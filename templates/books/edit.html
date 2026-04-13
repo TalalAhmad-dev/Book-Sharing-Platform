@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Book - BookShare{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Edit Book: {{ book.title }}</h2>
+    <form action="{{ url_for('books.edit', book_id=book.id) }}" method="POST">
+        <div class="form-group">
+            <label for="title">Book Title</label>
+            <input type="text" id="title" name="title" value="{{ book.title }}" required>
+        </div>
+        <div class="form-group">
+            <label for="author">Author</label>
+            <input type="text" id="author" name="author" value="{{ book.author }}" required>
+        </div>
+        <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+                <option value="Programming" {% if book.category == 'Programming' %}selected{% endif %}>Programming</option>
+                <option value="Fiction" {% if book.category == 'Fiction' %}selected{% endif %}>Fiction</option>
+                <option value="Science" {% if book.category == 'Science' %}selected{% endif %}>Science</option>
+                <option value="Other" {% if book.category == 'Other' %}selected{% endif %}>Other</option>
+            </select>
+        </div>
+        
+        {% if book.book_type == 'physical' %}
+        <div class="form-group">
+            <label for="location_notes">Pickup Location Notes</label>
+            <input type="text" id="location_notes" name="location_notes" value="{{ book.location_notes or '' }}">
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4">{{ book.description or '' }}</textarea>
+        </div>
+        
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary">Update Book</button>
+            <a href="{{ url_for('books.detail', book_id=book.id) }}" class="btn btn-secondary" style="background-color: var(--secondary-color); color: white;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

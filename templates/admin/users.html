@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - BookShare{% endblock %}
+
+{% block content %}
+<h2>Manage Users</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td><a href="{{ url_for('profile.view', user_id=user.id) }}">{{ user.name }}</a></td>
+            <td>{{ user.email }}</td>
+            <td><span class="badge badge-info">{{ user.role }}</span></td>
+            <td>
+                <span class="badge badge-{% if user.status == 'active' %}available{% else %}danger{% endif %}">
+                    {{ user.status }}
+                </span>
+            </td>
+            <td class="table-actions">
+                {% if user.id != current_user.id %}
+                    {% if user.status == 'active' %}
+                        <form action="{{ url_for('admin.block_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('Block this user?');">
+                            <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background-color: var(--danger-color); color: white;">Block</button>
+                        </form>
+                    {% else %}
+                        <form action="{{ url_for('admin.unblock_user', user_id=user.id) }}" method="POST">
+                            <button type="submit" class="btn btn-success" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Unblock</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <small>Self (Admin)</small>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

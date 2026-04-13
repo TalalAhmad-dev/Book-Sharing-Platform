@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Books - BookShare{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <form action="{{ url_for('books.catalog') }}" method="GET" class="search-form">
+        <input type="text" name="q" placeholder="Search title, author, category..." value="{{ request.args.get('q', '') }}">
+        <select name="category">
+            <option value="All">All Categories</option>
+            <option value="Programming" {% if request.args.get('category') == 'Programming' %}selected{% endif %}>Programming</option>
+            <option value="Fiction" {% if request.args.get('category') == 'Fiction' %}selected{% endif %}>Fiction</option>
+            <option value="Science" {% if request.args.get('category') == 'Science' %}selected{% endif %}>Science</option>
+            <option value="Other" {% if request.args.get('category') == 'Other' %}selected{% endif %}>Other</option>
+        </select>
+        <select name="type">
+            <option value="All">All Types</option>
+            <option value="Physical" {% if request.args.get('type') == 'Physical' %}selected{% endif %}>Physical</option>
+            <option value="Digital" {% if request.args.get('type') == 'Digital' %}selected{% endif %}>Digital</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+<div class="book-grid">
+    {% for book in books %}
+    <a href="{{ url_for('books.detail', book_id=book.id) }}" class="book-card">
+        <div class="book-cover-placeholder">📚</div>
+        <div class="book-details">
+            <div class="book-title">{{ book.title }}</div>
+            <div class="book-author">by {{ book.author }}</div>
+            <div style="margin-bottom: 0.5rem;">
+                <span class="badge badge-{{ book.book_type }}">{{ book.book_type }}</span>
+                <span class="badge badge-{{ book.status }}">{{ book.status }}</span>
+            </div>
+            <div style="font-size: 0.9rem; color: var(--secondary-color);">Owner: {{ book.owner.name }}</div>
+        </div>
+    </a>
+    {% else %}
+    <p>No books found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

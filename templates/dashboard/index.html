@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - BookShare{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ current_user.name }}!</h1>
+
+<div class="quick-links">
+    <a href="{{ url_for('dashboard.my_books') }}" class="btn btn-primary">My Shared Books</a>
+    <a href="{{ url_for('dashboard.borrowed') }}" class="btn btn-primary">Borrowed Books</a>
+</div>
+
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <div class="stat-value">{{ my_books_count }}</div>
+        <div class="stat-label">Books Shared</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ borrowed_count }}</div>
+        <div class="stat-label">Currently Borrowing</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ pending_requests_count }}</div>
+        <div class="stat-label">Pending Requests</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ favorites_count }}</div>
+        <div class="stat-label">Favorites</div>
+    </div>
+</div>
+
+<div class="dashboard-content">
+    <h3>Recent Activity</h3>
+    <p>No recent activity to show.</p>
+</div>
+{% endblock %}

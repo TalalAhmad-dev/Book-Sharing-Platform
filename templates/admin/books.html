@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Books - BookShare{% endblock %}
+
+{% block content %}
+<h2>Manage Books</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Owner</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.id }}</td>
+            <td><a href="{{ url_for('books.detail', book_id=book.id) }}">{{ book.title }}</a></td>
+            <td>{{ book.author }}</td>
+            <td><a href="{{ url_for('profile.view', user_id=book.owner_id) }}">{{ book.owner.name }}</a></td>
+            <td><span class="badge badge-{{ book.status }}">{{ book.status }}</span></td>
+            <td class="table-actions">
+                <form action="{{ url_for('books.delete', book_id=book.id) }}" method="POST" onsubmit="return confirm('Delete this book?');">
+                    <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background-color: var(--danger-color); color: white;">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

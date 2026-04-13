@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Login - BookShare{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Login</h2>
+    <form action="{{ url_for('auth.login') }}" method="POST">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group" style="display: flex; align-items: center;">
+            <input type="checkbox" id="remember" name="remember" style="width: auto; margin-right: 0.5rem;">
+            <label for="remember" style="margin-bottom: 0;">Remember Me</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Sign In</button>
+    </form>
+    <p style="margin-top: 1rem;">Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+</div>
+{% endblock %}

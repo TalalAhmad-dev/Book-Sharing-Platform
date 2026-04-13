@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - BookShare{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Edit Profile</h2>
+    <form action="{{ url_for('profile.edit') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" value="{{ current_user.name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio" name="bio" rows="4">{{ current_user.bio or '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="contact">Contact Information</label>
+            <input type="text" id="contact" name="contact" value="{{ current_user.contact or '' }}" placeholder="Phone or social link">
+        </div>
+        <div class="form-group">
+            <label for="profile_image">Profile Image</label>
+            <input type="file" id="profile_image" name="profile_image">
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} - BookShare{% endblock %}
+
+{% block content %}
+<div class="book-detail-grid">
+    <div class="book-detail-cover">📚</div>
+    
+    <div class="book-info">
+        <h1>{{ book.title }}</h1>
+        <div class="book-meta">
+            <span class="badge badge-{{ book.book_type }}">{{ book.book_type }}</span>
+            <span class="badge badge-{{ book.status }}">{{ book.status }}</span>
+            <span style="color: var(--secondary-color);">Category: {{ book.category }}</span>
+        </div>
+        
+        <p><strong>Author:</strong> {{ book.author }}</p>
+        <p><strong>Owner:</strong> <a href="{{ url_for('profile.view', user_id=book.owner_id) }}">{{ book.owner.name }}</a></p>
+        
+        {% if book.book_type == 'physical' %}
+            <p><strong>Location:</strong> {{ book.location_notes or 'Not specified' }}</p>
+        {% endif %}
+
+        <div class="description" style="margin-top: 1.5rem;">
+            <h3>Description</h3>
+            <p>{{ book.description or 'No description provided.' }}</p>
+        </div>
+
+        {% if current_user.id != book.owner_id %}
+            <div class="borrow-form-section">
+                {% if book.status == 'available' %}
+                    <h3>Request this Book</h3>
+                    <form action="{{ url_for('borrow.request_borrow', book_id=book.id) }}" method="POST">
+                        {% if book.book_type == 'physical' %}
+                            <div class="form-group">
+                                <label for="proposed_date">Proposed Date</label>
+                                <input type="date" id="proposed_date" name="proposed_date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="proposed_time">Proposed Time</label>
+                                <input type="time" id="proposed_time" name="proposed_time" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Pickup Location</label>
+                                <input type="text" id="location" name="location" placeholder="Where to meet?" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message (Optional)</label>
+                                <textarea id="message" name="message"></textarea>
+                            </div>
+                        {% endif %}
+                        <button type="submit" class="btn btn-success">{% if book.book_type == 'digital' %}Borrow & Download Now{% else %}Send Borrow Request{% endif %}</button>
+                    </form>
+                {% else %}
+                    <p class="flash flash-info">This book is currently {{ book.status }}.</p>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="borrow-form-section">
+                <a href="{{ url_for('books.edit', book_id=book.id) }}" class="btn btn-primary">Edit My Book</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

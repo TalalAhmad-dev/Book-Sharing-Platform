@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Borrowed Books - BookShare{% endblock %}
+
+{% block content %}
+<h2>Books I Am Borrowing</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Book Title</th>
+            <th>Owner</th>
+            <th>Exchange Info</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in my_borrows %}
+        <tr>
+            <td><a href="{{ url_for('books.detail', book_id=request.book_id) }}">{{ request.book.title }}</a></td>
+            <td><a href="{{ url_for('profile.view', user_id=request.book.owner_id) }}">{{ request.book.owner.name }}</a></td>
+            <td>
+                {% if request.book.book_type == 'physical' %}
+                    {{ request.proposed_date }} at {{ request.proposed_time }}<br>
+                    <small>{{ request.location }}</small>
+                {% else %}
+                    Digital
+                {% endif %}
+            </td>
+            <td><span class="badge badge-{{ request.status }}">{{ request.status }}</span></td>
+            <td>
+                {% if request.status == 'borrowed' %}
+                    {% if request.book.book_type == 'digital' %}
+                        <a href="{{ request.book.file_path or '#' }}" class="btn btn-success" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Download</a>
+                    {% endif %}
+                    <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Mark Returned</button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">You are not borrowing any books yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

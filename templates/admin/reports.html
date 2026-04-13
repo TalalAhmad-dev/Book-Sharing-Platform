@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Review Reports - BookShare{% endblock %}
+
+{% block content %}
+<h2>Review Reports</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Reporter</th>
+            <th>Target</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for report in reports %}
+        <tr>
+            <td>{{ report.id }}</td>
+            <td><a href="{{ url_for('profile.view', user_id=report.reporter_id) }}">{{ report.reporter.name }}</a></td>
+            <td>
+                {% if report.reported_book_id %}
+                    Book: <a href="{{ url_for('books.detail', book_id=report.reported_book_id) }}">{{ report.reported_book.title }}</a>
+                {% elif report.reported_user_id %}
+                    User: <a href="{{ url_for('profile.view', user_id=report.reported_user_id) }}">{{ report.reported_user.name }}</a>
+                {% endif %}
+            </td>
+            <td>{{ report.reason }}</td>
+            <td><span class="badge badge-info">{{ report.status }}</span></td>
+            <td class="table-actions">
+                <!-- Logic for marking reviewed/dismissed can be added to admin routes -->
+                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background-color: var(--secondary-color); color: white;">Mark Reviewed</button>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6">No reports found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

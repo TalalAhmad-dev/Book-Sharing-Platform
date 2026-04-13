@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.name }}'s Profile - BookShare{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="profile-img">👤</div>
+    <div class="profile-info">
+        <h1>{{ user.name }}</h1>
+        <p class="badge badge-info">{{ user.role }}</p>
+        <div class="profile-bio">{{ user.bio or 'No bio provided.' }}</div>
+        <p style="margin-top: 1rem; color: var(--secondary-color);">Member since: {{ user.created_at.strftime('%Y-%m-%d') }}</p>
+        
+        {% if current_user.id == user.id %}
+            <a href="{{ url_for('profile.edit') }}" class="btn btn-primary" style="margin-top: 1rem;">Edit Profile</a>
+        {% endif %}
+    </div>
+</div>
+
+<h3>Books Shared by {{ user.name }}</h3>
+<div class="book-grid">
+    {% for book in books %}
+    <a href="{{ url_for('books.detail', book_id=book.id) }}" class="book-card">
+        <div class="book-cover-placeholder">📚</div>
+        <div class="book-details">
+            <div class="book-title">{{ book.title }}</div>
+            <div class="book-author">by {{ book.author }}</div>
+            <div>
+                <span class="badge badge-{{ book.book_type }}">{{ book.book_type }}</span>
+                <span class="badge badge-{{ book.status }}">{{ book.status }}</span>
+            </div>
+        </div>
+    </a>
+    {% else %}
+    <p>This user hasn't shared any books yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
