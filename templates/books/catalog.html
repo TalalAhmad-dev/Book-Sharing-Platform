@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}Browse Books - BookShare{% endblock %}
+{% block title %}Browse Books - Book Sharing Platform{% endblock %}
 
 {% block content %}
 <div class="search-container">
     <form action="{{ url_for('books.catalog') }}" method="GET" class="search-form">
         <input type="text" name="q" placeholder="Search title, author, category..." value="{{ request.args.get('q', '') }}">
-        <select name="category">
+        <select name="category" title="category">
             <option value="All">All Categories</option>
             <option value="Programming" {% if request.args.get('category') == 'Programming' %}selected{% endif %}>Programming</option>
             <option value="Fiction" {% if request.args.get('category') == 'Fiction' %}selected{% endif %}>Fiction</option>
             <option value="Science" {% if request.args.get('category') == 'Science' %}selected{% endif %}>Science</option>
             <option value="Other" {% if request.args.get('category') == 'Other' %}selected{% endif %}>Other</option>
         </select>
-        <select name="type">
+        <select name="type" title="type">
             <option value="All">All Types</option>
             <option value="Physical" {% if request.args.get('type') == 'Physical' %}selected{% endif %}>Physical</option>
             <option value="Digital" {% if request.args.get('type') == 'Digital' %}selected{% endif %}>Digital</option>

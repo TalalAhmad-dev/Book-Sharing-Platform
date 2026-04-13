@@ -9,7 +9,7 @@
 <body>
     <nav class="navbar">
         <div class="container">
-            <a href="{{ url_for('books.catalog') }}" class="logo">BookShare</a>
+            <a href="{{ url_for('books.catalog') }}" class="logo">Book Sharing Platform</a>
             <ul class="nav-links">
                 <li><a href="{{ url_for('books.catalog') }}">Browse Books</a></li>
                 {% if current_user.is_authenticated %}
