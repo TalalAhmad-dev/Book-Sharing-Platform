@@ -35,39 +35,13 @@
     </div>
 </div>
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for book in books %}
-    <div class="col">
-        <div class="card h-100 shadow-sm">
-            {% if book.cover_image %}
-            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}" class="card-img-top" alt="{{ book.title }} Cover" style="height: 250px; object-fit: cover;">
-            {% else %}
-            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px; font-size: 5rem;">
-                📚
-            </div>
-            {% endif %}
-            <div class="card-body">
-                <h5 class="card-title">{{ book.title }}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">by {{ book.author }}</h6>
-                <div class="mb-3">
-                    <span class="badge {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %}">
-                        {{ book.book_type|capitalize }}
-                    </span>
-                    <span class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %}">
-                        {{ book.status|capitalize }}
-                    </span>
-                </div>
-                <p class="card-text small text-secondary">Owner: {{ book.owner.name }}</p>
-            </div>
-            <div class="card-footer bg-transparent border-top-0 pb-3">
-                <a href="{{ url_for('books.detail', book_id=book.id) }}" class="btn btn-outline-primary w-100">View Details</a>
-            </div>
-        </div>
-    </div>
+<div class="row row-cols-1 row-cols-md-3 g-4" id="book-grid">
+    {% if books %}
+        {% include 'books/_book_cards.html' %}
     {% else %}
-    <div class="col-12">
-        <div class="alert alert-info">No books found.</div>
-    </div>
-    {% endfor %}
+        <div class="col-12">
+            <div class="alert alert-info">No books found.</div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

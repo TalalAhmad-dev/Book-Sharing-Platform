@@ -15,6 +15,8 @@ def catalog():
         search = escape(request.args.get('search', ''))
         category = escape(request.args.get('category', 'All'))
         book_type = escape(request.args.get('type', 'All'))
+        page = request.args.get('page', 1, type=int)
+        per_page = 9
 
         query = Book.query
 
@@ -25,12 +27,17 @@ def catalog():
         if book_type != 'All':
             query = query.filter_by(book_type=book_type.lower())
 
-        books = query.all()
-        return render_template('books/catalog.html', books=books)
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        books = pagination.items
+
+        if request.headers.get('HX-Request'):
+            return render_template('books/_book_cards.html', books=books, pagination=pagination)
+
+        return render_template('books/catalog.html', books=books, pagination=pagination)
     except Exception as e:
         current_app.logger.exception(f'Error loading book catalog: {e}')
         flash('Unable to load the catalog at this time. Please try again later.', 'danger')
-        return render_template('books/catalog.html', books=[])
+        return render_template('books/catalog.html', books=[], pagination=None)
 
 @books_bp.route('/<int:book_id>')
 @login_required
