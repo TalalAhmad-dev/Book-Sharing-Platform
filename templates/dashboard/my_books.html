@@ -24,23 +24,28 @@
                 <tbody class="table-group-divider">
                     {% for book in my_books %}
                     <tr>
-                        <td class="ps-3">{{ book.id }}</td>
+                        <td class="px-3 text-muted">#{{ book.id }}</td>
                         <td class="fw-bold">{{ book.title }}</td>
                         <td>
-                            <span class="badge {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %} text-capitalize">
+                            <span
+                                class="badge {% if book.book_type == 'physical' %}bg-success text-white {% else %}bg-info-subtle text-dark{% endif %} border text-capitalize">
                                 {{ book.book_type }}
                             </span>
                         </td>
                         <td>
-                            <span class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %} text-capitalize">
+                            <span
+                                class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %} text-capitalize">
                                 {{ book.status }}
                             </span>
                         </td>
                         <td class="text-end pe-3">
                             <div class="btn-group btn-group-sm">
-                                <a href="{{ url_for('books.detail', book_id=book.id) }}" class="btn btn-outline-secondary">View</a>
-                                <a href="{{ url_for('books.edit', book_id=book.id) }}" class="btn btn-outline-primary">Edit</a>
-                                <form action="{{ url_for('books.delete', book_id=book.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this book?');">
+                                <a href="{{ url_for('books.detail', book_id=book.id) }}"
+                                    class="btn btn-outline-secondary">View</a>
+                                <a href="{{ url_for('books.edit', book_id=book.id) }}"
+                                    class="btn btn-outline-primary">Edit</a>
+                                <form action="{{ url_for('books.delete', book_id=book.id) }}" method="POST"
+                                    class="d-inline" onsubmit="return confirm('Delete this book?');">
                                     <button type="submit" class="btn btn-outline-danger">Delete</button>
                                 </form>
                             </div>
@@ -64,54 +69,62 @@
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 table-striped">
                 <thead class="table-light">
-                    <tr>
-                        <th class="ps-3">ID</th>
+                    <tr class="text-center">
+                        <th>ID</th>
                         <th>Book</th>
                         <th>Requester</th>
                         <th>Exchange Details</th>
                         <th>Status</th>
-                        <th class="text-end pe-3">Actions</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
                     {% for request in incoming_requests %}
-                    <tr>
-                        <td class="ps-3">{{ request.id }}</td>
-                        <td class="fw-bold">{{ request.book.title }}</td>
+                    <tr class="text-center">
+                        <td class="text-muted px-3">#{{ request.id }}</td>
+                        <td class="fw-bold text-truncate" style="max-width: 250px;" title="{{ request.book.title }}">{{
+                            request.book.title }}</td>
                         <td>{{ request.borrower.name }}</td>
                         <td>
                             {% if request.proposed_date %}
-                                <div class="small">
-                                    <i class="bi bi-calendar-event text-muted me-1"></i> {{ request.proposed_date }}<br>
-                                    <i class="bi bi-clock text-muted me-1"></i> {{ request.proposed_time }}
-                                </div>
+                            <div class="small">
+                                <i class="bi bi-calendar-event text-muted me-1"></i> {{ request.proposed_date }}<br>
+                                <i class="bi bi-clock text-muted me-1"></i> {{ request.proposed_time }}
+                            </div>
                             {% else %}
-                                <span class="text-muted small italic">Digital Download</span>
+                            <span class="text-muted small italic">Digital Download</span>
                             {% endif %}
                         </td>
                         <td>
-                            <span class="badge bg-secondary text-capitalize">{{ request.status }}</span>
+                            <span class="badge bg-{% if request.status == 'pending' %}warning
+                                {% elif request.status == 'accepted' %}info
+                                {% elif request.status == 'borrowed' %}success
+                                {% elif request.status == 'rejected' %}danger
+                                {% elif request.status == 'returned' %}secondary{% endif %} text-capitalize">{{
+                                request.status }}</span>
                         </td>
-                        <td class="text-end pe-3">
+                        <td>
                             {% if request.status == 'pending' %}
-                                <div class="btn-group btn-group-sm">
-                                    <form action="{{ url_for('borrow.accept', req_id=request.id) }}" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-success">Accept</button>
-                                    </form>
-                                    <form action="{{ url_for('borrow.reject', req_id=request.id) }}" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-danger">Reject</button>
-                                    </form>
-                                </div>
+                            <div class="btn-group btn-group-sm">
+                                <form action="{{ url_for('borrow.accept', req_id=request.id) }}" method="POST"
+                                    class="d-inline">
+                                    <button type="submit" class="btn btn-success">Accept</button>
+                                </form>
+                                <form action="{{ url_for('borrow.reject', req_id=request.id) }}" method="POST"
+                                    class="d-inline">
+                                    <button type="submit" class="btn btn-danger">Reject</button>
+                                </form>
+                            </div>
                             {% elif request.status == 'accepted' %}
-                                <form action="{{ url_for('borrow.mark_borrowed', req_id=request.id) }}" method="POST">
-                                    <button type="submit" class="btn btn-sm btn-primary">Mark Borrowed</button>
-                                </form>
+                            <form action="{{ url_for('borrow.mark_borrowed', req_id=request.id) }}" method="POST">
+                                <button type="submit" class="btn btn-sm btn-primary">Mark Borrowed</button>
+                            </form>
                             {% elif request.status == 'borrowed' and not request.book.book_type == 'digital' %}
-                                <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}" method="POST">
-                                    <button type="submit" class="btn btn-sm btn-success">Mark Returned</button>
-                                </form>
+                            <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}" method="POST">
+                                <button type="submit" class="btn btn-sm btn-success">Mark Returned</button>
+                            </form>
                             {% else %}
-                                <span class="text-muted small">No actions</span>
+                            <span class="text-muted small">No actions</span>
                             {% endif %}
                         </td>
                     </tr>

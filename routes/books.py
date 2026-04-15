@@ -44,7 +44,13 @@ def catalog():
 def detail(book_id):
     try:
         book = Book.query.get_or_404(book_id)
-        return render_template('books/detail.html', book=book)
+        
+        active_request = BorrowRequest.query.filter_by(
+            book_id=book_id,
+            borrower_id=current_user.id
+        ).filter(BorrowRequest.status.in_(['pending', 'accepted', 'borrowed'])).first()
+        
+        return render_template('books/detail.html', book=book, active_request=active_request)
     except Exception as e:
         current_app.logger.exception(f'Error loading book detail for ID {book_id}: {e}')
         flash('An error occurred while loading book details.', 'danger')
@@ -215,7 +221,7 @@ def download(book_id):
         borrow_req = BorrowRequest.query.filter_by(
             book_id=book_id, 
             borrower_id=current_user.id
-        ).filter(BorrowRequest.status._in(['accepted', 'borrowed'])).first()
+        ).filter(BorrowRequest.status.in_(['accepted', 'borrowed'])).first()
 
         if not borrow_req and book.owner_id != current_user.id and current_user.role != 'admin':
             flash('You do not have permission to download this book.', 'danger')

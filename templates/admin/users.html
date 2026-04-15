@@ -24,7 +24,7 @@
                 <tbody class="table-group-divider">
                     {% for user in users %}
                     <tr>
-                        <td class="ps-3 text-muted">#{{ user.id }}</td>
+                        <td class="px-3 text-muted">#{{ user.id }}</td>
                         <td>
                             <a href="{{ url_for('profile.view', user_id=user.id) }}" class="text-decoration-none fw-bold text-dark">
                                 {{ user.name }}

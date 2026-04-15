@@ -65,14 +65,14 @@
                     {% else %}
                     <div class="alert alert-success text-center">
                         <i class="bi bi-info-circle-fill"></i>
-                        This is a <strong>digital book</strong>. You can borrow it instantly and download the book after request confirmation.
+                        This is a <strong>digital book</strong>. You can send borrow request and can borrow and dowload immediately if accepted by {{ book.owner.name }}.
                     </div>
                     {% endif %}
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                         <a href="{{ url_for('books.catalog') }}" class="btn btn-outline-secondary px-4">Cancel</a>
                         <button type="submit" class="btn btn-success px-5">
-                            {% if book.book_type == 'digital' %}Borrow Now{% else %}Submit Request{% endif %}
+                            Submit Borrow Request
                         </button>
                     </div>
                 </form>

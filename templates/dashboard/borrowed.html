@@ -10,22 +10,22 @@
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 table-striped">
                 <thead class="table-light">
-                    <tr>
-                        <th class="ps-3">ID</th>
+                    <tr class="text-center">
+                        <th>ID</th>
                         <th>Book Title</th>
                         <th>Owner</th>
-                        <th>Exchange Info</th>
+                        <th class="w-25">Exchange Info</th>
                         <th>Request Status</th>
-                        <th class="text-end pe-3">Actions</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
                     {% for request in my_borrows %}
-                    <tr>
-                        <td class="ps-3 fw-bold">{{ request.id }}</td>
-                        <td class="fw-bold">
+                    <tr class="text-center">
+                        <td class="px-3 text-muted">#{{ request.id }}</td>
+                        <td class="fw-bold" title="{{ request.book.title }}">
                             <a href="{{ url_for('books.detail', book_id=request.book_id) }}"
-                                class="text-decoration-none text-dark">
+                                class="text-decoration-underline text-dark text-truncate d-inline-block" style="max-width: 250px;">
                                 {{ request.book.title }}
                             </a>
                         </td>
@@ -37,14 +37,20 @@
                                 <span class="text-muted">{{ request.location }}</span>
                             </div>
                             {% else %}
-                            <span class="badge bg-light text-dark border">Digital</span>
+                            <span class="badge bg-info-subtle text-dark border">Digital</span>
                             {% endif %}
                         </td>
                         <td>
-                            <span class="badge bg-secondary text-capitalize">{{ request.status }}</span>
+                            <span class="badge 
+                                bg-{% if request.status == 'pending' %}warning
+                                {% elif request.status == 'accepted' %}info
+                                {% elif request.status == 'borrowed' %}success
+                                {% elif request.status == 'rejected' %}danger
+                                {% elif request.status == 'returned' %}secondary{% endif %} text-capitalize">{{
+                                request.status }}</span>
                         </td>
-                        <td class="text-end pe-3">
-                            {% if request.status in ('pending', 'accepted', 'rejected', 'borrowed') %}
+                        <td>
+                            {% if request.status in ('pending', 'accepted', 'borrowed') %}
                             <div class="btn-group btn-group-sm">
                                 <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}" method="POST"
                                     class="d-inline">

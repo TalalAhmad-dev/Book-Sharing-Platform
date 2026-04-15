@@ -24,7 +24,7 @@
                 <tbody class="table-group-divider">
                     {% for book in books %}
                     <tr>
-                        <td class="ps-3 text-muted">#{{ book.id }}</td>
+                        <td class="px-3 text-muted">#{{ book.id }}</td>
                         <td>
                             <a href="{{ url_for('books.detail', book_id=book.id) }}" class="text-decoration-none fw-bold text-dark">
                                 {{ book.title }}
