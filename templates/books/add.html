@@ -1,78 +1,107 @@
 {% extends "base.html" %}
 
-{% block title %}Add Book - Book Sharing Platform{% endblock %}
+{% block title %}Add Book - BookShare{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h2>Add New Book</h2>
-    <form action="{{ url_for('books.add') }}" method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="title">Book Title</label>
-            <input type="text" id="title" name="title" required>
-        </div>
-        <div class="form-group">
-            <label for="author">Author</label>
-            <input type="text" id="author" name="author" required>
-        </div>
-        <div class="form-group">
-            <label for="category">Category</label>
-            <select id="category" name="category" required>
-                <option value="Programming">Programming</option>
-                <option value="Fiction">Fiction</option>
-                <option value="Science">Science</option>
-                <option value="Other">Other</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Book Type</label>
-            <div style="display: flex; gap: 1rem;">
-                <label style="display: flex; align-items: center; width: auto;">
-                    <input type="radio" name="book_type" value="physical" checked style="width: auto; margin-right: 0.5rem;"> Physical
-                </label>
-                <label style="display: flex; align-items: center; width: auto;">
-                    <input type="radio" name="book_type" value="digital" style="width: auto; margin-right: 0.5rem;"> Digital
-                </label>
-            </div>
-        </div>
-        
-        <div id="physical-fields">
-            <div class="form-group">
-                <label for="location_notes">Pickup Location Notes</label>
-                <input type="text" id="location_notes" name="location_notes" placeholder="e.g. Near Main Gate">
-            </div>
-        </div>
+<div class="row justify-content-center py-5">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h2 class="card-title text-center mb-4">Add New Book</h2>
+                <form action="{{ url_for('books.add') }}" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3 form-floating">
+                        <input type="text" class="form-control" id="title" name="title" placeholder="Enter Book Title"
+                            required autocomplete="on">
+                        <label for="title" class="form-label">Book Title <span class="text-danger fw-bold">*</span></label>
+                    </div>
 
-        <div id="digital-fields" class="hidden">
-            <div class="form-group">
-                <label for="file">Upload Book File (.pdf, .epub, .txt)</label>
-                <input type="file" id="file" name="file">
+                    <div class="mb-3 form-floating">
+                        <input type="text" class="form-control" id="author" name="author"
+                            placeholder="Enter Author Name" required autocomplete="name">
+                        <label for="author" class="form-label">Author <span class="text-danger fw-bold">*</span></label>
+                    </div>
+
+                    <div class="mb-3 form-floating">
+                        <select class="form-select" id="category" name="category" required>
+                            <option selected value="">Select Category</option>
+                            <option value="Programming">Programming</option>
+                            <option value="Fiction">Fiction</option>
+                            <option value="Science">Science</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <label for="category" class="form-label">Category <span class="text-danger fw-bold">*</span></label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="cover_image" class="form-label">Book Cover Image</label>
+                        <input type="file" class="form-control" accept="image/*" id="cover_image" name="cover_image">
+                    </div>
+
+                    <div class="mb-4 form-floating">
+                        <textarea class="form-control floating-textarea-height" id="description" name="description"
+                            placeholder="Provide a short description of the book..."></textarea>
+                        <label for="description" class="form-label">Description</label>
+                    </div>
+
+                    <div class="mb-3 mx-1 btn-group row row-cols-2 d-flex" role="group">
+                        <input class="btn-check" type="radio" name="book_type" id="type_physical" value="physical"
+                            checked>
+                        <label class="form-label btn btn-outline-primary" for="type_physical">Physical</label>
+
+                        <input class="btn-check" type="radio" name="book_type" id="type_digital" value="digital">
+                        <label class="form-label btn btn-outline-primary" for="type_digital">Digital</label>
+                    </div>
+
+                    <div id="physical-fields">
+                        <div class="mb-3 form-floating">
+                            <select class="form-select" id="condition" name="condition">
+                                <option selected value="">Select Condition</option>
+                                <option value="New">New</option>
+                                <option value="Good">Good</option>
+                                <option value="Poor">Poor</option>
+                            </select>
+                            <label for="condition" class="form-label">Condition <span class="text-danger fw-bold">*</span></label>
+                        </div>
+
+                        <div class="mb-3 form-floating">
+                            <textarea class="form-control floating-textarea-height" id="location_notes"
+                                name="location_notes" placeholder="e.g. Near Main Gate"
+                                autocomplete="street-address"></textarea>
+                            <label for="location_notes" class="form-label">Pickup Location Notes</label>
+                        </div>
+                    </div>
+
+                    <div id="digital-fields" class="d-none">
+                        <div class="mb-3">
+                            <label for="file" class="form-label">Upload Book File (.pdf, .epub, .txt) <span class="text-danger fw-bold">*</span></label>
+                            <input type="file" class="form-control" accept=".pdf,.epub,.txt" id="file" name="file">
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Add Book</button>
+                    </div>
+                </form>
             </div>
         </div>
-
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" rows="4"></textarea>
-        </div>
-        
-        <button type="submit" class="btn btn-primary">Add Book</button>
-    </form>
+    </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-document.querySelectorAll('input[name="book_type"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-        const physical = document.getElementById('physical-fields');
-        const digital = document.getElementById('digital-fields');
-        if (this.value === 'physical') {
-            physical.classList.remove('hidden');
-            digital.classList.add('hidden');
-        } else {
-            physical.classList.add('hidden');
-            digital.classList.remove('hidden');
-        }
+    document.querySelectorAll('input[name="book_type"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            const physical = document.getElementById('physical-fields');
+            const digital = document.getElementById('digital-fields');
+            if (this.value === 'physical') {
+                physical.classList.remove('d-none');
+                digital.classList.add('d-none');
+            } else {
+                physical.classList.add('d-none');
+                digital.classList.remove('d-none');
+            }
+        });
     });
-});
 </script>
 {% endblock %}

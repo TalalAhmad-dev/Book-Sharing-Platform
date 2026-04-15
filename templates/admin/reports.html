@@ -1,43 +1,68 @@
 {% extends "base.html" %}
 
-{% block title %}Review Reports - Book Sharing Platform{% endblock %}
+{% block title %}Review Reports - BookShare{% endblock %}
 
 {% block content %}
-<h2>Review Reports</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3">Review Reports</h2>
+</div>
 
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Reporter</th>
-            <th>Target</th>
-            <th>Reason</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for report in reports %}
-        <tr>
-            <td>{{ report.id }}</td>
-            <td><a href="{{ url_for('profile.view', user_id=report.reporter_id) }}">{{ report.reporter.name }}</a></td>
-            <td>
-                {% if report.reported_book_id %}
-                    Book: <a href="{{ url_for('books.detail', book_id=report.reported_book_id) }}">{{ report.reported_book.title }}</a>
-                {% elif report.reported_user_id %}
-                    User: <a href="{{ url_for('profile.view', user_id=report.reported_user_id) }}">{{ report.reported_user.name }}</a>
-                {% endif %}
-            </td>
-            <td>{{ report.reason }}</td>
-            <td><span class="badge badge-info">{{ report.status }}</span></td>
-            <td class="table-actions">
-                <!-- Logic for marking reviewed/dismissed can be added to admin routes -->
-                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background-color: var(--secondary-color); color: white;">Mark Reviewed</button>
-            </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="6">No reports found.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">ID</th>
+                        <th>Reporter</th>
+                        <th>Target</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <td class="ps-3 text-muted">#{{ report.id }}</td>
+                        <td>
+                            <a href="{{ url_for('profile.view', user_id=report.reporter_id) }}" class="text-decoration-none">
+                                {{ report.reporter.name }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if report.reported_book_id %}
+                                <span class="badge bg-light text-dark border me-1">Book</span>
+                                <a href="{{ url_for('books.detail', book_id=report.reported_book_id) }}" class="text-decoration-none small text-truncate d-inline-block" style="max-width: 150px;">
+                                    {{ report.reported_book.title }}
+                                </a>
+                            {% elif report.reported_user_id %}
+                                <span class="badge bg-light text-dark border me-1">User</span>
+                                <a href="{{ url_for('profile.view', user_id=report.reported_user_id) }}" class="text-decoration-none small text-truncate d-inline-block" style="max-width: 150px;">
+                                    {{ report.reported_user.name }}
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="small text-muted text-truncate d-inline-block" style="max-width: 200px;" title="{{ report.reason }}">
+                                {{ report.reason }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary text-capitalize">{{ report.status }}</span>
+                        </td>
+                        <td class="text-end pe-3">
+                            <button class="btn btn-sm btn-outline-secondary">Mark Reviewed</button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No reports found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

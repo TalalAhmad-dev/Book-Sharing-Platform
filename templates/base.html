@@ -1,54 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Book Sharing Platform{% endblock %}</title>
+    <title>{% block title %}BookShare{% endblock %}</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <a href="{{ url_for('books.catalog') }}" class="logo">Book Sharing Platform</a>
-            <ul class="nav-links">
-                <li><a href="{{ url_for('books.catalog') }}">Browse Books</a></li>
-                {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('books.add') }}">Add Book</a></li>
-                    <li><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        ...
+        <main class="container flex-shrink-0 my-1">
+
+            <a href="{{ url_for('books.catalog') }}" class="navbar-brand fs-4">BookShare</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('books.catalog') }}">Browse
+                            Books</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('books.add') }}">Add Book</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2"
+                            href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                    </li>
                     {% if current_user.role == 'admin' %}
-                        <li><a href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('admin.dashboard') }}">Admin</a>
+                    </li>
                     {% endif %}
-                    <li><a href="{{ url_for('profile.view', user_id=current_user.id) }}">Profile</a></li>
-                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-                {% else %}
-                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-                    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
-                {% endif %}
-            </ul>
-        </div>
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2"
+                            href="{{ url_for('profile.view', user_id=current_user.id) }}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('auth.logout') }}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('auth.login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold" href="{{ url_for('auth.register') }}">Register</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            </div>
     </nav>
 
-    <div class="container main-content">
-        {% with messages = get_flashed_messages(with_categories=true) %}
+    <main class="container">
+        <div class="toast-container position-fixed top-0 end-0 p-3 toast-priority">
+            {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="flash flash-{{ category }}">{{ message }}</div>
-                    {% endfor %}
+            {% for category, message in messages %}
+            <div class="toast align-items-center text-white bg-{{ category if category != 'error' else 'danger' }} border-0"
+                role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="4000">
+                <div class="d-flex">
+                    <div class="toast-body fw-bold fs-6">
+                        {{ message }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
                 </div>
+            </div>
+            {% endfor %}
             {% endif %}
-        {% endwith %}
-
+            {% endwith %}
+        </div>
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 Book Sharing Platform. CS619 Final Project.</p>
+    <footer class="footer mt-auto py-3 bg-light border-top">
+        <div class="container text-center">
+            <p class="text-muted mb-0">&copy; 2026 BookShare. CS619 Final Project.</p>
         </div>
     </footer>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
     {% block scripts %}{% endblock %}
 </body>
+
 </html>

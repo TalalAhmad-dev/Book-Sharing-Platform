@@ -1,10 +1,10 @@
-# Book Sharing Platform
+# BookShare
 
 A Flask-based web application for sharing physical and digital books among users. This project is a CS619 Final Project (Group F25PROJECT92F39).
 
 ## Project Overview
 
-- **Purpose:** Peer-to-peer book sharing platform with search, borrowing workflows, and admin management.
+- **Purpose:** Peer-to-peer BookShare with search, borrowing workflows, and admin management.
 - **Tech Stack:**
   - **Backend:** Flask (Python >= 3.14)
   - **Database:** SQLite (SQLAlchemy recommended)

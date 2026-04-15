@@ -5,6 +5,13 @@ build/
 dist/
 wheels/
 *.egg-info
+instance/
+*.db
 
 # Virtual environments
 .venv
+
+# User Uploaded Files
+uploads/
+
+.env

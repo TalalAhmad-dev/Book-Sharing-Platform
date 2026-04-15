@@ -1,63 +1,107 @@
 {% extends "base.html" %}
 
-{% block title %}{{ book.title }} - Book Sharing Platform{% endblock %}
+{% block title %}{{ book.title }} - BookShare{% endblock %}
 
 {% block content %}
-<div class="book-detail-grid">
-    <div class="book-detail-cover">📚</div>
-    
-    <div class="book-info">
-        <h1>{{ book.title }}</h1>
-        <div class="book-meta">
-            <span class="badge badge-{{ book.book_type }}">{{ book.book_type }}</span>
-            <span class="badge badge-{{ book.status }}">{{ book.status }}</span>
-            <span style="color: var(--secondary-color);">Category: {{ book.category }}</span>
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100 overflow-hidden">
+            {% if book.cover_image %}
+                <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}" class="img-fluid rounded w-100" alt="{{ book.title }} Cover" style="min-height: 400px; object-fit: cover;">
+            {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center text-center py-5" style="font-size: 8rem; min-height: 400px;">
+                    📚
+                </div>
+            {% endif %}
         </div>
-        
-        <p><strong>Author:</strong> {{ book.author }}</p>
-        <p><strong>Owner:</strong> <a href="{{ url_for('profile.view', user_id=book.owner_id) }}">{{ book.owner.name }}</a></p>
-        
-        {% if book.book_type == 'physical' %}
-            <p><strong>Location:</strong> {{ book.location_notes or 'Not specified' }}</p>
-        {% endif %}
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h1 class="card-title h2 mb-0">{{ book.title }}</h1>
+                    <div>
+                        <span class="badge {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %} text-capitalize p-2">{{ book.book_type }}</span>
+                        <span class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %} text-capitalize p-2">{{ book.status }}</span>
+                    </div>
+                </div>
+                
+                <h6 class="text-muted mb-4">Category: {{ book.category }}</h6>
+                
+                <div class="row mb-4">
+                    <div class="col-sm-6">
+                        <p class="mb-1 text-secondary small text-uppercase fw-bold">Author</p>
+                        <p class="fs-5">{{ book.author }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="mb-1 text-secondary small text-uppercase fw-bold">Owner</p>
+                        <p class="fs-5"><a href="{{ url_for('profile.view', user_id=book.owner_id) }}" class="text-decoration-none">{{ book.owner.name }}</a></p>
+                    </div>
+                </div>
+                
+                {% if book.book_type == 'physical' %}
+                    <div class="mb-4">
+                        <p class="mb-1 text-secondary small text-uppercase fw-bold">Pickup Location</p>
+                        <p class="fs-6">{{ book.location_notes or 'Not specified' }}</p>
+                    </div>
+                {% endif %}
 
-        <div class="description" style="margin-top: 1.5rem;">
-            <h3>Description</h3>
-            <p>{{ book.description or 'No description provided.' }}</p>
+                <hr>
+
+                <div class="mt-4">
+                    <h5 class="mb-3">Description</h5>
+                    <p class="text-secondary lh-lg">{{ book.description or 'No description provided.' }}</p>
+                </div>
+            </div>
         </div>
 
         {% if current_user.id != book.owner_id %}
-            <div class="borrow-form-section">
-                {% if book.status == 'available' %}
-                    <h3>Request this Book</h3>
-                    <form action="{{ url_for('borrow.request_borrow', book_id=book.id) }}" method="POST">
-                        {% if book.book_type == 'physical' %}
-                            <div class="form-group">
-                                <label for="proposed_date">Proposed Date</label>
-                                <input type="date" id="proposed_date" name="proposed_date" required>
+            <div class="card shadow-sm border-success bg-light">
+                <div class="card-body p-4">
+                    {% if book.status == 'available' %}
+                        <h4 class="card-title mb-4">Request this Book</h4>
+                        <form action="{{ url_for('borrow.request_borrow', book_id=book.id) }}" method="POST">
+                            {% if book.book_type == 'physical' %}
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label for="proposed_date" class="form-label">Proposed Date</label>
+                                        <input type="date" id="proposed_date" name="proposed_date" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="proposed_time" class="form-label">Proposed Time</label>
+                                        <input type="time" id="proposed_time" name="proposed_time" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="location" class="form-label">Pickup Location</label>
+                                    <input type="text" id="location" name="location" class="form-control" placeholder="Where would you like to meet?" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message (Optional)</label>
+                                    <textarea id="message" name="message" class="form-control" rows="3" placeholder="Add a note for the owner..."></textarea>
+                                </div>
+                            {% endif %}
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    {% if book.book_type == 'digital' %}Borrow & Download Now{% else %}Send Borrow Request{% endif %}
+                                </button>
                             </div>
-                            <div class="form-group">
-                                <label for="proposed_time">Proposed Time</label>
-                                <input type="time" id="proposed_time" name="proposed_time" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="location">Pickup Location</label>
-                                <input type="text" id="location" name="location" placeholder="Where to meet?" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="message">Message (Optional)</label>
-                                <textarea id="message" name="message"></textarea>
-                            </div>
-                        {% endif %}
-                        <button type="submit" class="btn btn-success">{% if book.book_type == 'digital' %}Borrow & Download Now{% else %}Send Borrow Request{% endif %}</button>
-                    </form>
-                {% else %}
-                    <p class="flash flash-info">This book is currently {{ book.status }}.</p>
-                {% endif %}
+                        </form>
+                    {% else %}
+                        <div class="alert alert-warning mb-0 text-center">
+                            <i class="bi bi-info-circle me-2"></i>
+                            This book is currently <strong class="text-capitalize">{{ book.status }}</strong>.
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         {% else %}
-            <div class="borrow-form-section">
-                <a href="{{ url_for('books.edit', book_id=book.id) }}" class="btn btn-primary">Edit My Book</a>
+            <div class="card shadow-sm border-primary">
+                <div class="card-body text-center py-4">
+                    <p class="mb-3">This is your book listing.</p>
+                    <a href="{{ url_for('books.edit', book_id=book.id) }}" class="btn btn-primary px-5">Edit Listing</a>
+                </div>
             </div>
         {% endif %}
     </div>

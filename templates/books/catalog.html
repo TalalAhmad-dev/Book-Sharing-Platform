@@ -1,43 +1,73 @@
 {% extends "base.html" %}
 
-{% block title %}Browse Books - Book Sharing Platform{% endblock %}
+{% block title %}Browse Books - BookShare{% endblock %}
 
 {% block content %}
-<div class="search-container">
-    <form action="{{ url_for('books.catalog') }}" method="GET" class="search-form">
-        <input type="text" name="q" placeholder="Search title, author, category..." value="{{ request.args.get('q', '') }}">
-        <select name="category" title="category">
-            <option value="All">All Categories</option>
-            <option value="Programming" {% if request.args.get('category') == 'Programming' %}selected{% endif %}>Programming</option>
-            <option value="Fiction" {% if request.args.get('category') == 'Fiction' %}selected{% endif %}>Fiction</option>
-            <option value="Science" {% if request.args.get('category') == 'Science' %}selected{% endif %}>Science</option>
-            <option value="Other" {% if request.args.get('category') == 'Other' %}selected{% endif %}>Other</option>
-        </select>
-        <select name="type" title="type">
-            <option value="All">All Types</option>
-            <option value="Physical" {% if request.args.get('type') == 'Physical' %}selected{% endif %}>Physical</option>
-            <option value="Digital" {% if request.args.get('type') == 'Digital' %}selected{% endif %}>Digital</option>
-        </select>
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <form action="{{ url_for('books.catalog') }}" method="GET" class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control" placeholder="Search title, author..." value="{{ request.args.get('search', '') }}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Category</label>
+                <select name="category" class="form-select">
+                    <option value="All">All Categories</option>
+                    <option value="Programming" {% if request.args.get('category') == 'Programming' %}selected{% endif %}>Programming</option>
+                    <option value="Fiction" {% if request.args.get('category') == 'Fiction' %}selected{% endif %}>Fiction</option>
+                    <option value="Science" {% if request.args.get('category') == 'Science' %}selected{% endif %}>Science</option>
+                    <option value="Other" {% if request.args.get('category') == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Type</label>
+                <select name="type" class="form-select">
+                    <option value="All">All Types</option>
+                    <option value="Physical" {% if request.args.get('type') == 'Physical' %}selected{% endif %}>Physical</option>
+                    <option value="Digital" {% if request.args.get('type') == 'Digital' %}selected{% endif %}>Digital</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<div class="book-grid">
+<div class="row row-cols-1 row-cols-md-3 g-4">
     {% for book in books %}
-    <a href="{{ url_for('books.detail', book_id=book.id) }}" class="book-card">
-        <div class="book-cover-placeholder">📚</div>
-        <div class="book-details">
-            <div class="book-title">{{ book.title }}</div>
-            <div class="book-author">by {{ book.author }}</div>
-            <div style="margin-bottom: 0.5rem;">
-                <span class="badge badge-{{ book.book_type }}">{{ book.book_type }}</span>
-                <span class="badge badge-{{ book.status }}">{{ book.status }}</span>
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            {% if book.cover_image %}
+            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}" class="card-img-top" alt="{{ book.title }} Cover" style="height: 250px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px; font-size: 5rem;">
+                📚
             </div>
-            <div style="font-size: 0.9rem; color: var(--secondary-color);">Owner: {{ book.owner.name }}</div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">by {{ book.author }}</h6>
+                <div class="mb-3">
+                    <span class="badge {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %}">
+                        {{ book.book_type|capitalize }}
+                    </span>
+                    <span class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %}">
+                        {{ book.status|capitalize }}
+                    </span>
+                </div>
+                <p class="card-text small text-secondary">Owner: {{ book.owner.name }}</p>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 pb-3">
+                <a href="{{ url_for('books.detail', book_id=book.id) }}" class="btn btn-outline-primary w-100">View Details</a>
+            </div>
         </div>
-    </a>
+    </div>
     {% else %}
-    <p>No books found.</p>
+    <div class="col-12">
+        <div class="alert alert-info">No books found.</div>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}

@@ -1,85 +1,124 @@
 {% extends "base.html" %}
 
-{% block title %}My Shared Books - Book Sharing Platform{% endblock %}
+{% block title %}My Shared Books - BookShare{% endblock %}
 
 {% block content %}
-<h2>My Shared Books</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3">My Shared Books</h2>
+    <a href="{{ url_for('books.add') }}" class="btn btn-primary">Add New Book</a>
+</div>
 
-<table>
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for book in my_books %}
-        <tr>
-            <td>{{ book.title }}</td>
-            <td><span class="badge badge-{{ book.book_type }}">{{ book.book_type }}</span></td>
-            <td><span class="badge badge-{{ book.status }}">{{ book.status }}</span></td>
-            <td class="table-actions">
-                <a href="{{ url_for('books.edit', book_id=book.id) }}" class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Edit</a>
-                <form action="{{ url_for('books.delete', book_id=book.id) }}" method="POST" onsubmit="return confirm('Delete this book?');">
-                    <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background-color: var(--danger-color); color: white;">Delete</button>
-                </form>
-            </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="4">You haven't shared any books yet.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="card shadow-sm mb-5">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Title</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in my_books %}
+                    <tr>
+                        <td class="ps-3 fw-bold">{{ book.title }}</td>
+                        <td>
+                            <span class="badge {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %} text-capitalize">
+                                {{ book.book_type }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %} text-capitalize">
+                                {{ book.status }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-3">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('books.detail', book_id=book.id) }}" class="btn btn-outline-secondary">View</a>
+                                <a href="{{ url_for('books.edit', book_id=book.id) }}" class="btn btn-outline-primary">Edit</a>
+                                <form action="{{ url_for('books.delete', book_id=book.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this book?');">
+                                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">You haven't shared any books yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-<h3>Incoming Borrow Requests</h3>
+<h3 class="h4 mb-4">Incoming Borrow Requests</h3>
 
-<table>
-    <thead>
-        <tr>
-            <th>Book</th>
-            <th>Requester</th>
-            <th>Proposed Date/Time</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for request in incoming_requests %}
-        <tr>
-            <td>{{ request.book.title }}</td>
-            <td>{{ request.borrower.name }}</td>
-            <td>
-                {% if request.proposed_date %}
-                    {{ request.proposed_date }} at {{ request.proposed_time }}
-                {% else %}
-                    N/A (Digital)
-                {% endif %}
-            </td>
-            <td><span class="badge badge-{{ request.status }}">{{ request.status }}</span></td>
-            <td class="table-actions">
-                {% if request.status == 'pending' %}
-                    <form action="{{ url_for('borrow.accept', req_id=request.id) }}" method="POST">
-                        <button type="submit" class="btn btn-success" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Accept</button>
-                    </form>
-                    <form action="{{ url_for('borrow.reject', req_id=request.id) }}" method="POST">
-                        <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background-color: var(--danger-color); color: white;">Reject</button>
-                    </form>
-                {% elif request.status == 'accepted' %}
-                    <form action="{{ url_for('borrow.mark_borrowed', req_id=request.id) }}" method="POST">
-                        <button type="submit" class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Mark Borrowed</button>
-                    </form>
-                {% elif request.status == 'borrowed' %}
-                    <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}" method="POST">
-                        <button type="submit" class="btn btn-success" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Mark Returned</button>
-                    </form>
-                {% endif %}
-            </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="5">No borrow requests yet.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Book</th>
+                        <th>Requester</th>
+                        <th>Exchange Details</th>
+                        <th>Status</th>
+                        <th class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in incoming_requests %}
+                    <tr>
+                        <td class="ps-3 fw-bold">{{ request.book.title }}</td>
+                        <td>{{ request.borrower.name }}</td>
+                        <td>
+                            {% if request.proposed_date %}
+                                <div class="small">
+                                    <i class="bi bi-calendar-event text-muted me-1"></i> {{ request.proposed_date }}<br>
+                                    <i class="bi bi-clock text-muted me-1"></i> {{ request.proposed_time }}
+                                </div>
+                            {% else %}
+                                <span class="text-muted small italic">Digital Download</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary text-capitalize">{{ request.status }}</span>
+                        </td>
+                        <td class="text-end pe-3">
+                            {% if request.status == 'pending' %}
+                                <div class="btn-group btn-group-sm">
+                                    <form action="{{ url_for('borrow.accept', req_id=request.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-success">Accept</button>
+                                    </form>
+                                    <form action="{{ url_for('borrow.reject', req_id=request.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-danger">Reject</button>
+                                    </form>
+                                </div>
+                            {% elif request.status == 'accepted' %}
+                                <form action="{{ url_for('borrow.mark_borrowed', req_id=request.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-primary">Mark Borrowed</button>
+                                </form>
+                            {% elif request.status == 'borrowed' %}
+                                <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-success">Mark Returned</button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted small">No actions</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">No borrow requests yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,28 +1,38 @@
 {% extends "base.html" %}
 
-{% block title %}Edit Profile - Book Sharing Platform{% endblock %}
+{% block title %}Edit Profile - BookShare{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h2>Edit Profile</h2>
-    <form action="{{ url_for('profile.edit') }}" method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" value="{{ current_user.name }}" required>
+<div class="row justify-content-center py-5">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h2 class="card-title text-center mb-4">Edit Profile</h2>
+                <form action="{{ url_for('profile.edit') }}" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ current_user.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">Bio</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Tell us a bit about yourself and your book interests...">{{ current_user.bio or '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact" class="form-label">Contact Information</label>
+                        <input type="text" class="form-control" id="contact" name="contact" value="{{ current_user.contact or '' }}" placeholder="Phone number, social media link, etc.">
+                        <div class="form-text">This will be shown to users who want to borrow your books.</div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="profile_image" class="form-label">Profile Image</label>
+                        <input type="file" class="form-control" id="profile_image" name="profile_image">
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                        <a href="{{ url_for('profile.view', user_id=current_user.id) }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="bio">Bio</label>
-            <textarea id="bio" name="bio" rows="4">{{ current_user.bio or '' }}</textarea>
-        </div>
-        <div class="form-group">
-            <label for="contact">Contact Information</label>
-            <input type="text" id="contact" name="contact" value="{{ current_user.contact or '' }}" placeholder="Phone or social link">
-        </div>
-        <div class="form-group">
-            <label for="profile_image">Profile Image</label>
-            <input type="file" id="profile_image" name="profile_image">
-        </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-    </form>
+    </div>
 </div>
 {% endblock %}

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from extensions import db
 from models import Book, User
+from markupsafe import escape
 import os
 from werkzeug.utils import secure_filename
 
@@ -10,95 +11,186 @@ books_bp = Blueprint('books', __name__)
 @books_bp.route('/')
 @login_required
 def catalog():
-    q = request.args.get('q', '')
-    category = request.args.get('category', 'All')
-    book_type = request.args.get('type', 'All')
-    
-    query = Book.query
-    
-    if q:
-        query = query.filter(Book.title.contains(q) | Book.author.contains(q) | Book.category.contains(q))
-    if category != 'All':
-        query = query.filter_by(category=category)
-    if book_type != 'All':
-        query = query.filter_by(book_type=book_type.lower())
-        
-    books = query.all()
-    return render_template('books/catalog.html', books=books)
+    try:
+        search = escape(request.args.get('search', ''))
+        category = escape(request.args.get('category', 'All'))
+        book_type = escape(request.args.get('type', 'All'))
+
+        query = Book.query
+
+        if search:
+            query = query.filter(Book.title.contains(search) | Book.author.contains(search))
+        if category != 'All':
+            query = query.filter_by(category=category)
+        if book_type != 'All':
+            query = query.filter_by(book_type=book_type.lower())
+
+        books = query.all()
+        return render_template('books/catalog.html', books=books)
+    except Exception as e:
+        current_app.logger.exception(f'Error loading book catalog: {e}')
+        flash('Unable to load the catalog at this time. Please try again later.', 'danger')
+        return render_template('books/catalog.html', books=[])
 
 @books_bp.route('/<int:book_id>')
 @login_required
 def detail(book_id):
-    book = Book.query.get_or_404(book_id)
-    return render_template('books/detail.html', book=book)
+    try:
+        book = Book.query.get_or_404(book_id)
+        return render_template('books/detail.html', book=book)
+    except Exception as e:
+        current_app.logger.exception(f'Error loading book detail for ID {book_id}: {e}')
+        flash('An error occurred while loading book details.', 'danger')
+        return redirect(url_for('books.catalog'))
 
 @books_bp.route('/add', methods=['GET', 'POST'])
 @login_required
 def add():
     if request.method == 'POST':
-        title = request.form.get('title')
-        author = request.form.get('author')
-        category = request.form.get('category')
-        book_type = request.form.get('book_type')
-        description = request.form.get('description')
-        location_notes = request.form.get('location_notes')
-        
-        new_book = Book()
-        new_book.title = title
-        new_book.author = author
-        new_book.category = category
-        new_book.book_type = book_type
-        new_book.description = description
-        new_book.location_notes = location_notes
-        new_book.owner_id = current_user.id
-        
-        if book_type == 'digital':
-            file = request.files.get('file')
-            if file and file.filename:
-                filename = secure_filename(file.filename)
-                # Ensure directory exists
-                upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'books', str(current_user.id))
-                os.makedirs(upload_dir, exist_ok=True)
-                file_path = os.path.join('books', str(current_user.id), filename)
-                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], file_path))
-                new_book.file_path = file_path
-        
-        db.session.add(new_book)
-        db.session.commit()
-        
-        flash('Book added successfully!', 'success')
-        return redirect(url_for('books.catalog'))
+        try:
+            title = request.form.get('title')
+            author = request.form.get('author')
+            category = request.form.get('category')
+            book_type = request.form.get('book_type')
+            description = request.form.get('description')
+            location_notes = request.form.get('location_notes')
+            
+            if not title or not author or not category or not book_type:
+                flash('Please provide the required fields', 'danger')
+                return redirect(url_for('books.add'))
+            
+            new_book = Book()
+            new_book.title = escape(title)
+            new_book.author = escape(author)
+            new_book.category = escape(category)
+            new_book.book_type = escape(book_type)
+            new_book.description = escape(description)
+            new_book.owner_id = current_user.id
+            
+            cover_file = request.files.get('cover_image')
+            if cover_file and cover_file.filename:
+                cover_filename = secure_filename(cover_file.filename)
+                cover_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'covers', str(current_user.id))
+                os.makedirs(cover_dir, exist_ok=True)
+                cover_path = os.path.join('covers', str(current_user.id), cover_filename)
+                cover_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], cover_path))
+                new_book.cover_image = cover_path
+                
+            if book_type == 'digital':
+                file = request.files.get('file')
+                if file and file.filename:
+                    filename = secure_filename(file.filename)
+                    if not filename.lower().endswith(('.pdf', '.epub', '.txt')):
+                        flash('Invalid file type. Only PDF, EPUB, and TXT files are allowed.', 'danger')
+                        return redirect(url_for('books.add'))
+                    upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'books', str(current_user.id))
+                    os.makedirs(upload_dir, exist_ok=True)
+                    file_path = os.path.join('books', str(current_user.id), filename)
+                    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], file_path))
+                    new_book.file_path = file_path
+                elif not new_book.file_path:
+                    flash('Please upload a file for digital books.', 'danger')
+                    return redirect(url_for('books.add'))                
+                
+            elif book_type == 'physical':
+                condition = request.form.get('condition')
+                if not condition or not condition.strip():
+                    flash('Please select a condition for physical books.', 'danger')
+                    return redirect(url_for('books.add'))
+                
+                new_book.condition = escape(condition)
+                new_book.location_notes = escape(location_notes)
+                
+            else:
+                flash('Invalid book type. Please select a valid type.', 'danger')
+                return redirect(url_for('books.add'))            
+
+            db.session.add(new_book)
+            db.session.commit()
+            
+            flash('Book Added Successfully!', 'success')
+            return redirect(url_for('books.catalog'))
+        except Exception as e:
+            db.session.rollback()
+
+            try:
+                if 'cover_path' in locals() and cover_path:
+                    full_cover_path = os.path.join(current_app.config['UPLOAD_FOLDER'], cover_path)
+                    if os.path.exists(full_cover_path):
+                        os.remove(full_cover_path)
+                        
+                if 'file_path' in locals() and file_path:
+                    full_file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], file_path)
+                    if os.path.exists(full_file_path):
+                        os.remove(full_file_path)
+            except Exception as e:
+                current_app.logger.error(f'Error cleaning up files after failed book add: {e}')
+
+            current_app.logger.exception(f'Error adding book: {e}')
+            flash('An error occurred while adding the book.', 'danger')
+            return redirect(url_for('books.add'))
         
     return render_template('books/add.html')
 
 @books_bp.route('/<int:book_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit(book_id):
-    book = Book.query.get_or_404(book_id)
-    if book.owner_id != current_user.id and current_user.role != 'admin':
-        abort(403)
+    try:
+        book = Book.query.get_or_404(book_id)
+        if book.owner_id != current_user.id and current_user.role != 'admin':
+            abort(403)
+            
+        if request.method == 'POST':
+            book.title = escape(request.form.get('title'))
+            book.author = escape(request.form.get('author'))
+            book.category = escape(request.form.get('category'))
+            book.description = escape(request.form.get('description'))
+            book.location_notes = escape(request.form.get('location_notes'))
+            book.condition = escape(request.form.get('condition'))
+
+            cover_file = request.files.get('cover_image')
+            if cover_file and cover_file.filename:
+                cover_filename = secure_filename(cover_file.filename)
+                cover_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'covers', str(current_user.id))
+                os.makedirs(cover_dir, exist_ok=True)
+                cover_path = os.path.join('covers', str(current_user.id), cover_filename)
+                cover_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], cover_path))
+                book.cover_image = cover_path
+            
+            db.session.commit()
+            flash('Book Updated Successfully!', 'success')
+            return redirect(url_for('books.detail', book_id=book.id))
+            
+        return render_template('books/edit.html', book=book)
+    except Exception as e:
+        db.session.rollback()
         
-    if request.method == 'POST':
-        book.title = request.form.get('title')
-        book.author = request.form.get('author')
-        book.category = request.form.get('category')
-        book.description = request.form.get('description')
-        book.location_notes = request.form.get('location_notes')
-        
-        db.session.commit()
-        flash('Book updated successfully!', 'success')
-        return redirect(url_for('books.detail', book_id=book.id))
-        
-    return render_template('books/edit.html', book=book)
+        try:
+            if 'cover_path' in locals() and cover_path:
+                full_cover_path = os.path.join(current_app.config['UPLOAD_FOLDER'], cover_path)
+                if os.path.exists(full_cover_path):
+                    os.remove(full_cover_path)
+        except Exception as e:
+            current_app.logger.error(f'Error cleaning up cover image after failed book edit: {e}')
+
+        current_app.logger.exception(f'Error editing book {book_id}: {e}')
+        flash('An error occurred while updating the book.', 'danger')
+        return redirect(url_for('books.catalog'))
 
 @books_bp.route('/<int:book_id>/delete', methods=['POST'])
 @login_required
 def delete(book_id):
-    book = Book.query.get_or_404(book_id)
-    if book.owner_id != current_user.id and current_user.role != 'admin':
-        abort(403)
+    try:
+        book = Book.query.get_or_404(book_id)
+        if book.owner_id != current_user.id and current_user.role != 'admin':
+            abort(403)
+            
+        db.session.delete(book)
+        db.session.commit()
+        flash('Book Deleted Successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception(f'Error deleting book {book_id}: {e}')
+        flash('An error occurred while deleting the book.', 'danger')
         
-    db.session.delete(book)
-    db.session.commit()
-    flash('Book deleted.', 'success')
     return redirect(url_for('dashboard.my_books'))

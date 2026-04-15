@@ -33,15 +33,18 @@ class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     author = db.Column(db.String(255), nullable=False)
-    category = db.Column(db.String(100))
+    category = db.Column(db.String(100), nullable=False)
     book_type = db.Column(db.String(20), nullable=False) # physical | digital
+    condition = db.Column(db.String(20)) # new | good | poor
     status = db.Column(db.String(20), default='available') # available | borrowed | returned
     location_notes = db.Column(db.String(255))
     file_path = db.Column(db.String(255))
-    download_link = db.Column(db.String(255))
+    cover_image = db.Column(db.String(255))
+    # download_link = db.Column(db.String(255))
     description = db.Column(db.Text)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc), default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     borrow_requests = db.relationship('BorrowRequest', backref='book', lazy=True)

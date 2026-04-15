@@ -1,45 +1,83 @@
 {% extends "base.html" %}
 
-{% block title %}Edit Book - Book Sharing Platform{% endblock %}
+{% block title %}Edit Book - BookShare{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h2>Edit Book: {{ book.title }}</h2>
-    <form action="{{ url_for('books.edit', book_id=book.id) }}" method="POST">
-        <div class="form-group">
-            <label for="title">Book Title</label>
-            <input type="text" id="title" name="title" value="{{ book.title }}" required>
-        </div>
-        <div class="form-group">
-            <label for="author">Author</label>
-            <input type="text" id="author" name="author" value="{{ book.author }}" required>
-        </div>
-        <div class="form-group">
-            <label for="category">Category</label>
-            <select id="category" name="category" required>
-                <option value="Programming" {% if book.category == 'Programming' %}selected{% endif %}>Programming</option>
-                <option value="Fiction" {% if book.category == 'Fiction' %}selected{% endif %}>Fiction</option>
-                <option value="Science" {% if book.category == 'Science' %}selected{% endif %}>Science</option>
-                <option value="Other" {% if book.category == 'Other' %}selected{% endif %}>Other</option>
-            </select>
-        </div>
-        
-        {% if book.book_type == 'physical' %}
-        <div class="form-group">
-            <label for="location_notes">Pickup Location Notes</label>
-            <input type="text" id="location_notes" name="location_notes" value="{{ book.location_notes or '' }}">
-        </div>
-        {% endif %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h2 class="card-title text-center mb-4">Edit Book: {{ book.title }}</h2>
+                <form action="{{ url_for('books.edit', book_id=book.id) }}" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3 form-floating">
+                        <input type="text" class="form-control" id="title" name="title" value="{{ book.title }}"
+                            placeholder="Enter Book Title" required autocomplete="on">
+                        <label for="title" class="form-label">Book Title <span
+                                class="text-danger fw-bold">*</span></label>
+                    </div>
+                    <div class="mb-3 form-floating">
+                        <input type="text" class="form-control" id="author" name="author" value="{{ book.author }}"
+                            placeholder="Enter Author Name" required autocomplete="name">
+                        <label for="author" class="form-label">Author <span class="text-danger">*</span></label>
+                    </div>
+                    <div class="mb-3 form-floating">
+                        <select class="form-select" id="category" name="category" required>
+                            <option {% if not book.category %}selected{% endif %} value="">Select Category</option>
+                            <option value="Programming" {% if book.category=='Programming' %}selected{% endif %}>
+                                Programming</option>
+                            <option value="Fiction" {% if book.category=='Fiction' %}selected{% endif %}>Fiction
+                            </option>
+                            <option value="Science" {% if book.category=='Science' %}selected{% endif %}>Science
+                            </option>
+                            <option value="Other" {% if book.category=='Other' %}selected{% endif %}>Other</option>
+                        </select>
+                        <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+                    </div>
 
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" rows="4">{{ book.description or '' }}</textarea>
+                    <div class="mb-3">
+                        <label for="cover_image" class="form-label">Change Cover Image</label>
+                        {% if book.cover_image %}
+                        <div class="mb-2">
+                            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}"
+                                alt="Current Cover" style="height: 100px;">
+                        </div>
+                        {% endif %}
+                        <input type="file" class="form-control" accept="image/*" id="cover_image" name="cover_image">
+                    </div>
+
+                    <div class="mb-4 form-floating">
+                        <textarea class="form-control floating-textarea-height" id="description" name="description"
+                            rows="4">{{ book.description or '' }}</textarea>
+                        <label for="description" class="form-label">Description</label>
+                    </div>
+
+                    {% if book.book_type == 'physical' %}
+                    <div class="mb-3 form-floating">
+                        <input type="text" class="form-control" id="location_notes" name="location_notes"
+                            value="{{ book.location_notes or '' }}">
+                        <label for="location_notes" class="form-label">Pickup Location Notes</label>
+                    </div>
+
+                    <div class="mb-3 form-floating">
+                        <select class="form-select" id="condition" name="condition">
+                            <option {% if not book.condition %}selected{% endif %} value="">Select Condition</option>
+                            <option value="New" {% if book.condition=='New' %}selected{% endif %}>New</option>
+                            <option value="Good" {% if book.condition=='Good' %}selected{% endif %}>Good</option>
+                            <option value="Poor" {% if book.condition=='Poor' %}selected{% endif %}>Poor</option>
+                        </select>
+                        <label for="condition" class="form-label">Condition <span
+                                class="text-danger fw-bold">*</span></label>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">Update Book</button>
+                        <a href="{{ url_for('books.detail', book_id=book.id) }}"
+                            class="btn btn-outline-secondary px-4">Cancel</a>
+                    </div>
+                </form>
+            </div>
         </div>
-        
-        <div style="display: flex; gap: 1rem;">
-            <button type="submit" class="btn btn-primary">Update Book</button>
-            <a href="{{ url_for('books.detail', book_id=book.id) }}" class="btn btn-secondary" style="background-color: var(--secondary-color); color: white;">Cancel</a>
-        </div>
-    </form>
+    </div>
 </div>
 {% endblock %}
