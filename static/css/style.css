@@ -5,3 +5,8 @@
 .toast-priority {
     z-index: 1100 !important;
 }
+
+.cursor-disabled {
+    cursor: not-allowed !important;
+    pointer-events: all !important;
+}

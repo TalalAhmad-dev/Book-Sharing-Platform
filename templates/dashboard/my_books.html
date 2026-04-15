@@ -11,19 +11,21 @@
 <div class="card shadow-sm mb-5">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0 table-striped">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-3">Title</th>
+                        <th class="ps-3">ID</th>
+                        <th>Title</th>
                         <th>Type</th>
                         <th>Status</th>
                         <th class="text-end pe-3">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-group-divider">
                     {% for book in my_books %}
                     <tr>
-                        <td class="ps-3 fw-bold">{{ book.title }}</td>
+                        <td class="ps-3">{{ book.id }}</td>
+                        <td class="fw-bold">{{ book.title }}</td>
                         <td>
                             <span class="badge {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %} text-capitalize">
                                 {{ book.book_type }}
@@ -60,20 +62,22 @@
 <div class="card shadow-sm">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0 table-striped">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-3">Book</th>
+                        <th class="ps-3">ID</th>
+                        <th>Book</th>
                         <th>Requester</th>
                         <th>Exchange Details</th>
                         <th>Status</th>
                         <th class="text-end pe-3">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-group-divider">
                     {% for request in incoming_requests %}
                     <tr>
-                        <td class="ps-3 fw-bold">{{ request.book.title }}</td>
+                        <td class="ps-3">{{ request.id }}</td>
+                        <td class="fw-bold">{{ request.book.title }}</td>
                         <td>{{ request.borrower.name }}</td>
                         <td>
                             {% if request.proposed_date %}
@@ -102,7 +106,7 @@
                                 <form action="{{ url_for('borrow.mark_borrowed', req_id=request.id) }}" method="POST">
                                     <button type="submit" class="btn btn-sm btn-primary">Mark Borrowed</button>
                                 </form>
-                            {% elif request.status == 'borrowed' %}
+                            {% elif request.status == 'borrowed' and not request.book.book_type == 'digital' %}
                                 <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}" method="POST">
                                     <button type="submit" class="btn btn-sm btn-success">Mark Returned</button>
                                 </form>

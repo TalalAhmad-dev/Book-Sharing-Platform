@@ -8,50 +8,59 @@
 <div class="card shadow-sm">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0 table-striped">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-3">Book Title</th>
+                        <th class="ps-3">ID</th>
+                        <th>Book Title</th>
                         <th>Owner</th>
                         <th>Exchange Info</th>
-                        <th>Status</th>
+                        <th>Request Status</th>
                         <th class="text-end pe-3">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-group-divider">
                     {% for request in my_borrows %}
                     <tr>
-                        <td class="ps-3 fw-bold">
-                            <a href="{{ url_for('books.detail', book_id=request.book_id) }}" class="text-decoration-none text-dark">
+                        <td class="ps-3 fw-bold">{{ request.id }}</td>
+                        <td class="fw-bold">
+                            <a href="{{ url_for('books.detail', book_id=request.book_id) }}"
+                                class="text-decoration-none text-dark">
                                 {{ request.book.title }}
                             </a>
                         </td>
                         <td>{{ request.book.owner.name }}</td>
                         <td>
                             {% if request.book.book_type == 'physical' %}
-                                <div class="small">
-                                    <strong>{{ request.proposed_date }}</strong> at {{ request.proposed_time }}<br>
-                                    <span class="text-muted">{{ request.location }}</span>
-                                </div>
+                            <div class="small">
+                                <strong>{{ request.proposed_date }}</strong> at {{ request.proposed_time }}<br>
+                                <span class="text-muted">{{ request.location }}</span>
+                            </div>
                             {% else %}
-                                <span class="badge bg-light text-dark border">Digital</span>
+                            <span class="badge bg-light text-dark border">Digital</span>
                             {% endif %}
                         </td>
                         <td>
                             <span class="badge bg-secondary text-capitalize">{{ request.status }}</span>
                         </td>
                         <td class="text-end pe-3">
-                            {% if request.status == 'borrowed' %}
-                                <div class="btn-group btn-group-sm">
+                            {% if request.status in ('pending', 'accepted', 'rejected', 'borrowed') %}
+                            <div class="btn-group btn-group-sm">
+                                <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}" method="POST"
+                                    class="d-inline">
                                     {% if request.book.book_type == 'digital' %}
-                                        <a href="{{ url_for('static', filename='uploads/' + request.book.file_path or '#') }}" class="btn btn-success" download>Download</a>
+                                    <a href="{% if request.status == 'borrowed' %}{{ url_for('static', filename='uploads/' + request.book.file_path or '#') }}{% else %}#{% endif %}"
+                                        type="button"
+                                        class="btn btn-success {% if not request.status == 'borrowed' %}disabled cursor-disabled{% endif %}"
+                                        {% if request.status=='borrowed' %}download{% endif %}>Download</a>
                                     {% endif %}
-                                    <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-primary">Mark Returned</button>
-                                    </form>
-                                </div>
+                                    <button
+                                        class="btn btn-primary {% if not request.status == 'borrowed' %}disabled cursor-disabled{% endif %}"
+                                        type="submit">Mark Returned</button>
+                                </form>
+                            </div>
                             {% else %}
-                                <span class="text-muted small">N/A</span>
+                            <span class="text-muted small">No Actions</span>
                             {% endif %}
                         </td>
                     </tr>

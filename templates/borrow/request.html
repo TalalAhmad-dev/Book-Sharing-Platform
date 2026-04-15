@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Borrow {{ book.title }} - BookShare{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white py-3">
+                <h3 class="card-title mb-0">Borrow Request: {{ book.title }}</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        {% if book.cover_image %}
+                        <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}"
+                            class="img-fluid rounded shadow-sm" alt="{{ book.title }} Cover">
+                        {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center rounded border"
+                            style="height: 150px; font-size: 3rem;">
+                            📚
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h4 class="mb-1">{{ book.title }}</h4>
+                        <p class="text-muted mb-2">by {{ book.author }}</p>
+                        <p class="mb-0"><strong>Owner:</strong> {{ book.owner.name }}</p>
+                        <p class="mb-0"><strong>Category:</strong> {{ book.category }}</p>
+                        <p class="mb-0"><strong>Type:</strong> <span
+                                class="badge {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %} text-capitalize">{{
+                                book.book_type }}</span></p>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <form action="{{ url_for('books.request_borrow', book_id=book.id) }}" method="POST">
+                    {% if book.book_type == 'physical' %}
+                    <h5 class="mb-3">Meeting Details</h5>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="proposed_date" class="form-label fw-bold">Proposed Date</label>
+                            <input type="date" id="proposed_date" name="proposed_date" class="form-control" required>
+                            <div class="form-text">When would you like to pick up the book?</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="proposed_time" class="form-label fw-bold">Proposed Time</label>
+                            <input type="time" id="proposed_time" name="proposed_time" class="form-control" required>
+                            <div class="form-text">At what time?</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label fw-bold">Pickup Location</label>
+                        <input type="text" id="location" name="location" class="form-control"
+                            placeholder="e.g. Central Library, City Park Cafe" required autocomplete="street-address">
+                        <div class="form-text">Suggested location: <em>{{ book.location_notes or 'Not specified by
+                                owner' }}</em></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label fw-bold">Message for Owner (Optional)</label>
+                        <textarea id="message" name="message" class="form-control" rows="3"
+                            placeholder="Add a note..."></textarea>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success text-center">
+                        <i class="bi bi-info-circle-fill"></i>
+                        This is a <strong>digital book</strong>. You can borrow it instantly and download the book after request confirmation.
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{{ url_for('books.catalog') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-success px-5">
+                            {% if book.book_type == 'digital' %}Borrow Now{% else %}Submit Request{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

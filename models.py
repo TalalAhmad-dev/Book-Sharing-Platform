@@ -64,6 +64,7 @@ class BorrowRequest(db.Model):
     borrowed_at = db.Column(db.DateTime)
     returned_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc), default=lambda: datetime.now(timezone.utc))
 
 class Favorite(db.Model):
     __tablename__ = 'favorites'

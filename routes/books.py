@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app, send_from_directory
 from flask_login import login_required, current_user
 from extensions import db
-from models import Book, User
+from models import Book, User, DownloadLog, BorrowRequest
 from markupsafe import escape
 import os
 from werkzeug.utils import secure_filename
@@ -201,3 +201,38 @@ def delete(book_id):
         flash('An error occurred while deleting the book.', 'danger')
         
     return redirect(url_for('dashboard.my_books'))
+
+@books_bp.route('/<int:book_id>/download')
+@login_required
+def download(book_id):
+    try:
+        book = Book.query.get_or_404(book_id)
+
+        if book.book_type != 'digital':
+            flash('This book is not available for digital download.', 'danger')
+            return redirect(url_for('books.detail', book_id=book_id))
+
+        borrow_req = BorrowRequest.query.filter_by(
+            book_id=book_id, 
+            borrower_id=current_user.id
+        ).filter(BorrowRequest.status._in(['accepted', 'borrowed'])).first()
+
+        if not borrow_req and book.owner_id != current_user.id and current_user.role != 'admin':
+            flash('You do not have permission to download this book.', 'danger')
+            return redirect(url_for('books.detail', book_id=book_id))
+
+        log = DownloadLog()
+        log.book_id = book_id
+        log.user_id = current_user.id
+        db.session.add(log)
+        db.session.commit()
+
+        directory = os.path.join(current_app.config['UPLOAD_FOLDER'], os.path.dirname(book.file_path))
+        filename = os.path.basename(book.file_path)
+
+        return send_from_directory(directory, filename, as_attachment=True)
+
+    except Exception as e:
+        current_app.logger.exception(f'Error downloading book {book_id}: {e}')
+        flash('An error occurred while trying to download the book.', 'danger')
+        return redirect(url_for('books.detail', book_id=book_id))

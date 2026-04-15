@@ -10,7 +10,7 @@
 <div class="card shadow-sm">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0 table-striped">
                 <thead class="table-light">
                     <tr>
                         <th class="ps-3">ID</th>
@@ -21,7 +21,7 @@
                         <th class="text-end pe-3">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-group-divider">
                     {% for user in users %}
                     <tr>
                         <td class="ps-3 text-muted">#{{ user.id }}</td>
