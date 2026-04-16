@@ -1,12 +1,98 @@
+/* TODO: Work on finding proper branding theme scheme and implement it throughout the project */
+
 .floating-textarea-height {
-    min-height: 100px !important;
+  min-height: 100px !important;
 }
 
 .toast-priority {
-    z-index: 1100 !important;
+  z-index: 1100 !important;
 }
 
 .cursor-disabled {
-    cursor: not-allowed !important;
-    pointer-events: all !important;
+  cursor: not-allowed !important;
+  pointer-events: all !important;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+  pointer-events: all !important;
+}
+
+.split-row {
+  min-height: 100vh;
+  margin: 0;
+}
+
+.auth-form-section {
+  display: block;
+  align-content: center;
+  justify-items: center;
+  background: white;
+}
+
+.auth-image-section {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  position: relative;
+}
+
+.auth-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(163, 168, 176, 0.8) 0%,
+    rgba(21, 32, 48, 0.4) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem;
+  color: white;
+}
+
+.form-wrapper {
+  max-width: 480px;
+  background: linear-gradient(
+    150deg,
+    rgba(202, 26, 10, 0.837) 0%,
+    rgba(253, 141, 13, 0.8) 100%
+  );
+}
+
+.auth-brand {
+  letter-spacing: -1px;
+}
+
+@media (max-width: 767.98px) {
+  .auth-image-section {
+    display: none;
+  }
+
+  .auth-form-section {
+    padding: 2rem;
+    min-height: 100vh;
+  }
+}
+
+.form-control:focus {
+  border-color: #000 !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Custom Checkbox Colors */
+.form-check-input:checked {
+  background-color: #000 !important;
+  border-color: #000 !important;
+}
+
+.form-check-input:focus {
+  border-color: #000 !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.4) !important;
 }

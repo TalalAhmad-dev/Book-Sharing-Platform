@@ -19,6 +19,10 @@ def register():
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
         
+        if password and len(password) < 8:
+            flash('Password must be at least 8 characters long.', 'error')
+            return render_template('auth/register.html')
+        
         if password != confirm_password:
             flash('Passwords do not match.', 'error')
             return render_template('auth/register.html')

@@ -1,40 +1,93 @@
-{% extends "base.html" %}
+{% extends "base/public.html" %}
 
 {% block title %}Register - BookShare{% endblock %}
 
 {% block content %}
-<div class="row row-cols-2 justify-content-center py-5">
-    <div>
-        <div class="card shadow">
-            <div class="card-body p-4">
-                <h2 class="card-title text-center mb-4">Create Account</h2>
-                <form action="{{ url_for('auth.register') }}" method="POST">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required minlength="8">
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="8">
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Register</button>
-                    </div>
-                </form>
-                <div class="text-center mt-3">
-                    <p class="mb-0">Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
-                </div>
-            </div>
+
+<!-- TODO: Work on 'Auth Image Section' for better image and lead -->
+<div class="row g-0 min-vh-100">
+    <div class="col-md-6 auth-image-section"
+        style="background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80&w=1500');">
+        <div class="auth-image-overlay">
+            <h1 class="display-4 fw-bold mb-4">Start sharing your library.</h1>
+            <p class="lead">Join BookShare to share your collection with neighbors, and borrow books you've always
+                wanted to read.</p>
         </div>
     </div>
-    <div class="bg-gradient bg-primary-subtle"></div>
+
+    <div class="col-md-6 auth-form-section">
+        <div class="mb-3">
+            <h3 class="auth-brand fw-bold fs-2">BookShare</h3>
+        </div>
+        <div class="form-wrapper p-4 w-100 rounded-5 text-white">
+            <div class="mb-4">
+                <h2 class="mt-4 fw-bold">Create Account</h2>
+                <p>Join our community of book lovers today.</p>
+            </div>
+
+            <form action="{{ url_for('auth.register') }}" method="POST">
+                <div class="mb-3">
+                    <label for="name" class="form-label small fw-bold">Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name"
+                        required autocomplete="name" autofocus>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label small fw-bold">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email"
+                        required autocomplete="email">
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label small fw-bold">Password</label>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="********"
+                            required minlength="8" aria-describedby="showPassword" autocomplete="new-password">
+                        <span class="input-group-text cursor-pointer" id="showPassword"
+                            onclick="togglePassword('password', 'passwordIcon')">
+                            <i class="bi bi-eye-slash-fill" id="passwordIcon"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label small fw-bold">Confirm Password</label>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                            placeholder="********" required minlength="8" aria-describedby="showConfirmPassword"
+                            autocomplete="new-password">
+                        <span class="input-group-text cursor-pointer" id="showConfirmPassword"
+                            onclick="togglePassword('confirm_password', 'confirmPasswordIcon')">
+                            <i class="bi bi-eye-slash-fill" id="confirmPasswordIcon"></i>
+                        </span>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-secondary w-100 mb-3 fw-semibold">Get Started</button>
+            </form>
+
+            <p class="text-center mt-2 small">
+                Already have an account? <a href="{{ url_for('auth.login') }}"
+                    class="text-dark fw-bold text-decoration-underline fs-6">Log in</a>
+            </p>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === "password") {
+            input.type = "text";
+            inputId != 'confirm_password' ? input.placeholder = "Enter your password" : input.placeholder = "Confirm your password";
+            icon.classList.replace("bi-eye-slash-fill", "bi-eye-fill");
+        } else {
+            input.type = "password";
+            input.placeholder = "********";
+            icon.classList.replace("bi-eye-fill", "bi-eye-slash-fill");
+        }
+    }
+</script>
 {% endblock %}

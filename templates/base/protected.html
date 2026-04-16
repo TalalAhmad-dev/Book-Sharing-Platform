@@ -1,0 +1,56 @@
+{% extends "base/_skeleton.html" %}
+
+{% block body %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container flex-shrink-0 my-1">
+            <a href="{{ url_for('books.catalog') }}" class="navbar-brand fs-4">BookShare</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('books.catalog') }}">Browse Books</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('books.add') }}">Add Book</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                    </li>
+                    {% if current_user.role == 'admin' %}
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('admin.dashboard') }}">Admin</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('profile.view', user_id=current_user.id) }}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('auth.logout') }}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('auth.login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold" href="{{ url_for('auth.register') }}">Register</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-light border-top">
+        <div class="container text-center">
+            <p class="text-muted mb-0">&copy; 2026 BookShare. CS619 Final Project.</p>
+        </div>
+    </footer>
+{% endblock %}

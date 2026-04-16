@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from extensions import db
 
+#TODO(Done): Add updated_at to User model and update it on profile updates
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -15,6 +16,7 @@ class User(db.Model, UserMixin):
     contact = db.Column(db.String(50))
     profile_image = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc), default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     books = db.relationship('Book', backref='owner', lazy=True)
