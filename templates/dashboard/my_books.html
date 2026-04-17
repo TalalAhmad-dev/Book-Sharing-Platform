@@ -8,6 +8,7 @@
     <a href="{{ url_for('books.add') }}" class="btn btn-primary">Add New Book</a>
 </div>
 
+<!-- TODO: Consider removing the message from the table and move it in suggest alternative and view details (yet to be implemented) -->
 <div class="card shadow-sm mb-5">
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -19,6 +20,7 @@
                         <th>Type</th>
                         <th>Status</th>
                         <th class="text-end pe-3">Actions</th>
+                        <!-- TODO: Add view details action and group action buttons into split dropdown. Keep all the actions that might be performed while disabling the one's that shouldn't be allwowed untill conditions are met -->
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
@@ -87,9 +89,14 @@
                         <td>{{ request.borrower.name }}</td>
                         <td>
                             {% if request.proposed_date %}
+                            {% set msg_data = request.message|fromjson %}
                             <div class="small">
-                                <i class="bi bi-calendar-event text-muted me-1"></i> {{ request.proposed_date }}<br>
-                                <i class="bi bi-clock text-muted me-1"></i> {{ request.proposed_time }}
+                                <i class="bi bi-calendar-event text-muted me-1"></i> {{
+                                request.proposed_date|format_date }} at {{ request.proposed_time|format_time }}<br>
+                                <span class="small">
+                                    <i class="bi bi-chat-left-text text-muted me-1"></i>
+                                    <strong>Message from Borrower:</strong> {{ msg_data.borrower or 'No message.' }}
+                                </span>
                             </div>
                             {% else %}
                             <span class="text-muted small italic">Digital Download</span>
@@ -116,7 +123,7 @@
                                     <button type="submit" class="btn btn-danger">Reject</button>
                                 </form>
                                 {% if request.book.book_type == 'physical' %}
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#suggestModal{{ request.id }}">
                                     Suggest
                                 </button>
@@ -152,7 +159,8 @@
                                                     <div class="mb-3">
                                                         <label class="form-label fw-bold">Proposed Date</label>
                                                         <input type="date" name="proposed_date" class="form-control"
-                                                            value="{{ request.proposed_date }}" required>
+                                                            value="{{ request.proposed_date }}"
+                                                            min="{{ now.strftime('%Y-%m-%d') }}" required>
                                                         <div class="form-text">
                                                             When would you like to pick up the book?
                                                         </div>
@@ -181,9 +189,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label class="form-label fw-bold">Message/Note</label>
+                                                    <label class="form-label fw-bold">Your Message/Note to
+                                                        Borrower</label>
                                                     <textarea name="message" class="form-control"
-                                                        rows="3">{{ request.message }}</textarea>
+                                                        rows="3">{{ msg_data.owner }}</textarea>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">

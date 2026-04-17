@@ -33,9 +33,12 @@
                         <td>{{ request.book.owner.name }}</td>
                         <td>
                             {% if request.book.book_type == 'physical' %}
+                            {% set msg_data = request.message|fromjson %}
                             <div class="small">
-                                <strong>{{ request.proposed_date }}</strong> at {{ request.proposed_time }}<br>
-                                <span class="text-muted">{{ request.location }}</span>
+                                <strong>{{ request.proposed_date|format_date }}</strong> at {{
+                                request.proposed_time|format_time }}<br>
+                                <span class="text-muted small"><strong>Message from Owner: </strong> {{ msg_data.owner
+                                    or 'No message.' }}</span>
                             </div>
                             {% else %}
                             <span class="badge bg-info-subtle text-dark border">Digital</span>
@@ -96,7 +99,8 @@
                                                     <div class="mb-3">
                                                         <label class="form-label fw-bold">Proposed Date</label>
                                                         <input type="date" name="proposed_date" class="form-control"
-                                                            value="{{ request.proposed_date }}" required>
+                                                            value="{{ request.proposed_date }}"
+                                                            min="{{ now.strftime('%Y-%m-%d') }}" required>
                                                         <div class="form-text">
                                                             When would you like to pick up the book?
                                                         </div>
@@ -125,9 +129,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label class="form-label fw-bold">Message/Note</label>
+                                                    <label class="form-label fw-bold">Your Message/Note to Owner</label>
                                                     <textarea name="message" class="form-control"
-                                                        rows="3">{{ request.message }}</textarea>
+                                                        rows="3">{{ msg_data.borrower }}</textarea>
                                                 </div>
                                         </form>
                                     </div>

@@ -2,6 +2,8 @@ from flask import Flask
 from config import Config
 from extensions import db, login_manager, migrate
 from models import *
+from datetime import datetime
+import json
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -29,6 +31,27 @@ def create_app(config_class=Config):
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(profile_bp, url_prefix='/profile')
+
+    @app.template_filter('fromjson')
+    def fromjson(value):
+        try:
+            return json.loads(value) if value else value
+        except (ValueError, TypeError):
+            return value
+
+    @app.template_filter('format_date')
+    def format_date(value):
+        if not value: return ""
+        return value.strftime('%b %d, %Y')
+
+    @app.template_filter('format_time')
+    def format_time(value):
+        if not value: return ""
+        return value.strftime('%I:%M %p')
+
+    @app.context_processor
+    def inject_now():
+        return {'now': datetime.now()}
 
     with app.app_context():
         db.create_all()

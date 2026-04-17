@@ -1,3 +1,4 @@
+import json
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app
 from flask_login import login_required, current_user
 from extensions import db
@@ -7,6 +8,7 @@ from routes.books import books_bp
 
 borrow_bp = Blueprint('borrow', __name__)
 
+# TODO: When request borrow or suggest alternative, make sure that the meeting time is in the future and not in the past.
 @books_bp.route('/<int:book_id>/borrow', methods=['GET', 'POST'])
 @login_required
 def request_borrow(book_id):
@@ -16,7 +18,7 @@ def request_borrow(book_id):
         active_request = BorrowRequest.query.filter_by(
             book_id=book_id,
             borrower_id=current_user.id
-        ).filter(BorrowRequest.status.in_(['pending', 'accepted', 'borrowed'])).first()
+        ).filter(BorrowRequest.status.in_(['pending', 'accepted', 'borrowed', 'suggested'])).first()
         
         if active_request:
             flash("You already have an active request for this book.", "warning")
@@ -51,9 +53,17 @@ def request_borrow(book_id):
                 flash("Please fill in all required fields.", "danger")
                 return redirect(url_for('borrow.request_borrow', book_id=book_id))
 
+            if proposed_time_str and len(proposed_time_str.split(':')) == 3:
+                proposed_time_str = ':'.join(proposed_time_str.split(':')[:2])
+
             try:
                 proposed_date = datetime.strptime(proposed_date_str, '%Y-%m-%d').date()
                 proposed_time = datetime.strptime(proposed_time_str, '%H:%M').time()
+                
+                proposed_datetime = datetime.combine(proposed_date, proposed_time)
+                if proposed_datetime < datetime.now():
+                    flash("Meeting time must be in the future.", "danger")
+                    return redirect(url_for('borrow.request_borrow', book_id=book_id))
             except ValueError:
                 flash(f"Invalid date or time format.", "danger")
                 return redirect(url_for('borrow.request_borrow', book_id=book_id))
@@ -65,7 +75,9 @@ def request_borrow(book_id):
             new_request.proposed_date = proposed_date
             new_request.proposed_time = proposed_time
             new_request.location = location
-            new_request.message = message
+            
+            msg_data = {"borrower": message, "owner": ""}
+            new_request.message = json.dumps(msg_data)
             
             db.session.add(new_request)
             db.session.commit()
@@ -161,15 +173,29 @@ def suggest(req_id):
         try:
             proposed_date = datetime.strptime(proposed_date_str, '%Y-%m-%d').date()
             proposed_time = datetime.strptime(proposed_time_str, '%H:%M').time()
-        except ValueError:
             
+            proposed_datetime = datetime.combine(proposed_date, proposed_time)
+            if proposed_datetime < datetime.now():
+                flash("Meeting time must be in the future.", "danger")
+                return redirect(url_for('dashboard.my_books' if is_owner else 'dashboard.borrowed'))
+        except ValueError:
             flash("Invalid date or time format.", "danger")
             return redirect(url_for('dashboard.my_books' if is_owner else 'dashboard.borrowed'))
 
+        try:
+            msg_data = json.loads(borrow_req.message) if borrow_req.message else {"borrower": "", "owner": ""}
+        except json.JSONDecodeError:
+            msg_data = {"borrower": borrow_req.message, "owner": ""}
+
+        if is_owner:
+            msg_data["owner"] = message
+        else:
+            msg_data["borrower"] = message
+            
+        borrow_req.message = json.dumps(msg_data)
         borrow_req.proposed_date = proposed_date
         borrow_req.proposed_time = proposed_time
         borrow_req.location = location
-        borrow_req.message = message
         borrow_req.status = 'suggested'
         
         db.session.commit()
