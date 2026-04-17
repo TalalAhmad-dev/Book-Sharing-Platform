@@ -42,7 +42,6 @@ class Book(db.Model):
     location_notes = db.Column(db.String(255))
     file_path = db.Column(db.String(255))
     cover_image = db.Column(db.String(255))
-    # download_link = db.Column(db.String(255))
     description = db.Column(db.Text)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))

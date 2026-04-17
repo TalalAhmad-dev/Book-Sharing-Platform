@@ -18,6 +18,11 @@
   pointer-events: all !important;
 }
 
+.cursor-zoom {
+  cursor: zoom-in !important;
+  pointer-events: all !important;
+}
+
 .split-row {
   min-height: 100vh;
   margin: 0;

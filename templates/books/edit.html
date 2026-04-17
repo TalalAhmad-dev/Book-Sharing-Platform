@@ -38,7 +38,7 @@
                         <label for="cover_image" class="form-label">Change Cover Image</label>
                         {% if book.cover_image %}
                         <div class="mb-2">
-                            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}"
+                            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}" id="cover_image"
                                 alt="Current Cover" style="height: 100px;">
                         </div>
                         {% endif %}
@@ -53,8 +53,8 @@
 
                     {% if book.book_type == 'physical' %}
                     <div class="mb-3 form-floating">
-                        <input type="text" class="form-control" id="location_notes" name="location_notes"
-                            value="{{ book.location_notes or '' }}">
+                        <input type="text" class="form-control floating-textarea-height" id="location_notes"
+                            name="location_notes" value="{{ book.location_notes or '' }}">
                         <label for="location_notes" class="form-label">Pickup Location Notes</label>
                     </div>
 
@@ -71,9 +71,9 @@
                     {% endif %}
 
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary px-4">Update Book</button>
                         <a href="{{ url_for('books.detail', book_id=book.id) }}"
-                            class="btn btn-outline-secondary px-4">Cancel</a>
+                            class="btn btn-outline-secondary px-4 col-6">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 col-6">Update Book</button>
                     </div>
                 </form>
             </div>
