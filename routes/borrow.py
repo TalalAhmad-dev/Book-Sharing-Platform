@@ -55,7 +55,7 @@ def request_borrow(book_id):
                 proposed_date = datetime.strptime(proposed_date_str, '%Y-%m-%d').date()
                 proposed_time = datetime.strptime(proposed_time_str, '%H:%M').time()
             except ValueError:
-                flash("Invalid date or time format.", "danger")
+                flash(f"Invalid date or time format.", "danger")
                 return redirect(url_for('borrow.request_borrow', book_id=book_id))
 
             new_request = BorrowRequest()
@@ -84,7 +84,18 @@ def request_borrow(book_id):
 def accept(req_id):
     try:
         borrow_req = BorrowRequest.query.get_or_404(req_id)
-        if borrow_req.book.owner_id != current_user.id:
+        is_owner = borrow_req.book.owner_id == current_user.id
+        is_borrower = borrow_req.borrower_id == current_user.id
+
+        if is_owner:
+            if borrow_req.status not in ('pending', 'suggested'):
+                flash("Invalid request status for acceptance.", "danger")
+                return redirect(url_for('dashboard.my_books'))
+        elif is_borrower:
+            if borrow_req.status != 'suggested':
+                flash("You can't accept your own borrow request.", "danger")
+                return redirect(url_for('dashboard.borrowed'))
+        else:
             abort(403)
         
         if borrow_req.book.book_type == 'physical':
@@ -106,12 +117,69 @@ def accept(req_id):
         
         db.session.commit()
         flash("Request accepted.", "success")
-        return redirect(url_for('dashboard.my_books'))
+        return redirect(url_for('dashboard.my_books' if is_owner else 'dashboard.borrowed'))
     except Exception as e:
         db.session.rollback()
         current_app.logger.exception(f"Error accepting request {req_id}: {e}")
         flash("An error occurred while accepting the request.", "danger")
-        return redirect(url_for('dashboard.my_books'))
+        return redirect(url_for('dashboard.my_books' if is_owner else 'dashboard.borrowed'))
+
+@borrow_bp.route('/<int:req_id>/suggest', methods=['POST'])
+@login_required
+def suggest(req_id):
+    try:
+        borrow_req = BorrowRequest.query.get_or_404(req_id)
+        is_owner = borrow_req.book.owner_id == current_user.id
+        is_borrower = borrow_req.borrower_id == current_user.id
+
+        if not (is_owner or is_borrower):
+            abort(403)
+        
+        if borrow_req.book.book_type != 'physical':
+            flash("Suggestions are only available for physical books.", "warning")
+            return redirect(url_for('dashboard.my_books' if is_owner else 'dashboard.borrowed'))
+        
+        if borrow_req.status not in ('pending', 'suggested'):
+            if not is_owner and borrow_req.status == 'pending':
+                flash("You can't suggest changes to a pending request. Please wait for the owner to respond first.", "warning")
+                
+            flash("Only pending or suggested requests can be updated with suggestions.", "danger")
+            return redirect(url_for('dashboard.my_books' if is_owner else 'dashboard.borrowed'))
+
+        proposed_date_str = request.form.get('proposed_date')
+        proposed_time_str = request.form.get('proposed_time')
+        location = request.form.get('location')
+        message = request.form.get('message')
+
+        if not proposed_date_str or not proposed_time_str or not location:
+            flash("Date, time, and location are required for suggestions.", "danger")
+            return redirect(url_for('dashboard.my_books' if is_owner else 'dashboard.borrowed'))
+        
+        if proposed_time_str and len(proposed_time_str.split(':')) == 3:
+            proposed_time_str = ':'.join(proposed_time_str.split(':')[:2])
+
+        try:
+            proposed_date = datetime.strptime(proposed_date_str, '%Y-%m-%d').date()
+            proposed_time = datetime.strptime(proposed_time_str, '%H:%M').time()
+        except ValueError:
+            
+            flash("Invalid date or time format.", "danger")
+            return redirect(url_for('dashboard.my_books' if is_owner else 'dashboard.borrowed'))
+
+        borrow_req.proposed_date = proposed_date
+        borrow_req.proposed_time = proposed_time
+        borrow_req.location = location
+        borrow_req.message = message
+        borrow_req.status = 'suggested'
+        
+        db.session.commit()
+        flash("Suggestion sent successfully.", "success")
+        return redirect(url_for('dashboard.my_books' if is_owner else 'dashboard.borrowed'))
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception(f"Error suggesting alternative for request {req_id}: {e}")
+        flash("An error occurred while sending the suggestion.", "danger")
+        return redirect(url_for('dashboard.my_books' if is_owner else 'dashboard.borrowed'))
 
 @borrow_bp.route('/<int:req_id>/reject', methods=['POST'])
 @login_required
@@ -121,6 +189,17 @@ def reject(req_id):
         if borrow_req.book.owner_id != current_user.id:
             abort(403)
         
+        is_borrower = borrow_req.borrower_id == current_user.id
+        is_owner = borrow_req.book.owner_id == current_user.id    
+        
+        if not (is_owner or is_borrower):
+            flash("You don't have permission to reject this request.", "danger")
+            abort(403)
+            
+        if not borrow_req.status == 'pending':
+            flash("Only pending requests can be rejected.", "danger")
+            return redirect(url_for('dashboard.my_books'))
+
         borrow_req.status = 'rejected'
         db.session.commit()
         flash("Request rejected.", "info")
@@ -137,6 +216,7 @@ def mark_borrowed(req_id):
     try:
         borrow_req = BorrowRequest.query.get_or_404(req_id)
         if borrow_req.book.owner_id != current_user.id:
+            flash("Only the owner can mark the book as borrowed.", "danger")
             abort(403)
         
         if borrow_req.book.book_type == 'physical':
@@ -166,7 +246,11 @@ def mark_returned(req_id):
         
         if borrow_req.book.book_type == 'digital' and borrow_req.book.owner_id == current_user.id:
             flash("Digital book borrowings can only be marked as returned by the borrower or will be marked as returned automatically after 7 days.", "danger") 
-            return redirect(url_for('dashboard.my_books'))       
+            return redirect(url_for('dashboard.my_books'))
+        
+        if borrow_req.book.book_type == 'physical' and borrow_req.book.owner_id != current_user.id:
+            flash("Only the owner can mark a physical book as returned.", "danger")
+            return redirect(url_for('dashboard.borrowed'))
         
         if borrow_req.status in ('borrowed'):
             borrow_req.status = 'returned'

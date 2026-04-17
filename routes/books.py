@@ -225,7 +225,7 @@ def download(book_id):
 
         if not borrow_req and book.owner_id != current_user.id and current_user.role != 'admin':
             flash('You do not have permission to download this book.', 'danger')
-            return redirect(url_for('books.detail', book_id=book_id))
+            return redirect(url_for('dashboard.borrowed'))
 
         log = DownloadLog()
         log.book_id = book_id
@@ -241,4 +241,4 @@ def download(book_id):
     except Exception as e:
         current_app.logger.exception(f'Error downloading book {book_id}: {e}')
         flash('An error occurred while trying to download the book.', 'danger')
-        return redirect(url_for('books.detail', book_id=book_id))
+        return redirect(url_for('dashboard.borrowed'))

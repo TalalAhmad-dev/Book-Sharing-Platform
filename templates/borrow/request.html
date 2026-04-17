@@ -47,15 +47,22 @@
                         <div class="col-md-6">
                             <label for="proposed_time" class="form-label fw-bold">Proposed Time</label>
                             <input type="time" id="proposed_time" name="proposed_time" class="form-control" required>
-                            <div class="form-text">At what time?</div>
+                            <div class="form-text">What time would you like to pick up the book?</div>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="location" class="form-label fw-bold">Pickup Location</label>
-                        <input type="text" id="location" name="location" class="form-control"
-                            placeholder="e.g. Central Library, City Park Cafe" required autocomplete="street-address">
-                        <div class="form-text">Suggested location: <em>{{ book.location_notes or 'Not specified by
-                                owner' }}</em></div>
+                        <div class="input-group">
+                            <input type="text" id="location" name="location" class="form-control"
+                                placeholder="e.g. Central Library, City Park Cafe" required
+                                autocomplete="street-address">
+                            <span class="input-group-text cursor-pointer" tabindex="0" data-bs-container="body"
+                                data-bs-toggle="popover" data-bs-trigger="toggle" data-bs-placement="top"
+                                title="Location Notes By Owner"
+                                data-bs-content="{{ book.location_notes or 'Not specified by the owner.' }}">
+                                <i class="bi bi-info-circle-fill"></i>
+                            </span>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="message" class="form-label fw-bold">Message for Owner (Optional)</label>
@@ -65,7 +72,8 @@
                     {% else %}
                     <div class="alert alert-success text-center">
                         <i class="bi bi-info-circle-fill"></i>
-                        This is a <strong>digital book</strong>. You can send borrow request and can borrow and dowload immediately if accepted by {{ book.owner.name }}.
+                        This is a <strong>digital book</strong>. You can send borrow request and can borrow and download
+                        immediately if accepted by {{ book.owner.name }}.
                     </div>
                     {% endif %}
 

@@ -16,4 +16,12 @@ document.addEventListener("DOMContentLoaded", function () {
   toastList.forEach(function (toast) {
     toast.show();
   });
+
+  // Bootstrap Popovers Initialization
+  const popoverTriggerList = document.querySelectorAll(
+    '[data-bs-toggle="popover"]',
+  );
+  const popoverList = [...popoverTriggerList].map(
+    (popoverTriggerEl) => new bootstrap.Popover(popoverTriggerEl),
+  );
 });
