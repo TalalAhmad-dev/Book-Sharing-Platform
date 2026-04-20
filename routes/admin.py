@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
+from flask import Blueprint, render_template, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
 from functools import wraps
 from models import User, Book, Report, BorrowRequest
@@ -18,70 +18,118 @@ def admin_required(f):
 @login_required
 @admin_required
 def dashboard():
-    stats = {
-        'users': User.query.count(),
-        'books': Book.query.filter(Book.deleted_at.is_(None)).count(),
-        'reports': Report.query.filter_by(status='open').count(),
-        'borrows': BorrowRequest.query.filter_by(status='borrowed').count()
-    }
-    return render_template('admin/dashboard.html', stats=stats)
+    try:
+        stats = {
+            'users': User.query.count(),
+            'books': Book.query.filter(Book.deleted_at.is_(None)).count(),
+            'reports': Report.query.filter_by(status='open').count(),
+            'borrows': BorrowRequest.query.filter_by(status='borrowed').count()
+        }
+        return render_template('admin/dashboard.html', stats=stats)
+    except Exception as e:
+        current_app.logger.exception(f'Error loading admin dashboard: {e}')
+        flash('Unable to load the admin dashboard right now.', 'danger')
+        return render_template('admin/dashboard.html', stats={'users': 0, 'books': 0, 'reports': 0, 'borrows': 0})
 
 @admin_bp.route('/users')
 @login_required
 @admin_required
 def users():
-    all_users = User.query.all()
-    return render_template('admin/users.html', users=all_users)
+    try:
+        all_users = User.query.all()
+        return render_template('admin/users.html', users=all_users)
+    except Exception as e:
+        current_app.logger.exception(f'Error loading admin users list: {e}')
+        flash('Unable to load users right now.', 'danger')
+        return render_template('admin/users.html', users=[])
 
 @admin_bp.route('/users/<int:user_id>/block', methods=['POST'])
 @login_required
 @admin_required
 def block_user(user_id):
-    user = User.query.get_or_404(user_id)
-    if user.id == current_user.id:
-        flash("You cannot block yourself.", "error")
-        return redirect(url_for('admin.users'))
-    
-    user.status = 'blocked'
-    db.session.commit()
-    flash(f"User {user.name} blocked.", "success")
+    try:
+        user = User.query.get_or_404(user_id)
+        if user.id == current_user.id:
+            flash("You cannot block yourself.", "error")
+            return redirect(url_for('admin.users'))
+
+        if user.status == 'blocked':
+            flash(f"User {user.name} is already blocked.", "info")
+            return redirect(url_for('admin.users'))
+
+        user.status = 'blocked'
+        db.session.commit()
+        flash(f"User {user.name} blocked.", "success")
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception(f'Error blocking user {user_id}: {e}')
+        flash('Unable to block this user right now.', 'danger')
+
     return redirect(url_for('admin.users'))
 
 @admin_bp.route('/users/<int:user_id>/unblock', methods=['POST'])
 @login_required
 @admin_required
 def unblock_user(user_id):
-    user = User.query.get_or_404(user_id)
-    user.status = 'active'
-    db.session.commit()
-    flash(f"User {user.name} unblocked.", "success")
+    try:
+        user = User.query.get_or_404(user_id)
+
+        if user.status == 'active':
+            flash(f"User {user.name} is already active.", "info")
+            return redirect(url_for('admin.users'))
+
+        user.status = 'active'
+        db.session.commit()
+        flash(f"User {user.name} unblocked.", "success")
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception(f'Error unblocking user {user_id}: {e}')
+        flash('Unable to unblock this user right now.', 'danger')
+
     return redirect(url_for('admin.users'))
 
 @admin_bp.route('/books')
 @login_required
 @admin_required
 def books():
-    all_books = Book.query.filter(Book.deleted_at.is_(None)).all()
-    return render_template('admin/books.html', books=all_books)
+    try:
+        all_books = Book.query.filter(Book.deleted_at.is_(None)).all()
+        return render_template('admin/books.html', books=all_books)
+    except Exception as e:
+        current_app.logger.exception(f'Error loading admin books list: {e}')
+        flash('Unable to load books right now.', 'danger')
+        return render_template('admin/books.html', books=[])
 
 @admin_bp.route('/reports')
 @login_required
 @admin_required
 def reports():
-    all_reports = Report.query.all()
-    return render_template('admin/reports.html', reports=all_reports)
+    try:
+        all_reports = Report.query.all()
+        return render_template('admin/reports.html', reports=all_reports)
+    except Exception as e:
+        current_app.logger.exception(f'Error loading admin reports list: {e}')
+        flash('Unable to load reports right now.', 'danger')
+        return render_template('admin/reports.html', reports=[])
 
 @admin_bp.route('/reports/<int:report_id>/reviewed', methods=['POST'])
 @login_required
 @admin_required
 def mark_report_reviewed(report_id):
-    report = Report.query.get_or_404(report_id)
-    if report.status != 'open':
-        flash(f"Report has already been {report.status}. Can't mark as reviewed.", "warning")
-        return redirect(url_for('admin.reports'))
-    report.status = 'reviewed'
-    db.session.commit()
-    flash(f"Report marked as reviewed.", "success")
+    try:
+        report = Report.query.get_or_404(report_id)
+        if report.status != 'open':
+            flash(f"Report has already been {report.status}. Can't mark as reviewed.", "warning")
+            return redirect(url_for('admin.reports'))
+
+        report.status = 'reviewed'
+        db.session.commit()
+        flash("Report marked as reviewed.", "success")
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception(f'Error marking report {report_id} as reviewed: {e}')
+        flash('Unable to update this report right now.', 'danger')
+
     return redirect(url_for('admin.reports'))
 
 
@@ -89,11 +137,18 @@ def mark_report_reviewed(report_id):
 @login_required
 @admin_required
 def dismiss_report(report_id):
-    report = Report.query.get_or_404(report_id)
-    if report.status != 'open':
-        flash(f"Report has already been {report.status}. Can't dismiss.", "warning")
-        return redirect(url_for('admin.reports'))
-    report.status = 'dismissed'
-    db.session.commit()
-    flash(f"Report has been dismissed.", "info")
+    try:
+        report = Report.query.get_or_404(report_id)
+        if report.status != 'open':
+            flash(f"Report has already been {report.status}. Can't dismiss.", "warning")
+            return redirect(url_for('admin.reports'))
+
+        report.status = 'dismissed'
+        db.session.commit()
+        flash("Report has been dismissed.", "info")
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception(f'Error dismissing report {report_id}: {e}')
+        flash('Unable to update this report right now.', 'danger')
+
     return redirect(url_for('admin.reports'))

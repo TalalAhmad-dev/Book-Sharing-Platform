@@ -65,6 +65,10 @@ def report_user(user_id):
         if current_user.role == 'admin':
             flash('Admins cannot submit reports.', 'warning')
             return redirect(request.referrer or url_for('profile.view', user_id=user_id))
+        
+        if user.role == 'admin' and current_user.role != 'admin':
+            flash("You don't have permission to report an admin user.", 'warning')
+            return redirect(request.referrer or url_for('profile.view', user_id=user_id))
 
         if not reason:
             flash('Please provide a reason to submit the report.', 'danger')

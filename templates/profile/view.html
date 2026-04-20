@@ -23,14 +23,14 @@
                     <a href="{{ url_for('profile.edit') }}" class="btn btn-outline-primary">
                         <i class="bi bi-pencil me-2"></i>Edit Profile
                     </a>
-                    {% elif current_user.role != 'admin' %}
+                    {% elif current_user.role != 'admin' and user.role != 'admin' %}
                     <button class="btn btn-outline-warning" type="button" data-bs-toggle="collapse"
                         data-bs-target="#reportUserForm" aria-expanded="false" aria-controls="reportUserForm">
                         Report User
                     </button>
                     {% endif %}
                 </div>
-                {% if current_user.id != user.id and current_user.role != 'admin' %}
+                {% if current_user.id != user.id and (current_user.role != 'admin' and user.role != "admin") %}
                 <div class="collapse mt-3" id="reportUserForm">
                     <form action="{{ url_for('reports.report_user', user_id=user.id) }}" method="POST">
                         <div class="mb-2">

@@ -5,10 +5,10 @@ from models import User
 app = create_app()
 
 with app.app_context():
-    if not User.query.filter_by(email='admin@example.com').first():
+    if not User.query.filter(User.email.like('%@admin.com')).first():
         admin = User()
-        admin.name='Admin User'
-        admin.email='admin@example.com'
+        admin.name='Talal Ahmad (Admin)'
+        admin.email='talal.ahmad@admin.com'
         admin.role='admin'
         admin.set_password('admin123')
         
