@@ -90,6 +90,35 @@
                         This book is currently <strong class="text-capitalize">{{ book.status }}</strong>.
                     </div>
                 {% endif %}
+
+                <hr>
+                <div class="d-grid gap-2">
+                    {% if is_favorite %}
+                    <form action="{{ url_for('favorites.remove', book_id=book.id) }}" method="POST">
+                        <button type="submit" class="btn btn-outline-danger">Remove from Favorites</button>
+                    </form>
+                    {% else %}
+                    <form action="{{ url_for('favorites.add', book_id=book.id) }}" method="POST">
+                        <button type="submit" class="btn btn-outline-primary">Add to Favorites</button>
+                    </form>
+                    {% endif %}
+
+                    {% if current_user.role != 'admin' %}
+                    <button class="btn btn-outline-warning" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#reportBookForm" aria-expanded="false" aria-controls="reportBookForm">
+                        Report this Book
+                    </button>
+                    <div class="collapse" id="reportBookForm">
+                        <form action="{{ url_for('reports.report_book', book_id=book.id) }}" method="POST" class="mt-2">
+                            <div class="mb-2 text-start">
+                                <label for="reason" class="form-label fw-semibold">Reason</label>
+                                <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-warning w-100">Submit Report</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% else %}

@@ -11,7 +11,10 @@ profile_bp = Blueprint('profile', __name__)
 @login_required
 def view(user_id):
     user = User.query.get_or_404(user_id)
-    user_books = Book.query.filter_by(owner_id=user.id).all()
+    user_books = Book.query.filter(
+        Book.owner_id == user.id,
+        Book.deleted_at.is_(None)
+    ).all()
     return render_template('profile/view.html', user=user, books=user_books)
 
 @profile_bp.route('/edit', methods=['GET', 'POST'])

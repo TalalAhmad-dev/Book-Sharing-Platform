@@ -1,0 +1,54 @@
+{% extends "base/protected.html" %}
+
+{% block title %}Favorites - BookShare{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3">My Favorites</h2>
+    <a href="{{ url_for('books.catalog') }}" class="btn btn-outline-primary">Browse Books</a>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for book in books %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            {% if book.cover_image %}
+            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}" class="card-img-top"
+                alt="{{ book.title }} Cover" style="height: 250px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                style="height: 250px; font-size: 5rem;">
+                📚
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">by {{ book.author }}</h6>
+                <p class="card-text small text-secondary">Owner: {{ book.owner.name }}</p>
+                <div class="mb-3">
+                    <span class="badge {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %}">
+                        {{ book.book_type|capitalize }}
+                    </span>
+                    <span class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %}">
+                        {{ book.status|capitalize }}
+                    </span>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 d-grid gap-2">
+                <a href="{{ url_for('books.detail', book_id=book.id) }}" class="btn btn-outline-primary">View Details</a>
+                {% if current_user.id != book.owner_id and (book.status == 'available' or book.book_type == 'digital') %}
+                <a href="{{ url_for('books.request_borrow', book_id=book.id) }}" class="btn btn-success">Request to Borrow</a>
+                {% endif %}
+                <form action="{{ url_for('favorites.remove', book_id=book.id) }}" method="POST">
+                    <button type="submit" class="btn btn-outline-danger w-100">Remove from Favorites</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">No favorites yet. Browse books to add some!</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

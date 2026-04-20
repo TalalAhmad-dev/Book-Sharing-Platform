@@ -14,6 +14,9 @@ borrow_bp = Blueprint('borrow', __name__)
 def request_borrow(book_id):
     try:
         book = Book.query.get_or_404(book_id)
+        if book.deleted_at is not None:
+            flash("This book is no longer available.", "warning")
+            return redirect(url_for('books.catalog'))
         
         active_request = BorrowRequest.query.filter_by(
             book_id=book_id,

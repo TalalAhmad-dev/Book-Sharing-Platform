@@ -20,7 +20,7 @@ def admin_required(f):
 def dashboard():
     stats = {
         'users': User.query.count(),
-        'books': Book.query.count(),
+        'books': Book.query.filter(Book.deleted_at.is_(None)).count(),
         'reports': Report.query.filter_by(status='open').count(),
         'borrows': BorrowRequest.query.filter_by(status='borrowed').count()
     }
@@ -61,7 +61,7 @@ def unblock_user(user_id):
 @login_required
 @admin_required
 def books():
-    all_books = Book.query.all()
+    all_books = Book.query.filter(Book.deleted_at.is_(None)).all()
     return render_template('admin/books.html', books=all_books)
 
 @admin_bp.route('/reports')
@@ -70,3 +70,30 @@ def books():
 def reports():
     all_reports = Report.query.all()
     return render_template('admin/reports.html', reports=all_reports)
+
+@admin_bp.route('/reports/<int:report_id>/reviewed', methods=['POST'])
+@login_required
+@admin_required
+def mark_report_reviewed(report_id):
+    report = Report.query.get_or_404(report_id)
+    if report.status != 'open':
+        flash(f"Report has already been {report.status}. Can't mark as reviewed.", "warning")
+        return redirect(url_for('admin.reports'))
+    report.status = 'reviewed'
+    db.session.commit()
+    flash(f"Report marked as reviewed.", "success")
+    return redirect(url_for('admin.reports'))
+
+
+@admin_bp.route('/reports/<int:report_id>/dismiss', methods=['POST'])
+@login_required
+@admin_required
+def dismiss_report(report_id):
+    report = Report.query.get_or_404(report_id)
+    if report.status != 'open':
+        flash(f"Report has already been {report.status}. Can't dismiss.", "warning")
+        return redirect(url_for('admin.reports'))
+    report.status = 'dismissed'
+    db.session.commit()
+    flash(f"Report has been dismissed.", "info")
+    return redirect(url_for('admin.reports'))

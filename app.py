@@ -1,9 +1,10 @@
-from flask import Flask
+from flask import Flask, request, redirect, url_for, flash
 from config import Config
 from extensions import db, login_manager, migrate
 from models import *
 from datetime import datetime
 import json
+from flask_login import current_user, logout_user
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -24,6 +25,8 @@ def create_app(config_class=Config):
     from routes.dashboard import dashboard_bp
     from routes.admin import admin_bp
     from routes.profile import profile_bp
+    from routes.favorites import favorites_bp
+    from routes.reports import reports_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(books_bp, url_prefix='/books')
@@ -31,6 +34,8 @@ def create_app(config_class=Config):
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(profile_bp, url_prefix='/profile')
+    app.register_blueprint(favorites_bp, url_prefix='/favorites')
+    app.register_blueprint(reports_bp, url_prefix='/reports')
 
     @app.template_filter('fromjson')
     def fromjson(value):
@@ -52,6 +57,21 @@ def create_app(config_class=Config):
     @app.context_processor
     def inject_now():
         return {'now': datetime.now()}
+
+    @app.before_request
+    def enforce_blocked_user_logout():
+        if not current_user.is_authenticated:
+            return None
+        if current_user.status != 'blocked':
+            return None
+
+        allowed_endpoints = {'auth.login', 'auth.logout', 'static'}
+        if request.endpoint in allowed_endpoints:
+            return None
+
+        logout_user()
+        flash('Your account has been blocked.', 'error')
+        return redirect(url_for('auth.login'))
 
     with app.app_context():
         db.create_all()

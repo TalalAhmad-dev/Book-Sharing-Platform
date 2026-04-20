@@ -8,10 +8,20 @@ dashboard_bp = Blueprint('dashboard', __name__)
 @login_required
 def index():
     try:
-        my_books_count = Book.query.filter_by(owner_id=current_user.id).count()
+        my_books_count = Book.query.filter(
+            Book.owner_id == current_user.id,
+            Book.deleted_at.is_(None)
+        ).count()
         borrowed_count = BorrowRequest.query.filter_by(borrower_id=current_user.id, status='borrowed').count()
-        pending_requests_count = BorrowRequest.query.join(Book).filter(Book.owner_id == current_user.id, BorrowRequest.status == 'pending').count()
-        favorites_count = Favorite.query.filter_by(user_id=current_user.id).count()
+        pending_requests_count = BorrowRequest.query.join(Book).filter(
+            Book.owner_id == current_user.id,
+            Book.deleted_at.is_(None),
+            BorrowRequest.status == 'pending'
+        ).count()
+        favorites_count = Favorite.query.join(Book).filter(
+            Favorite.user_id == current_user.id,
+            Book.deleted_at.is_(None)
+        ).count()
         
         return render_template('dashboard/index.html', 
                                my_books_count=my_books_count,
@@ -31,8 +41,14 @@ def index():
 @login_required
 def my_books():
     try:
-        my_books = Book.query.filter_by(owner_id=current_user.id).all()
-        incoming_requests = BorrowRequest.query.join(Book).filter(Book.owner_id == current_user.id).all()
+        my_books = Book.query.filter(
+            Book.owner_id == current_user.id,
+            Book.deleted_at.is_(None)
+        ).all()
+        incoming_requests = BorrowRequest.query.join(Book).filter(
+            Book.owner_id == current_user.id,
+            Book.deleted_at.is_(None)
+        ).all()
         return render_template('dashboard/my_books.html', my_books=my_books, incoming_requests=incoming_requests)
     except Exception as e:
         current_app.logger.exception(f"Error loading my books dashboard: {e}")

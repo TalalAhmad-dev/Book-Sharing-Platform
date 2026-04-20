@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app, send_from_directory
 from flask_login import login_required, current_user
 from extensions import db
-from models import Book, User, DownloadLog, BorrowRequest
+from models import Book, User, DownloadLog, BorrowRequest, Favorite
 from markupsafe import escape
+from datetime import datetime, timezone
 import os
 from werkzeug.utils import secure_filename
 
@@ -18,7 +19,7 @@ def catalog():
         page = request.args.get('page', 1, type=int)
         per_page = 9
 
-        query = Book.query
+        query = Book.query.filter(Book.deleted_at.is_(None))
 
         if search:
             query = query.filter(Book.title.contains(search) | Book.author.contains(search))
@@ -43,14 +44,27 @@ def catalog():
 @login_required
 def detail(book_id):
     try:
-        book = Book.query.get_or_404(book_id)
+        book = Book.query.filter(
+            Book.id == book_id,
+            Book.deleted_at.is_(None)
+        ).first_or_404()
         
         active_request = BorrowRequest.query.filter_by(
             book_id=book_id,
             borrower_id=current_user.id
         ).filter(BorrowRequest.status.in_(['pending', 'accepted', 'borrowed'])).first()
+
+        is_favorite = Favorite.query.filter_by(
+            user_id=current_user.id,
+            book_id=book_id
+        ).first() is not None
         
-        return render_template('books/detail.html', book=book, active_request=active_request)
+        return render_template(
+            'books/detail.html',
+            book=book,
+            active_request=active_request,
+            is_favorite=is_favorite
+        )
     except Exception as e:
         current_app.logger.exception(f'Error loading book detail for ID {book_id}: {e}')
         flash('An error occurred while loading book details.', 'danger')
@@ -149,7 +163,10 @@ def add():
 @login_required
 def edit(book_id):
     try:
-        book = Book.query.get_or_404(book_id)
+        book = Book.query.filter(
+            Book.id == book_id,
+            Book.deleted_at.is_(None)
+        ).first_or_404()
         if book.owner_id != current_user.id and current_user.role != 'admin':
             abort(403)
             
@@ -194,25 +211,35 @@ def edit(book_id):
 @login_required
 def delete(book_id):
     try:
-        book = Book.query.get_or_404(book_id)
+        book = Book.query.filter(
+            Book.id == book_id,
+            Book.deleted_at.is_(None)
+        ).first_or_404()
         if book.owner_id != current_user.id and current_user.role != 'admin':
             abort(403)
-            
-        db.session.delete(book)
+
+        if book.deleted_at is not None:
+            flash('Book is already deleted.', 'info')
+            return redirect(url_for('dashboard.my_books' if current_user.role != 'admin' else 'admin.books'))
+
+        book.deleted_at = datetime.now(timezone.utc)
         db.session.commit()
-        flash('Book Deleted Successfully.', 'success')
+        flash('Book deleted successfully.', 'success')
     except Exception as e:
         db.session.rollback()
         current_app.logger.exception(f'Error deleting book {book_id}: {e}')
         flash('An error occurred while deleting the book.', 'danger')
         
-    return redirect(url_for('dashboard.my_books'))
+    return redirect(url_for('dashboard.my_books' if current_user.role != 'admin' else 'admin.books'))
 
 @books_bp.route('/<int:book_id>/download')
 @login_required
 def download(book_id):
     try:
-        book = Book.query.get_or_404(book_id)
+        book = Book.query.filter(
+            Book.id == book_id,
+            Book.deleted_at.is_(None)
+        ).first_or_404()
 
         if book.book_type != 'digital':
             flash('This book is not available for digital download.', 'danger')

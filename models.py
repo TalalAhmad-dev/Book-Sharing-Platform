@@ -46,6 +46,7 @@ class Book(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc), default=lambda: datetime.now(timezone.utc))
+    deleted_at = db.Column(db.DateTime)
 
     # Relationships
     borrow_requests = db.relationship('BorrowRequest', backref='book', lazy=True)
@@ -72,6 +73,7 @@ class Favorite(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'), primary_key=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc), default=lambda: datetime.now(timezone.utc))
     __table_args__ = (db.UniqueConstraint('user_id', 'book_id', name='unique_user_book_favorite'),)
 
 class Report(db.Model):
@@ -83,6 +85,7 @@ class Report(db.Model):
     reason = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), default='open') # open | reviewed | dismissed
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc), default=lambda: datetime.now(timezone.utc))
 
     # Relationship for users reported
     reported_user = db.relationship('User', foreign_keys=[reported_user_id], backref='reports_received')

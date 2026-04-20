@@ -49,10 +49,21 @@
                             </span>
                         </td>
                         <td>
-                            <span class="badge bg-secondary text-capitalize">{{ report.status }}</span>
+                            <span class="badge bg-{% if report.status == 'open' %}warning text-dark{% elif report.status == 'reviewed' %}success{% else %}secondary{% endif %} text-capitalize">{{ report.status }}</span>
                         </td>
                         <td class="text-end pe-3">
-                            <button class="btn btn-sm btn-outline-secondary">Mark Reviewed</button>
+                            <div class="btn-group btn-group-sm">
+                                <form action="{{ url_for('admin.mark_report_reviewed', report_id=report.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-outline-success" {% if report.status != 'open' %}disabled{% endif %}>
+                                        Mark Reviewed
+                                    </button>
+                                </form>
+                                <form action="{{ url_for('admin.dismiss_report', report_id=report.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-outline-secondary" {% if report.status != 'open' %}disabled{% endif %}>
+                                        Dismiss
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     {% else %}
