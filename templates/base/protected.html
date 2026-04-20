@@ -23,6 +23,14 @@
                     <li class="nav-item">
                         <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('favorites.index') }}">Favorites</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('inbox.index') }}">
+                            Inbox
+                            {% if unread_notifications_count > 0 %}
+                                <span class="badge text-bg-danger">{{ unread_notifications_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
                     {% if current_user.role == 'admin' %}
                     <li class="nav-item">
                         <a class="btn btn-primary fw-semibold me-2" href="{{ url_for('admin.dashboard') }}">Admin</a>

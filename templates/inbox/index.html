@@ -1,0 +1,68 @@
+{% extends "base/protected.html" %}
+
+{% block title %}Inbox - BookShare{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 mb-0">Inbox</h2>
+    {% if notifications %}
+    <form action="{{ url_for('inbox.mark_all_read') }}" method="POST">
+        <button type="submit" class="btn btn-outline-primary btn-sm">Mark all as read</button>
+    </form>
+    {% endif %}
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 table-striped">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Status</th>
+                        <th>Category</th>
+                        <th>Title</th>
+                        <th>Message</th>
+                        <th>Created</th>
+                        <th class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for notification in notifications %}
+                    <tr>
+                        <td class="ps-3">
+                            {% if notification.is_read %}
+                            <span class="badge text-bg-secondary">Read</span>
+                            {% else %}
+                            <span class="badge text-bg-primary">Unread</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge text-bg-light border text-capitalize">{{ notification.category }}</span></td>
+                        <td class="fw-semibold">{{ notification.title }}</td>
+                        <td class="small">{{ notification.message }}</td>
+                        <td class="text-nowrap small text-muted">
+                            {{ notification.created_at.strftime('%b %d, %Y %I:%M %p') if notification.created_at else '-' }}
+                        </td>
+                        <td class="text-end pe-3">
+                            <div class="btn-group btn-group-sm">
+                                {% if not notification.is_read %}
+                                <form action="{{ url_for('inbox.mark_read', notification_id=notification.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-outline-success">Mark read</button>
+                                </form>
+                                {% endif %}
+                                <form action="{{ url_for('inbox.delete', notification_id=notification.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No notifications yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

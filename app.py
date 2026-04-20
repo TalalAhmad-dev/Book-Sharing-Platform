@@ -27,6 +27,7 @@ def create_app(config_class=Config):
     from routes.profile import profile_bp
     from routes.favorites import favorites_bp
     from routes.reports import reports_bp
+    from routes.inbox import inbox_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(books_bp, url_prefix='/books')
@@ -36,6 +37,7 @@ def create_app(config_class=Config):
     app.register_blueprint(profile_bp, url_prefix='/profile')
     app.register_blueprint(favorites_bp, url_prefix='/favorites')
     app.register_blueprint(reports_bp, url_prefix='/reports')
+    app.register_blueprint(inbox_bp, url_prefix='/inbox')
 
     @app.template_filter('fromjson')
     def fromjson(value):
@@ -57,6 +59,16 @@ def create_app(config_class=Config):
     @app.context_processor
     def inject_now():
         return {'now': datetime.now()}
+
+    @app.context_processor
+    def inject_unread_notification_count():
+        unread_notifications_count = 0
+        if current_user.is_authenticated:
+            unread_notifications_count = Notification.query.filter_by(
+                recipient_id=current_user.id,
+                is_read=False
+            ).count()
+        return {'unread_notifications_count': unread_notifications_count}
 
     @app.before_request
     def enforce_blocked_user_logout():

@@ -51,7 +51,7 @@ A Flask-based web application for sharing physical and digital books among users
 - **BorrowRequest:** `id`, `book_id`, `borrower_id`, `status` (pending/accepted/rejected/suggested/borrowed/returned), `proposed_date`, `proposed_time`, `location`.
 - **Favorite:** `user_id`, `book_id`.
 - **Report:** `id`, `reporter_id`, `reported_book_id`, `reported_user_id`, `reason`, `status`.
-- **DownloadLog:** `id`, `user_id`, `book_id`, `downloaded_at`.
+- **Notification:** `id`, `recipient_id`, `actor_id`, `category`, `title`, `message`, `is_read`.
 
 ## Building and Running
 

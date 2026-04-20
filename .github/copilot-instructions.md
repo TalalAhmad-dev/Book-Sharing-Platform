@@ -14,8 +14,8 @@
 ## High-level architecture
 
 - Flask app uses an **application factory** in `app.py` (`create_app`) and initializes `SQLAlchemy`, `Flask-Migrate`, and `Flask-Login` from `extensions.py`.
-- Route logic is split by domain into blueprints under `routes/`: `auth`, `books`, `borrow`, `dashboard`, `admin`, and `profile`.
-- Data model is centralized in `models.py` with SQLAlchemy models: `User`, `Book`, `BorrowRequest`, `Favorite`, `Report`, and `DownloadLog`.
+- Route logic is split by domain into blueprints under `routes/`: `auth`, `books`, `borrow`, `dashboard`, `admin`, `profile`, `favorites`, `reports`, and `inbox`.
+- Data model is centralized in `models.py` with SQLAlchemy models: `User`, `Book`, `BorrowRequest`, `Favorite`, `Report`, and `Notification`.
 - UI is server-rendered Jinja templates with shared bases in `templates/base/`:
   - `base/_skeleton.html` (shared assets + toast rendering)
   - `base/public.html` (auth pages)

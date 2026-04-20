@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from extensions import db
 from models import Book, BorrowRequest, User
+from notification_service import queue_notification
 from datetime import datetime, timezone
 from routes.books import books_bp
 
@@ -46,6 +47,18 @@ def request_borrow(book_id):
                 new_request.status = 'pending'
                 
                 db.session.add(new_request)
+                db.session.flush()
+                notification = queue_notification(
+                    recipient_id=book.owner_id,
+                    actor_id=current_user.id,
+                    category='borrow',
+                    title='New borrow request',
+                    message=f'{current_user.name} requested your digital book "{book.title}".',
+                    entity_type='borrow_request',
+                    entity_id=new_request.id
+                )
+                if notification:
+                    db.session.add(notification)
                 db.session.commit()
                 flash("Borrow request sent to owner. Once accepted, you can download the book.", "success")
                 return redirect(url_for('dashboard.borrowed'))
@@ -86,6 +99,18 @@ def request_borrow(book_id):
             new_request.message = json.dumps(msg_data)
             
             db.session.add(new_request)
+            db.session.flush()
+            notification = queue_notification(
+                recipient_id=book.owner_id,
+                actor_id=current_user.id,
+                category='borrow',
+                title='New borrow request',
+                message=f'{current_user.name} requested your book "{book.title}".',
+                entity_type='borrow_request',
+                entity_id=new_request.id
+            )
+            if notification:
+                db.session.add(notification)
             db.session.commit()
             flash("Borrow request sent to owner.", "success")
             return redirect(url_for('dashboard.borrowed'))
@@ -134,6 +159,30 @@ def accept(req_id):
         if borrow_req.book.book_type == 'digital':
             borrow_req.status = 'borrowed'
             borrow_req.borrowed_at = datetime.now(timezone.utc)
+
+        if is_owner:
+            status_message = 'accepted and is now available to download' if borrow_req.book.book_type == 'digital' else 'accepted'
+            notification = queue_notification(
+                recipient_id=borrow_req.borrower_id,
+                actor_id=current_user.id,
+                category='borrow',
+                title='Borrow request updated',
+                message=f'Your request for "{borrow_req.book.title}" was {status_message}.',
+                entity_type='borrow_request',
+                entity_id=borrow_req.id
+            )
+        else:
+            notification = queue_notification(
+                recipient_id=borrow_req.book.owner_id,
+                actor_id=current_user.id,
+                category='borrow',
+                title='Borrower accepted suggestion',
+                message=f'{current_user.name} accepted your suggestion for "{borrow_req.book.title}".',
+                entity_type='borrow_request',
+                entity_id=borrow_req.id
+            )
+        if notification:
+            db.session.add(notification)
         
         db.session.commit()
         flash("Request accepted.", "success")
@@ -207,6 +256,20 @@ def suggest(req_id):
         borrow_req.proposed_time = proposed_time
         borrow_req.location = location
         borrow_req.status = 'suggested'
+
+        recipient_id = borrow_req.borrower_id if is_owner else borrow_req.book.owner_id
+        actor_name = current_user.name
+        notification = queue_notification(
+            recipient_id=recipient_id,
+            actor_id=current_user.id,
+            category='borrow',
+            title='Borrow request suggestion updated',
+            message=f'{actor_name} suggested updated exchange details for "{borrow_req.book.title}".',
+            entity_type='borrow_request',
+            entity_id=borrow_req.id
+        )
+        if notification:
+            db.session.add(notification)
         
         db.session.commit()
         flash("Suggestion sent successfully.", "success")
@@ -237,6 +300,17 @@ def reject(req_id):
             return _redirect_back_or('dashboard.my_books')
 
         borrow_req.status = 'rejected'
+        notification = queue_notification(
+            recipient_id=borrow_req.borrower_id,
+            actor_id=current_user.id,
+            category='borrow',
+            title='Borrow request rejected',
+            message=f'Your request for "{borrow_req.book.title}" was rejected.',
+            entity_type='borrow_request',
+            entity_id=borrow_req.id
+        )
+        if notification:
+            db.session.add(notification)
         db.session.commit()
         flash("Request rejected.", "info")
         return _redirect_back_or('dashboard.my_books')
@@ -263,6 +337,17 @@ def mark_borrowed(req_id):
         
         borrow_req.status = 'borrowed'
         borrow_req.borrowed_at = datetime.now(timezone.utc)
+        notification = queue_notification(
+            recipient_id=borrow_req.borrower_id,
+            actor_id=current_user.id,
+            category='borrow',
+            title='Book marked as borrowed',
+            message=f'"{borrow_req.book.title}" was marked as borrowed.',
+            entity_type='borrow_request',
+            entity_id=borrow_req.id
+        )
+        if notification:
+            db.session.add(notification)
         db.session.commit()
         flash("Book marked as borrowed.", "success")
         return _redirect_back_or('dashboard.my_books')
@@ -293,6 +378,20 @@ def mark_returned(req_id):
             borrow_req.returned_at = datetime.now(timezone.utc)
             if borrow_req.book.book_type == 'physical':
                 borrow_req.book.status = 'available'
+                recipient_id = borrow_req.borrower_id
+            else:
+                recipient_id = borrow_req.book.owner_id
+            notification = queue_notification(
+                recipient_id=recipient_id,
+                actor_id=current_user.id,
+                category='borrow',
+                title='Book marked as returned',
+                message=f'"{borrow_req.book.title}" was marked as returned by {current_user.username}.',
+                entity_type='borrow_request',
+                entity_id=borrow_req.id
+            )
+            if notification:
+                db.session.add(notification)
             db.session.commit()
             flash("Book marked as returned. Available again.", "success")
             return _redirect_back_or('books.catalog')

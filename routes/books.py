@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app, send_from_directory
 from flask_login import login_required, current_user
 from extensions import db
-from models import Book, User, DownloadLog, BorrowRequest, Favorite
+from models import Book, BorrowRequest, Favorite
+from notification_service import queue_notification
 from markupsafe import escape
 from datetime import datetime, timezone
 import os
@@ -226,6 +227,19 @@ def delete(book_id):
             flash('Book is already deleted.', 'info')
             return _redirect_back_or(fallback_endpoint)
 
+        if current_user.role == 'admin' and book.owner_id != current_user.id:
+            notification = queue_notification(
+                recipient_id=book.owner_id,
+                actor_id=current_user.id,
+                category='admin',
+                title='Book removed by admin',
+                message=f'An admin removed your book "{book.title}".',
+                entity_type='book',
+                entity_id=book.id
+            )
+            if notification:
+                db.session.add(notification)
+
         book.deleted_at = datetime.now(timezone.utc)
         db.session.commit()
         flash('Book deleted successfully.', 'success')
@@ -257,12 +271,6 @@ def download(book_id):
         if not borrow_req and book.owner_id != current_user.id and current_user.role != 'admin':
             flash('You do not have permission to download this book.', 'danger')
             return _redirect_back_or('dashboard.borrowed')
-
-        log = DownloadLog()
-        log.book_id = book_id
-        log.user_id = current_user.id
-        db.session.add(log)
-        db.session.commit()
 
         directory = os.path.join(current_app.config['UPLOAD_FOLDER'], os.path.dirname(book.file_path))
         filename = os.path.basename(book.file_path)

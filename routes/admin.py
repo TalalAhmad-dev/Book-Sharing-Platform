@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from functools import wraps
 from models import User, Book, Report, BorrowRequest
 from extensions import db
+from notification_service import queue_notification
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -61,6 +62,17 @@ def block_user(user_id):
             return _redirect_back_or('admin.users')
 
         user.status = 'blocked'
+        notification = queue_notification(
+            recipient_id=user.id,
+            actor_id=current_user.id,
+            category='admin',
+            title='Account blocked',
+            message='Your account has been blocked by an administrator.',
+            entity_type='user',
+            entity_id=user.id
+        )
+        if notification:
+            db.session.add(notification)
         db.session.commit()
         flash(f"User {user.name} blocked.", "success")
     except Exception as e:
@@ -82,6 +94,17 @@ def unblock_user(user_id):
             return _redirect_back_or('admin.users')
 
         user.status = 'active'
+        notification = queue_notification(
+            recipient_id=user.id,
+            actor_id=current_user.id,
+            category='admin',
+            title='Account unblocked',
+            message='Your account has been reactivated by an administrator.',
+            entity_type='user',
+            entity_id=user.id
+        )
+        if notification:
+            db.session.add(notification)
         db.session.commit()
         flash(f"User {user.name} unblocked.", "success")
     except Exception as e:
@@ -126,6 +149,17 @@ def mark_report_reviewed(report_id):
             return _redirect_back_or('admin.reports')
 
         report.status = 'reviewed'
+        notification = queue_notification(
+            recipient_id=report.reporter_id,
+            actor_id=current_user.id,
+            category='admin',
+            title='Report reviewed',
+            message='Your report has been reviewed by an administrator.',
+            entity_type='report',
+            entity_id=report.id
+        )
+        if notification:
+            db.session.add(notification)
         db.session.commit()
         flash("Report marked as reviewed.", "success")
     except Exception as e:
@@ -147,6 +181,17 @@ def dismiss_report(report_id):
             return _redirect_back_or('admin.reports')
 
         report.status = 'dismissed'
+        notification = queue_notification(
+            recipient_id=report.reporter_id,
+            actor_id=current_user.id,
+            category='admin',
+            title='Report dismissed',
+            message='Your report has been dismissed by an administrator.',
+            entity_type='report',
+            entity_id=report.id
+        )
+        if notification:
+            db.session.add(notification)
         db.session.commit()
         flash("Report has been dismissed.", "info")
     except Exception as e:

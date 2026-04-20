@@ -128,14 +128,21 @@ Six core tables derived from the ERD in the Design Document.
 | `status` | `TEXT DEFAULT 'open'` | Values: `open` \| `reviewed` \| `dismissed` |
 | `created_at` | `DATETIME` | Report timestamp |
 
-### 3.6 `download_log`
+### 3.6 `notification`
 
 | Field | Type | Notes |
 |---|---|---|
 | `id` | `INTEGER PK` | Auto-increment |
-| `user_id` | `INTEGER FK` | Borrower downloading the file |
-| `book_id` | `INTEGER FK` | Digital book downloaded |
-| `downloaded_at` | `DATETIME` | Timestamp of download |
+| `recipient_id` | `INTEGER FK` | User receiving the notification |
+| `actor_id` | `INTEGER FK NULL` | User who triggered the event (nullable) |
+| `category` | `TEXT` | Notification type: `borrow` \| `admin` \| `general` |
+| `title` | `TEXT` | Short notification title |
+| `message` | `TEXT` | User-facing message |
+| `entity_type` | `TEXT NULL` | Related entity type (`borrow_request`, `book`, `report`, etc.) |
+| `entity_id` | `INTEGER NULL` | Related entity ID |
+| `is_read` | `BOOLEAN` | Read state flag |
+| `read_at` | `DATETIME NULL` | Timestamp when read |
+| `created_at` | `DATETIME` | Notification creation time |
 
 ---
 
@@ -246,16 +253,26 @@ All routes are server-rendered (Flask + Jinja2). `GET` routes render templates; 
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| `GET` | `/books/<book_id>/download` | Login required | Verify active borrow request; serve file; log to `download_log` |
+| `GET` | `/books/<book_id>/download` | Login required | Verify active borrow request and serve file |
 
 **Logic Notes:**
 - Permission check: `BorrowRequest` must exist with `borrower_id=current_user.id`, `book_id=book_id`, `status='borrowed'`
 - Serve with `flask.send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)`
-- Log every download: `INSERT INTO download_log (user_id, book_id, downloaded_at)`
 
 ---
 
-### 4.9 Admin — `/admin`
+### 4.9 Inbox — `/inbox`
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/inbox/` | Login required | List notifications for the current user |
+| `POST` | `/inbox/<notification_id>/read` | Login required | Mark one notification as read |
+| `POST` | `/inbox/read-all` | Login required | Mark all notifications as read |
+| `POST` | `/inbox/<notification_id>/delete` | Login required | Delete one notification |
+
+---
+
+### 4.10 Admin — `/admin`
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -376,7 +393,7 @@ flask --app app run --debug
 sqlite3 book_sharing.db ".tables"
 ```
 
-Expected output: `book  borrow_request  download_log  favorite  report  user`
+Expected output: `books  borrow_requests  notifications  favorites  reports  users`
 
 ---
 

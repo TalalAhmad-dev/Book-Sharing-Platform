@@ -23,6 +23,8 @@ class User(db.Model, UserMixin):
     borrow_requests = db.relationship('BorrowRequest', backref='borrower', foreign_keys='BorrowRequest.borrower_id', lazy=True)
     favorites = db.relationship('Favorite', backref='user', lazy=True)
     reports_submitted = db.relationship('Report', backref='reporter', foreign_keys='Report.reporter_id', lazy=True)
+    notifications_received = db.relationship('Notification', backref='recipient', foreign_keys='Notification.recipient_id', lazy=True)
+    notifications_sent = db.relationship('Notification', backref='actor', foreign_keys='Notification.actor_id', lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -90,9 +92,17 @@ class Report(db.Model):
     # Relationship for users reported
     reported_user = db.relationship('User', foreign_keys=[reported_user_id], backref='reports_received')
 
-class DownloadLog(db.Model):
-    __tablename__ = 'download_logs'
+class Notification(db.Model):
+    __tablename__ = 'notifications'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    book_id = db.Column(db.Integer, db.ForeignKey('books.id'), nullable=False)
-    downloaded_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    actor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    category = db.Column(db.String(50), nullable=False, default='general')  # borrow | admin | system | general
+    title = db.Column(db.String(150), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    entity_type = db.Column(db.String(50))
+    entity_id = db.Column(db.Integer)
+    is_read = db.Column(db.Boolean, nullable=False, default=False)
+    read_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc), default=lambda: datetime.now(timezone.utc))
