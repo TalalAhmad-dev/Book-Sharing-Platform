@@ -9,6 +9,9 @@ from werkzeug.utils import secure_filename
 
 books_bp = Blueprint('books', __name__)
 
+def _redirect_back_or(endpoint, **values):
+    return redirect(request.referrer or url_for(endpoint, **values))
+
 @books_bp.route('/')
 @login_required
 def catalog():
@@ -68,7 +71,7 @@ def detail(book_id):
     except Exception as e:
         current_app.logger.exception(f'Error loading book detail for ID {book_id}: {e}')
         flash('An error occurred while loading book details.', 'danger')
-        return redirect(url_for('books.catalog'))
+        return _redirect_back_or('books.catalog')
 
 @books_bp.route('/add', methods=['GET', 'POST'])
 @login_required
@@ -84,7 +87,7 @@ def add():
             
             if not title or not author or not category or not book_type:
                 flash('Please provide the required fields', 'danger')
-                return redirect(url_for('books.add'))
+                return _redirect_back_or('books.add')
             
             new_book = Book()
             new_book.title = escape(title)
@@ -109,7 +112,7 @@ def add():
                     filename = secure_filename(file.filename)
                     if not filename.lower().endswith(('.pdf', '.epub', '.txt')):
                         flash('Invalid file type. Only PDF, EPUB, and TXT files are allowed.', 'danger')
-                        return redirect(url_for('books.add'))
+                        return _redirect_back_or('books.add')
                     upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'books', str(current_user.id))
                     os.makedirs(upload_dir, exist_ok=True)
                     file_path = os.path.join('books', str(current_user.id), filename)
@@ -117,26 +120,26 @@ def add():
                     new_book.file_path = file_path
                 elif not new_book.file_path:
                     flash('Please upload a file for digital books.', 'danger')
-                    return redirect(url_for('books.add'))                
+                    return _redirect_back_or('books.add')                
                 
             elif book_type == 'physical':
                 condition = request.form.get('condition')
                 if not condition or not condition.strip():
                     flash('Please select a condition for physical books.', 'danger')
-                    return redirect(url_for('books.add'))
+                    return _redirect_back_or('books.add')
                 
                 new_book.condition = escape(condition)
                 new_book.location_notes = escape(location_notes)
                 
             else:
                 flash('Invalid book type. Please select a valid type.', 'danger')
-                return redirect(url_for('books.add'))            
+                return _redirect_back_or('books.add')            
 
             db.session.add(new_book)
             db.session.commit()
             
             flash('Book Added Successfully!', 'success')
-            return redirect(url_for('books.catalog'))
+            return _redirect_back_or('books.catalog')
         except Exception as e:
             db.session.rollback()
 
@@ -155,7 +158,7 @@ def add():
 
             current_app.logger.exception(f'Error adding book: {e}')
             flash('An error occurred while adding the book.', 'danger')
-            return redirect(url_for('books.add'))
+            return _redirect_back_or('books.add')
         
     return render_template('books/add.html')
 
@@ -189,7 +192,7 @@ def edit(book_id):
             
             db.session.commit()
             flash('Book Updated Successfully!', 'success')
-            return redirect(url_for('books.detail', book_id=book.id))
+            return _redirect_back_or('books.detail', book_id=book.id)
             
         return render_template('books/edit.html', book=book)
     except Exception as e:
@@ -205,11 +208,12 @@ def edit(book_id):
 
         current_app.logger.exception(f'Error editing book {book_id}: {e}')
         flash('An error occurred while updating the book.', 'danger')
-        return redirect(url_for('books.catalog'))
+        return _redirect_back_or('books.catalog')
 
 @books_bp.route('/<int:book_id>/delete', methods=['POST'])
 @login_required
 def delete(book_id):
+    fallback_endpoint = 'admin.books' if current_user.role == 'admin' else 'dashboard.my_books'
     try:
         book = Book.query.filter(
             Book.id == book_id,
@@ -220,7 +224,7 @@ def delete(book_id):
 
         if book.deleted_at is not None:
             flash('Book is already deleted.', 'info')
-            return redirect(url_for('dashboard.my_books' if current_user.role != 'admin' else 'admin.books'))
+            return _redirect_back_or(fallback_endpoint)
 
         book.deleted_at = datetime.now(timezone.utc)
         db.session.commit()
@@ -230,7 +234,7 @@ def delete(book_id):
         current_app.logger.exception(f'Error deleting book {book_id}: {e}')
         flash('An error occurred while deleting the book.', 'danger')
         
-    return redirect(url_for('dashboard.my_books' if current_user.role != 'admin' else 'admin.books'))
+    return _redirect_back_or(fallback_endpoint)
 
 @books_bp.route('/<int:book_id>/download')
 @login_required
@@ -243,7 +247,7 @@ def download(book_id):
 
         if book.book_type != 'digital':
             flash('This book is not available for digital download.', 'danger')
-            return redirect(url_for('books.detail', book_id=book_id))
+            return _redirect_back_or('books.detail', book_id=book_id)
 
         borrow_req = BorrowRequest.query.filter_by(
             book_id=book_id, 
@@ -252,7 +256,7 @@ def download(book_id):
 
         if not borrow_req and book.owner_id != current_user.id and current_user.role != 'admin':
             flash('You do not have permission to download this book.', 'danger')
-            return redirect(url_for('dashboard.borrowed'))
+            return _redirect_back_or('dashboard.borrowed')
 
         log = DownloadLog()
         log.book_id = book_id
@@ -268,4 +272,4 @@ def download(book_id):
     except Exception as e:
         current_app.logger.exception(f'Error downloading book {book_id}: {e}')
         flash('An error occurred while trying to download the book.', 'danger')
-        return redirect(url_for('dashboard.borrowed'))
+        return _redirect_back_or('dashboard.borrowed')
