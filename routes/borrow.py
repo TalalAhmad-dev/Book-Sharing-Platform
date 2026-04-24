@@ -12,7 +12,7 @@ borrow_bp = Blueprint('borrow', __name__)
 def _redirect_back_or(endpoint, **values):
     return redirect(request.referrer or url_for(endpoint, **values))
 
-# TODO: When request borrow or suggest alternative, make sure that the meeting time is in the future and not in the past.
+# TODO (Done): When request borrow or suggest alternative, make sure that the meeting time is in the future and not in the past.
 @books_bp.route('/<int:book_id>/borrow', methods=['GET', 'POST'])
 @login_required
 def request_borrow(book_id):

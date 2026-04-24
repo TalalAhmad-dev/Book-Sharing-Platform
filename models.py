@@ -3,7 +3,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from extensions import db
 
-#TODO(Done): Add updated_at to User model and update it on profile updates
+#TODO (Done): Add updated_at to User model and update it on profile updates
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
