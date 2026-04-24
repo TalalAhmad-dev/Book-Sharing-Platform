@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
 from functools import wraps
 from models import User, Book, Report, BorrowRequest
@@ -6,9 +6,6 @@ from extensions import db
 from notification_service import queue_notification
 
 admin_bp = Blueprint('admin', __name__)
-
-def _redirect_back_or(endpoint, **values):
-    return redirect(request.referrer or url_for(endpoint, **values))
 
 def admin_required(f):
     @wraps(f)
@@ -55,11 +52,11 @@ def block_user(user_id):
         user = User.query.get_or_404(user_id)
         if user.id == current_user.id:
             flash("You cannot block yourself.", "error")
-            return _redirect_back_or('admin.users')
+            return redirect(url_for('admin.users'))
 
         if user.status == 'blocked':
             flash(f"User {user.name} is already blocked.", "info")
-            return _redirect_back_or('admin.users')
+            return redirect(url_for('admin.users'))
 
         user.status = 'blocked'
         notification = queue_notification(
@@ -80,7 +77,7 @@ def block_user(user_id):
         current_app.logger.exception(f'Error blocking user {user_id}: {e}')
         flash('Unable to block this user right now.', 'danger')
 
-    return _redirect_back_or('admin.users')
+    return redirect(url_for('admin.users'))
 
 @admin_bp.route('/users/<int:user_id>/unblock', methods=['POST'])
 @login_required
@@ -91,7 +88,7 @@ def unblock_user(user_id):
 
         if user.status == 'active':
             flash(f"User {user.name} is already active.", "info")
-            return _redirect_back_or('admin.users')
+            return redirect(url_for('admin.users'))
 
         user.status = 'active'
         notification = queue_notification(
@@ -112,7 +109,7 @@ def unblock_user(user_id):
         current_app.logger.exception(f'Error unblocking user {user_id}: {e}')
         flash('Unable to unblock this user right now.', 'danger')
 
-    return _redirect_back_or('admin.users')
+    return redirect(url_for('admin.users'))
 
 @admin_bp.route('/books')
 @login_required
@@ -146,7 +143,7 @@ def mark_report_reviewed(report_id):
         report = Report.query.get_or_404(report_id)
         if report.status != 'open':
             flash(f"Report has already been {report.status}. Can't mark as reviewed.", "warning")
-            return _redirect_back_or('admin.reports')
+            return redirect(url_for('admin.reports'))
 
         report.status = 'reviewed'
         notification = queue_notification(
@@ -167,7 +164,7 @@ def mark_report_reviewed(report_id):
         current_app.logger.exception(f'Error marking report {report_id} as reviewed: {e}')
         flash('Unable to update this report right now.', 'danger')
 
-    return _redirect_back_or('admin.reports')
+    return redirect(url_for('admin.reports'))
 
 
 @admin_bp.route('/reports/<int:report_id>/dismiss', methods=['POST'])
@@ -178,7 +175,7 @@ def dismiss_report(report_id):
         report = Report.query.get_or_404(report_id)
         if report.status != 'open':
             flash(f"Report has already been {report.status}. Can't dismiss.", "warning")
-            return _redirect_back_or('admin.reports')
+            return redirect(url_for('admin.reports'))
 
         report.status = 'dismissed'
         notification = queue_notification(
@@ -199,4 +196,4 @@ def dismiss_report(report_id):
         current_app.logger.exception(f'Error dismissing report {report_id}: {e}')
         flash('Unable to update this report right now.', 'danger')
 
-    return _redirect_back_or('admin.reports')
+    return redirect(url_for('admin.reports'))

@@ -1,14 +1,10 @@
 from datetime import datetime, timezone
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
 from extensions import db
 from models import Notification
 
 inbox_bp = Blueprint('inbox', __name__)
-
-
-def _redirect_back_or(endpoint, **values):
-    return redirect(request.referrer or url_for(endpoint, **values))
 
 
 @inbox_bp.route('/')
@@ -37,7 +33,7 @@ def mark_read(notification_id):
         ).first_or_404()
 
         if notification.is_read:
-            return _redirect_back_or('inbox.index')
+            return redirect(url_for('inbox.index'))
 
         notification.is_read = True
         notification.read_at = datetime.now(timezone.utc)
@@ -47,7 +43,7 @@ def mark_read(notification_id):
         current_app.logger.exception(f'Error marking notification {notification_id} as read: {e}')
         flash('Unable to update this notification right now.', 'danger')
 
-    return _redirect_back_or('inbox.index')
+    return redirect(url_for('inbox.index'))
 
 
 @inbox_bp.route('/read-all', methods=['POST'])
@@ -71,7 +67,7 @@ def mark_all_read():
         current_app.logger.exception(f'Error marking all notifications as read for user {current_user.id}: {e}')
         flash('Unable to update notifications right now.', 'danger')
 
-    return _redirect_back_or('inbox.index')
+    return redirect(url_for('inbox.index'))
 
 
 @inbox_bp.route('/<int:notification_id>/delete', methods=['POST'])
@@ -90,4 +86,4 @@ def delete(notification_id):
         current_app.logger.exception(f'Error deleting notification {notification_id}: {e}')
         flash('Unable to delete this notification right now.', 'danger')
 
-    return _redirect_back_or('inbox.index')
+    return redirect(url_for('inbox.index'))
