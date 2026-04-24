@@ -11,32 +11,39 @@
                 <input type="text" name="search" class="form-control" placeholder="Search title, author..."
                     value="{{ request.args.get('search', '') }}">
             </div>
-            <div class="col-md-2">
-                <label class="form-label">Category</label>
-                <select name="category" class="form-select" title="Book Category">
-                    <option value="All">All Categories</option>
-                    <option value="Programming" {% if request.args.get('category')=='Programming' %}selected{% endif %}>
+            {% set selected_categories = categories if categories is defined else request.args.getlist('category') %}
+            {% set selected_type_value = selected_type if selected_type is defined else request.args.get('type', 'All')
+            %}
+            <div class="col-md-3">
+                <label class="form-label">Categories</label>
+                <select name="category" class="form-select js-select2 js-select2-multiple" title="Book Categories"
+                    multiple data-placeholder="All Categories">
+                    <option value="Programming" {% if 'Programming' in selected_categories %}selected{% endif %}>
                         Programming</option>
-                    <option value="Fiction" {% if request.args.get('category')=='Fiction' %}selected{% endif %}>Fiction
+                    <option value="Fiction" {% if 'Fiction' in selected_categories %}selected{% endif %}>Fiction
                     </option>
-                    <option value="Science" {% if request.args.get('category')=='Science' %}selected{% endif %}>Science
+                    <option value="Science" {% if 'Science' in selected_categories %}selected{% endif %}>Science
                     </option>
-                    <option value="Other" {% if request.args.get('category')=='Other' %}selected{% endif %}>Other
-                    </option>
+                    <option value="Other" {% if 'Other' in selected_categories %}selected{% endif %}>Other</option>
                 </select>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label class="form-label">Type</label>
-                <select name="type" class="form-select" title="Book Type">
-                    <option value="All">All Types</option>
-                    <option value="Physical" {% if request.args.get('type')=='Physical' %}selected{% endif %}>Physical
+                <select name="type" class="form-select js-select2" title="Book Type" data-placeholder="All Types">
+                    <option value="All" {% if selected_type_value=='All' %}selected{% endif %}>All Types</option>
+                    <option value="Physical" {% if selected_type_value=='Physical' %}selected{% endif %}>Physical
                     </option>
-                    <option value="Digital" {% if request.args.get('type')=='Digital' %}selected{% endif %}>Digital
-                    </option>
+                    <option value="Digital" {% if selected_type_value=='Digital' %}selected{% endif %}>Digital</option>
                 </select>
             </div>
-            <div class="col-md-2 d-grid">
-                <button type="submit" class="btn btn-secondary fw-semibold">Search</button>
+            <div class="col-md-12 d-flex gap-2 justify-content-end">
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-secondary fw-semibold">Search</button>
+                </div>
+                <div class="col-md-1 d-grid">
+                    <a href="{{ url_for('books.catalog') }}" class="btn btn-outline-danger fw-semibold">Clear
+                        Filters</a>
+                </div>
             </div>
         </form>
     </div>

@@ -24,4 +24,29 @@ document.addEventListener("DOMContentLoaded", function () {
   const popoverList = [...popoverTriggerList].map(
     (popoverTriggerEl) => new bootstrap.Popover(popoverTriggerEl),
   );
+
+  // Select2 Initialization
+  if (window.jQuery && typeof window.jQuery.fn.select2 === "function") {
+    const $ = window.jQuery;
+
+    $(".js-select2").not(".js-select2-multiple").each(function () {
+      const $select = $(this);
+      $select.select2({
+        width: "100%",
+        minimumResultsForSearch: 6,
+        placeholder: $select.data("placeholder") || "",
+      });
+    });
+
+    $(".js-select2-multiple").each(function () {
+      const $select = $(this);
+      $select.select2({
+        width: "100%",
+        closeOnSelect: false,
+        allowClear: true,
+        minimumResultsForSearch: 0,
+        placeholder: $select.data("placeholder") || "",
+      });
+    });
+  }
 });

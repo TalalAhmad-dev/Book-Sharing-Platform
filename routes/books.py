@@ -15,7 +15,11 @@ books_bp = Blueprint('books', __name__)
 def catalog():
     try:
         search = escape(request.args.get('search', ''))
-        category = escape(request.args.get('category', 'All'))
+        category_values = request.args.getlist('category')
+        if not category_values:
+            category = request.args.get('category', '')
+            category_values = [category] if category else []
+        categories = [escape(value) for value in category_values if value and value != 'All']
         book_type = escape(request.args.get('type', 'All'))
         page = request.args.get('page', 1, type=int)
         per_page = 9
@@ -24,8 +28,8 @@ def catalog():
 
         if search:
             query = query.filter(Book.title.contains(search) | Book.author.contains(search))
-        if category != 'All':
-            query = query.filter_by(category=category)
+        if categories:
+            query = query.filter(Book.category.in_(categories))
         if book_type != 'All':
             query = query.filter_by(book_type=book_type.lower())
 
@@ -52,12 +56,21 @@ def catalog():
             'books/catalog.html',
             books=books,
             pagination=pagination,
-            favorite_book_ids=favorite_book_ids
+            favorite_book_ids=favorite_book_ids,
+            categories=categories,
+            selected_type=book_type
         )
     except Exception as e:
         current_app.logger.exception(f'Error loading book catalog: {e}')
         flash('Unable to load the catalog at this time. Please try again later.', 'danger')
-        return render_template('books/catalog.html', books=[], pagination=None, favorite_book_ids=set())
+        return render_template(
+            'books/catalog.html',
+            books=[],
+            pagination=None,
+            favorite_book_ids=set(),
+            categories=[],
+            selected_type='All'
+        )
 
 @books_bp.route('/<int:book_id>')
 @login_required
