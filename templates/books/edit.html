@@ -38,8 +38,8 @@
                         <label for="cover_image" class="form-label">Change Cover Image</label>
                         {% if book.cover_image %}
                         <div class="mb-2">
-                            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}" id="cover_image"
-                                alt="Current Cover" style="height: 100px;">
+                            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}"
+                                alt="Current Cover" class="img-thumbnail" height="100">
                         </div>
                         {% endif %}
                         <input type="file" class="form-control" accept="image/*" id="cover_image" name="cover_image">

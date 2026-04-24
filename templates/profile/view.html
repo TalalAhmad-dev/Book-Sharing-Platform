@@ -7,9 +7,8 @@
     <div class="card-body p-4 p-md-5">
         <div class="row align-items-center">
             <div class="col-md-3 text-center mb-4 mb-md-0">
-                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm"
-                    style="width: 150px; height: 150px; font-size: 5rem;">
-                    👤
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm p-4">
+                    <i class="bi bi-person-fill display-3 text-secondary"></i>
                 </div>
             </div>
             <div class="col-md-9">
@@ -64,15 +63,16 @@
     {% for book in books %}
     <div class="col">
         <div class="card h-100 shadow-sm border-0">
-            {% if book.cover_image %}
-            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}" class="card-img-top"
-                alt="{{ book.title }} Cover" style="height: 250px; object-fit: cover;">
-            {% else %}
-            <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
-                style="height: 250px; font-size: 5rem;">
-                📚
+            <div class="ratio ratio-4x3">
+                {% if book.cover_image %}
+                <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}"
+                    class="card-img-top w-100 h-100 object-fit-cover" alt="{{ book.title }} Cover">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center display-4">
+                    📚
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
             <div class="card-body">
                 <h5 class="card-title text-truncate">{{ book.title }}</h5>
                 <h6 class="card-subtitle mb-3 text-muted">by {{ book.author }}</h6>

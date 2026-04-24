@@ -15,8 +15,8 @@
                     <tr>
                         <th class="ps-3">ID</th>
                         <th>Reporter</th>
-                        <th>Target</th>
-                        <th>Reason</th>
+                        <th class="w-25">Target</th>
+                        <th class="w-25">Reason</th>
                         <th>Status</th>
                         <th class="text-end pe-3">Actions</th>
                     </tr>
@@ -33,18 +33,20 @@
                         <td>
                             {% if report.reported_book_id %}
                                 <span class="badge bg-light text-dark border me-1">Book</span>
-                                <a href="{{ url_for('books.detail', book_id=report.reported_book_id) }}" class="text-decoration-none small text-truncate d-inline-block" style="max-width: 150px;">
+                                <a href="{{ url_for('books.detail', book_id=report.reported_book_id) }}"
+                                    class="text-decoration-none small text-truncate d-inline-block w-100">
                                     {{ report.reported_book.title }}
                                 </a>
                             {% elif report.reported_user_id %}
                                 <span class="badge bg-light text-dark border me-1">User</span>
-                                <a href="{{ url_for('profile.view', user_id=report.reported_user_id) }}" class="text-decoration-none small text-truncate d-inline-block" style="max-width: 150px;">
+                                <a href="{{ url_for('profile.view', user_id=report.reported_user_id) }}"
+                                    class="text-decoration-none small text-truncate d-inline-block w-100">
                                     {{ report.reported_user.name }}
                                 </a>
                             {% endif %}
                         </td>
                         <td>
-                            <span class="small text-muted text-truncate d-inline-block" style="max-width: 200px;" title="{{ report.reason }}">
+                            <span class="small text-muted text-truncate d-inline-block w-100" title="{{ report.reason }}">
                                 {{ report.reason }}
                             </span>
                         </td>

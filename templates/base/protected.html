@@ -11,13 +11,13 @@ else '' %}
         <p class="sidebar-group-title">Library</p>
         <ul class="nav nav-pills flex-column gap-1">
             <li class="nav-item">
-                <a class="sidebar-link fw-semibold nav-link {% if endpoint in ['books.catalog', 'books.detail'] %}active{% endif %}"
+                <a class="sidebar-link fw-semibold nav-link {% if endpoint in ['books.catalog', 'books.detail', 'books.edit'] %}active{% endif %}"
                     href="{{ url_for('books.catalog') }}">
                     <i class="bi bi-journal-bookmark me-2"></i>Browse Books
                 </a>
             </li>
             <li class="nav-item">
-                <a class="sidebar-link fw-semibold nav-link {% if endpoint.startswith('books.') and endpoint not in ['books.catalog', 'books.detail'] %}active{% endif %}"
+                <a class="sidebar-link fw-semibold nav-link {% if endpoint.startswith('books.') and endpoint not in ['books.catalog', 'books.detail', 'books.edit'] %}active{% endif %}"
                     href="{{ url_for('books.add') }}">
                     <i class="bi bi-plus-square me-2"></i>Add Book
                 </a>

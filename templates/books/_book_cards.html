@@ -17,13 +17,13 @@
                 {% if book.id in favorite_ids %}
                 <form action="{{ url_for('favorites.remove', book_id=book.id) }}" method="POST">
                     <button type="submit" class="book-card-action-btn" title="Remove from favorites">
-                        <i class="bi bi-heart-fill text-danger"></i>
+                        <i class="bi bi-heart-fill text-danger fs-5"></i>
                     </button>
                 </form>
                 {% else %}
                 <form action="{{ url_for('favorites.add', book_id=book.id) }}" method="POST">
                     <button type="submit" class="book-card-action-btn" title="Add to favorites">
-                        <i class="bi bi-heart"></i>
+                        <i class="bi bi-heart fs-5"></i>
                     </button>
                 </form>
                 {% endif %}
@@ -31,7 +31,7 @@
                 {% if book.status == 'available' or book.book_type == 'digital' %}
                 <a href="{{ url_for('books.request_borrow', book_id=book.id) }}" class="book-card-action-btn"
                     title="Request to borrow">
-                    <i class="bi bi-box-arrow-in-down"></i>
+                    <i class="bi bi-box-arrow-in-down fs-5"></i>
                 </a>
                 {% endif %}
             </div>
@@ -42,7 +42,7 @@
                     <div class="book-card-overlay-author fst-italic mb-2">by {{ book.author }}</div>
                     <div class="mb-3">
                         <span
-                            class="badge fs-6 {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %}">
+                            class="badge fs-6 me-1 {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %}">
                             {{ book.book_type|capitalize }}
                         </span>
                         <span
@@ -59,10 +59,13 @@
                         <a href="{{ url_for('books.detail', book_id=book.id) }}"
                             class="btn btn-light fw-semibold btn-sm">View
                             Details</a>
-                        {% if (book.status == 'available' or book.book_type ==
+                        {% if book.owner_id != current_user.id and (book.status == 'available' or book.book_type ==
                         'digital') %}
                         <a href="{{ url_for('books.request_borrow', book_id=book.id) }}"
                             class="btn btn-secondary fw-semibold btn-sm">Borrow Book</a>
+                        {% else %}
+                        <a href="{{ url_for('books.edit', book_id=book.id) }}"
+                            class="btn btn-secondary fw-semibold btn-sm">Edit Book Details</a>
                         {% endif %}
                     </div>
                 </div>

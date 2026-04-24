@@ -158,7 +158,7 @@ def add():
             db.session.commit()
             
             flash('Book Added Successfully!', 'success')
-            return _redirect_back_or('books.catalog')
+            return redirect(url_for('books.catalog'))
         except Exception as e:
             db.session.rollback()
 
@@ -211,7 +211,7 @@ def edit(book_id):
             
             db.session.commit()
             flash('Book Updated Successfully!', 'success')
-            return _redirect_back_or('books.detail', book_id=book.id)
+            return redirect(url_for('books.detail', book_id=book.id))
             
         return render_template('books/edit.html', book=book)
     except Exception as e:

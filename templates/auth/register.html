@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <div class="col-md-6 auth-form-section">
+    <div class="col-md-6 d-flex align-items-center justify-content-center bg-white min-vh-100 p-4 p-md-0">
         <div class="form-wrapper p-4 w-100 rounded-5 text-white">
             <div class="text-center border-bottom border-2">
                 <img class="pb-2" src="/static/images/BookShare Logo (3).png" alt="">
@@ -43,10 +43,10 @@
                     <div class="input-group mb-3">
                         <input type="password" class="form-control" id="password" name="password" placeholder="********"
                             required minlength="8" aria-describedby="showPassword" autocomplete="new-password">
-                        <span class="input-group-text cursor-pointer" id="showPassword"
+                        <button class="input-group-text" type="button" id="showPassword"
                             onclick="togglePassword('password', 'passwordIcon')">
                             <i class="bi bi-eye-slash-fill" id="passwordIcon"></i>
-                        </span>
+                        </button>
                     </div>
                 </div>
 
@@ -56,10 +56,10 @@
                         <input type="password" class="form-control" id="confirm_password" name="confirm_password"
                             placeholder="********" required minlength="8" aria-describedby="showConfirmPassword"
                             autocomplete="new-password">
-                        <span class="input-group-text cursor-pointer" id="showConfirmPassword"
+                        <button class="input-group-text" type="button" id="showConfirmPassword"
                             onclick="togglePassword('confirm_password', 'confirmPasswordIcon')">
                             <i class="bi bi-eye-slash-fill" id="confirmPasswordIcon"></i>
-                        </span>
+                        </button>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-secondary w-100 mb-3 fw-semibold">Get Started</button>

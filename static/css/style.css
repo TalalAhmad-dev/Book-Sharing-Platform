@@ -12,37 +12,6 @@
   min-height: 100px !important;
 }
 
-.toast-priority {
-  z-index: 1100 !important;
-}
-
-.cursor-disabled {
-  cursor: not-allowed !important;
-  pointer-events: all !important;
-}
-
-.cursor-pointer {
-  cursor: pointer !important;
-  pointer-events: all !important;
-}
-
-.cursor-zoom {
-  cursor: zoom-in !important;
-  pointer-events: all !important;
-}
-
-.split-row {
-  min-height: 100vh;
-  margin: 0;
-}
-
-.auth-form-section {
-  display: block;
-  align-content: center;
-  justify-items: center;
-  background: white;
-}
-
 .auth-image-section {
   background-position: center;
   background-size: cover;
@@ -74,18 +43,9 @@
   background: var(--primary-color)
 }
 
-.auth-brand {
-  letter-spacing: -1px;
-}
-
 @media (max-width: 767.98px) {
   .auth-image-section {
     display: none;
-  }
-
-  .auth-form-section {
-    padding: 2rem;
-    min-height: 100vh;
   }
 }
 
@@ -119,8 +79,7 @@
 
 .sidebar-themed,
 .topbar-themed,
-.offcanvas-sidebar-themed,
-.bg-themed {
+.offcanvas-sidebar-themed {
   background: var(--primary-color)
 }
 
@@ -273,8 +232,8 @@
 }
 
 .book-card-action-btn {
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: 0;
   display: inline-flex;
@@ -284,10 +243,22 @@
   color: #343a40;
 }
 
+.book-card-action-btn:hover .bi-box-arrow-in-down,
+.book-card-action-btn:focus .bi-box-arrow-in-down {
+  background: transparent;
+  color: #0d6efd;
+}
+
+.book-card-action-btn:hover .bi-heart,
+.book-card-action-btn:focus .bi-heart {
+  background: transparent;
+  color: #dc3545;
+}
+
 .book-card-action-btn:hover,
 .book-card-action-btn:focus {
-  background: #fff;
-  color: #0d6efd;
+  border-radius: 25% !important;
+  transition: border-radius 0.2s ease;
 }
 
 .book-card-overlay {

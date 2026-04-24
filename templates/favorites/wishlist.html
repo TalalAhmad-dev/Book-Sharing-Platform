@@ -7,15 +7,16 @@
     {% for book in books %}
     <div class="col">
         <div class="card h-100 shadow-sm">
-            {% if book.cover_image %}
-            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}" class="card-img-top"
-                alt="{{ book.title }} Cover" style="height: 250px; object-fit: cover;">
-            {% else %}
-            <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
-                style="height: 250px; font-size: 5rem;">
-                📚
+            <div class="ratio ratio-4x3">
+                {% if book.cover_image %}
+                <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}"
+                    class="card-img-top w-100 h-100 object-fit-cover" alt="{{ book.title }} Cover">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center display-4">
+                    📚
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
             <div class="card-body">
                 <h5 class="card-title">{{ book.title }}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">by {{ book.author }}</h6>

@@ -73,7 +73,7 @@
                 <thead class="table-light">
                     <tr class="text-center">
                         <th>ID</th>
-                        <th>Book</th>
+                        <th class="w-25">Book</th>
                         <th>Requester</th>
                         <th>Exchange Details</th>
                         <th>Status</th>
@@ -84,7 +84,7 @@
                     {% for request in incoming_requests %}
                     <tr class="text-center">
                         <td class="text-muted px-3">#{{ request.id }}</td>
-                        <td class="fw-bold text-truncate" style="max-width: 250px;" title="{{ request.book.title }}">{{
+                        <td class="fw-bold text-truncate w-25" title="{{ request.book.title }}">{{
                             request.book.title }}</td>
                         <td>{{ request.borrower.name }}</td>
                         <td>
@@ -179,13 +179,13 @@
                                                     <div class="input-group">
                                                         <input type="text" name="location" class="form-control"
                                                             value="{{ request.location }}" required>
-                                                        <span class="input-group-text cursor-pointer" tabindex="0"
+                                                        <button class="input-group-text" type="button" tabindex="0"
                                                             data-bs-container="body" data-bs-toggle="popover"
                                                             data-bs-trigger="toggle" data-bs-placement="top"
                                                             title="Location Notes By Owner"
                                                             data-bs-content="{{ request.book.location_notes or 'Not specified by the owner.' }}">
                                                             <i class="bi bi-info-circle-fill"></i>
-                                                        </span>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">

@@ -12,7 +12,7 @@
                 <thead class="table-light">
                     <tr class="text-center">
                         <th>ID</th>
-                        <th>Book Title</th>
+                        <th class="w-25">Book Title</th>
                         <th>Owner</th>
                         <th class="w-25">Exchange Info</th>
                         <th>Request Status</th>
@@ -25,8 +25,7 @@
                         <td class="px-3 text-muted">#{{ request.id }}</td>
                         <td class="fw-bold" title="{{ request.book.title }}">
                             <a href="{{ url_for('books.detail', book_id=request.book_id) }}"
-                                class="text-decoration-underline text-dark text-truncate d-inline-block"
-                                style="max-width: 250px;">
+                                class="text-decoration-underline text-dark text-truncate d-inline-block w-100">
                                 {{ request.book.title }}
                             </a>
                         </td>
@@ -60,17 +59,16 @@
                                 {% if request.book.book_type == 'digital' %}
                                 <form action="{{ url_for('books.download', book_id=request.book_id) }}" method="GET"
                                     class="d-inline">
-                                    <button
-                                        class="btn btn-success {% if request.status != 'borrowed' %}disabled cursor-disabled{% endif %}"
-                                        type="submit">Download
+                                    <button class="btn btn-success" type="submit" {% if request.status !='borrowed'
+                                        %}disabled{% endif %}>Download
                                     </button>
                                 </form>
                                 {% endif %}
                                 <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}" method="POST"
                                     class="d-inline">
-                                    <button
-                                        class="btn btn-primary {% if not request.status == 'borrowed' or request.book.book_type == 'physical' %}disabled cursor-disabled{% endif %}"
-                                        type="submit">Mark Returned</button>
+                                    <button class="btn btn-primary" type="submit" {% if not request.status=='borrowed'
+                                        or request.book.book_type=='physical' %}disabled{% endif %}>
+                                        Mark Returned</button>
                                 </form>
                                 {% if request.book.book_type == 'physical' and request.status == 'suggested' %}
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
@@ -119,13 +117,13 @@
                                                     <div class="input-group">
                                                         <input type="text" name="location" class="form-control"
                                                             value="{{ request.location }}" required>
-                                                        <span class="input-group-text cursor-pointer" tabindex="0"
+                                                        <button class="input-group-text" type="button" tabindex="0"
                                                             data-bs-container="body" data-bs-toggle="popover"
                                                             data-bs-trigger="toggle" data-bs-placement="top"
                                                             title="Location Notes By Owner"
                                                             data-bs-content="{{ request.book.location_notes or 'Not specified by the owner.' }}">
                                                             <i class="bi bi-info-circle-fill"></i>
-                                                        </span>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">

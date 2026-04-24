@@ -16,8 +16,7 @@
                         <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}"
                             class="img-fluid rounded shadow-sm" alt="{{ book.title }} Cover">
                         {% else %}
-                        <div class="bg-light d-flex align-items-center justify-content-center rounded border"
-                            style="height: 150px; font-size: 3rem;">
+                        <div class="bg-light d-flex align-items-center justify-content-center rounded border py-5 fs-1">
                             📚
                         </div>
                         {% endif %}
@@ -57,12 +56,12 @@
                             <input type="text" id="location" name="location" class="form-control"
                                 placeholder="e.g. Central Library, City Park Cafe" required
                                 autocomplete="street-address">
-                            <span class="input-group-text cursor-pointer" tabindex="0" data-bs-container="body"
+                            <button class="input-group-text" type="button" tabindex="0" data-bs-container="body"
                                 data-bs-toggle="popover" data-bs-trigger="toggle" data-bs-placement="top"
                                 title="Location Notes By Owner"
                                 data-bs-content="{{ book.location_notes or 'Not specified by the owner.' }}">
                                 <i class="bi bi-info-circle-fill"></i>
-                            </span>
+                            </button>
                         </div>
                     </div>
                     <div class="mb-3">
