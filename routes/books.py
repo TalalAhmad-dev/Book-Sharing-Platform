@@ -34,15 +34,33 @@ def catalog():
 
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
         books = pagination.items
+        favorite_book_ids = set()
+        if books:
+            book_ids = [book.id for book in books]
+            favorites = Favorite.query.filter(
+                Favorite.user_id == current_user.id,
+                Favorite.book_id.in_(book_ids)
+            ).all()
+            favorite_book_ids = {favorite.book_id for favorite in favorites}
 
         if request.headers.get('HX-Request'):
-            return render_template('books/_book_cards.html', books=books, pagination=pagination)
+            return render_template(
+                'books/_book_cards.html',
+                books=books,
+                pagination=pagination,
+                favorite_book_ids=favorite_book_ids
+            )
 
-        return render_template('books/catalog.html', books=books, pagination=pagination)
+        return render_template(
+            'books/catalog.html',
+            books=books,
+            pagination=pagination,
+            favorite_book_ids=favorite_book_ids
+        )
     except Exception as e:
         current_app.logger.exception(f'Error loading book catalog: {e}')
         flash('Unable to load the catalog at this time. Please try again later.', 'danger')
-        return render_template('books/catalog.html', books=[], pagination=None)
+        return render_template('books/catalog.html', books=[], pagination=None, favorite_book_ids=set())
 
 @books_bp.route('/<int:book_id>')
 @login_required
