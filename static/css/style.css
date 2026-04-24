@@ -1,5 +1,13 @@
 /* TODO: Work on finding proper branding theme scheme and implement it throughout the project */
 
+:root {
+  --primary-color: linear-gradient(
+    150deg,
+    rgba(202, 26, 10, 0.96) 0%,
+    rgba(253, 141, 13, 0.92) 100%
+  );
+}
+
 .floating-textarea-height {
   min-height: 100px !important;
 }
@@ -63,11 +71,7 @@
 
 .form-wrapper {
   max-width: 480px;
-  background: linear-gradient(
-    150deg,
-    rgba(202, 26, 10, 0.837) 0%,
-    rgba(253, 141, 13, 0.8) 100%
-  );
+  background: var(--primary-color)
 }
 
 .auth-brand {
@@ -104,4 +108,241 @@
 .form-select:focus {
   border-color: #000 !important;
   box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.4) !important;
+}
+
+.sidebar-desktop {
+  width: 300px;
+  height: 100dvh !important;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar-themed,
+.topbar-themed,
+.offcanvas-sidebar-themed,
+.bg-themed {
+  background: var(--primary-color)
+}
+
+.sidebar-brand {
+  letter-spacing: -0.5px;
+}
+
+.sidebar-group + .sidebar-group {
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  margin-top: 0.95rem;
+  padding-top: 0.95rem;
+}
+
+.sidebar-group-title {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75) !important;
+  margin-bottom: 0.55rem;
+  font-weight: 700;
+}
+
+.sidebar-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 0.6rem;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.sidebar-link:hover,
+.sidebar-link:focus {
+  color: #fff !important;
+  border: #fff 1px solid !important;
+  background-color: rgba(0, 0, 0, 0.22) !important;
+}
+
+.sidebar-link.active {
+  background-color: #6c757d !important;
+  color: #fff !important;
+}
+
+.sidebar-subnav {
+  margin-top: 0.3rem;
+  margin-left: 1.4rem;
+  padding-left: 0.8rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.38) !important;
+  gap: 0.15rem;
+}
+
+.sidebar-sub-link {
+  border-radius: 0.5rem;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 0.92rem;
+  padding: 0.38rem 0.65rem;
+  margin-left: 4px;
+}
+
+.sidebar-sub-link:hover,
+.sidebar-sub-link:focus {
+  color: #fff !important;
+  border: #fff 1px solid !important;
+  background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.sidebar-sub-link.active {
+  color: #fff !important;
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.sidebar-account-btn {
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  background: rgba(0, 0, 0, 0.22);
+  color: #fff;
+}
+
+.sidebar-account-btn:hover,
+.sidebar-account-btn:focus,
+.sidebar-account-btn.show {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.sidebar-account-avatar {
+  width: 38px;
+  height: 38px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.sidebar-account-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-weight: 700;
+}
+
+.sidebar-account-menu {
+  min-width: 16rem;
+}
+
+.sidebar-account-info {
+  max-width: 100%;
+}
+
+@media (max-width: 767.98px) {
+  .offcanvas .sidebar-link,
+  .offcanvas .sidebar-sub-link {
+    color: #fff !important;
+  }
+}
+
+.book-card {
+  border: 0;
+  border-radius: 0.85rem;
+  overflow: hidden;
+}
+
+.book-card-image-wrap {
+  position: relative;
+  height: clamp(40dvh, 60dvh, 80dvh);
+}
+
+.book-card-image,
+.book-card-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.book-card-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4.4rem;
+  background: #f8f9fa;
+}
+
+.book-card-actions {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.book-card-action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.92);
+  color: #343a40;
+}
+
+.book-card-action-btn:hover,
+.book-card-action-btn:focus {
+  background: #fff;
+  color: #0d6efd;
+}
+
+.book-card-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1rem;
+  background: linear-gradient(
+    to top,
+    rgba(17, 24, 39, 0.92) 0%,
+    rgba(17, 24, 39, 0.72) 36%,
+    rgba(17, 24, 39, 0.15) 76%,
+    rgba(17, 24, 39, 0) 100%
+  );
+  opacity: 0;
+  transition:
+    opacity 0.25s ease-in-out,
+    transform 0.25s ease-in-out;
+  transform: translateY(8px);
+}
+
+.book-card:hover .book-card-overlay,
+.book-card:focus-within .book-card-overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.book-card-overlay-title {
+  color: #fff;
+  margin-bottom: 0.1rem;
+}
+
+.book-card-overlay-author {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+@media (hover: none), (max-width: 991.98px) {
+  .book-card-overlay {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.btn-check-toggle-group .btn-check:checked + label {
+  background: var(--primary-color) !important;
+  border-color: #6c757d !important;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.btn-check-toggle-group :not(.btn-check:checked) + label {
+  border-color: #6c757d !important;
+  color: #000 !important;
 }

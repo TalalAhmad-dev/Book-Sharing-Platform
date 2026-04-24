@@ -3,45 +3,52 @@
 {% block title %}Browse Books - BookShare{% endblock %}
 
 {% block content %}
-<div class="card mb-4 shadow-sm">
+<div class="card mb-4 shadow-sm" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="350">
     <div class="card-body">
         <form action="{{ url_for('books.catalog') }}" method="GET" class="row g-3 align-items-end">
             <div class="col-md-6">
                 <label class="form-label">Search</label>
-                <input type="text" name="search" class="form-control" placeholder="Search title, author..." value="{{ request.args.get('search', '') }}">
+                <input type="text" name="search" class="form-control" placeholder="Search title, author..."
+                    value="{{ request.args.get('search', '') }}">
             </div>
             <div class="col-md-2">
                 <label class="form-label">Category</label>
-                <select name="category" class="form-select">
+                <select name="category" class="form-select" title="Book Category">
                     <option value="All">All Categories</option>
-                    <option value="Programming" {% if request.args.get('category') == 'Programming' %}selected{% endif %}>Programming</option>
-                    <option value="Fiction" {% if request.args.get('category') == 'Fiction' %}selected{% endif %}>Fiction</option>
-                    <option value="Science" {% if request.args.get('category') == 'Science' %}selected{% endif %}>Science</option>
-                    <option value="Other" {% if request.args.get('category') == 'Other' %}selected{% endif %}>Other</option>
+                    <option value="Programming" {% if request.args.get('category')=='Programming' %}selected{% endif %}>
+                        Programming</option>
+                    <option value="Fiction" {% if request.args.get('category')=='Fiction' %}selected{% endif %}>Fiction
+                    </option>
+                    <option value="Science" {% if request.args.get('category')=='Science' %}selected{% endif %}>Science
+                    </option>
+                    <option value="Other" {% if request.args.get('category')=='Other' %}selected{% endif %}>Other
+                    </option>
                 </select>
             </div>
             <div class="col-md-2">
                 <label class="form-label">Type</label>
-                <select name="type" class="form-select">
+                <select name="type" class="form-select" title="Book Type">
                     <option value="All">All Types</option>
-                    <option value="Physical" {% if request.args.get('type') == 'Physical' %}selected{% endif %}>Physical</option>
-                    <option value="Digital" {% if request.args.get('type') == 'Digital' %}selected{% endif %}>Digital</option>
+                    <option value="Physical" {% if request.args.get('type')=='Physical' %}selected{% endif %}>Physical
+                    </option>
+                    <option value="Digital" {% if request.args.get('type')=='Digital' %}selected{% endif %}>Digital
+                    </option>
                 </select>
             </div>
             <div class="col-md-2 d-grid">
-                <button type="submit" class="btn btn-primary">Search</button>
+                <button type="submit" class="btn btn-secondary fw-semibold">Search</button>
             </div>
         </form>
     </div>
 </div>
 
-<div class="row row-cols-1 row-cols-md-3 g-4" id="book-grid">
+<div class="row row-cols-1 row-cols-xl-3 row-cols-md-1 row-cols-lg-2 g-4" id="book-grid">
     {% if books %}
-        {% include 'books/_book_cards.html' %}
+    {% include 'books/_book_cards.html' %}
     {% else %}
-        <div class="col-12">
-            <div class="alert alert-info">No books found.</div>
-        </div>
+    <div class="col-12">
+        <div class="alert alert-info">No books found.</div>
+    </div>
     {% endif %}
 </div>
 {% endblock %}
