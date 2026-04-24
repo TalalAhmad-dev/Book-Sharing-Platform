@@ -114,13 +114,16 @@ def add():
             new_book.owner_id = current_user.id
             
             cover_file = request.files.get('cover_image')
-            if cover_file and cover_file.filename:
-                cover_filename = secure_filename(cover_file.filename)
-                cover_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'covers', str(current_user.id))
-                os.makedirs(cover_dir, exist_ok=True)
-                cover_path = os.path.join('covers', str(current_user.id), cover_filename)
-                cover_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], cover_path))
-                new_book.cover_image = cover_path
+            if not cover_file or not cover_file.filename:
+                flash('Please upload a book cover image.', 'danger')
+                return redirect(url_for('books.add'))
+
+            cover_filename = secure_filename(cover_file.filename)
+            cover_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'covers', str(current_user.id))
+            os.makedirs(cover_dir, exist_ok=True)
+            cover_path = os.path.join('covers', str(current_user.id), cover_filename)
+            cover_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], cover_path))
+            new_book.cover_image = cover_path
                 
             if book_type == 'digital':
                 file = request.files.get('file')
@@ -198,13 +201,16 @@ def edit(book_id):
             book.condition = escape(request.form.get('condition'))
 
             cover_file = request.files.get('cover_image')
-            if cover_file and cover_file.filename:
-                cover_filename = secure_filename(cover_file.filename)
-                cover_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'covers', str(current_user.id))
-                os.makedirs(cover_dir, exist_ok=True)
-                cover_path = os.path.join('covers', str(current_user.id), cover_filename)
-                cover_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], cover_path))
-                book.cover_image = cover_path
+            if not cover_file or not cover_file.filename:
+                flash('Please upload a book cover image.', 'danger')
+                return redirect(url_for('books.edit', book_id=book.id))
+
+            cover_filename = secure_filename(cover_file.filename)
+            cover_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'covers', str(current_user.id))
+            os.makedirs(cover_dir, exist_ok=True)
+            cover_path = os.path.join('covers', str(current_user.id), cover_filename)
+            cover_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], cover_path))
+            book.cover_image = cover_path
             
             db.session.commit()
             flash('Book Updated Successfully!', 'success')
