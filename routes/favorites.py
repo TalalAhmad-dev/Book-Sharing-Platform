@@ -36,9 +36,6 @@ def add(book_id):
         if book.deleted_at is not None:
             flash('This book is no longer available.', 'warning')
             return redirect(request.referrer or url_for('books.catalog'))
-        if book.owner_id == current_user.id:
-            flash('You cannot favorite your own book.', 'warning')
-            return redirect(request.referrer or url_for('books.detail', book_id=book_id))
 
         exists = Favorite.query.filter_by(user_id=current_user.id, book_id=book_id).first()
         if exists:

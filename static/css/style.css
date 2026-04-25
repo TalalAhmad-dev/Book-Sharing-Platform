@@ -258,6 +258,10 @@
   height: clamp(40dvh, 60dvh, 80dvh);
 }
 
+.book-card-compact .book-card-image-wrap {
+  height: clamp(30dvh, 45dvh, 60dvh);
+}
+
 .book-card-image,
 .book-card-fallback {
   width: 100%;
@@ -331,8 +335,18 @@
   opacity: 0;
   transition:
     opacity 0.25s ease-in-out,
-    transform 0.25s ease-in-out;
-  transform: translateY(8px);
+    transform 0.3s ease-in-out;
+  transform: translateY(20px);
+}
+
+.book-card-compact .book-card-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(17, 24, 39, 0.98) 0%,
+    rgba(17, 24, 39, 0.85) 25%,
+    rgba(17, 24, 39, 0.78) 45%,
+    rgba(17, 24, 39, 0.22) 100%
+  );
 }
 
 .book-card:hover .book-card-overlay,

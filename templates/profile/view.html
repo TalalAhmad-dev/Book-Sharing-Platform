@@ -59,46 +59,16 @@
     <h3 class="h4">Books Shared by {{ user.name }}</h3>
 </div>
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for book in books %}
-    <div class="col">
-        <div class="card h-100 shadow-sm border-0">
-            <div class="ratio ratio-4x3">
-                {% if book.cover_image %}
-                <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}"
-                    class="card-img-top w-100 h-100 object-fit-cover" alt="{{ book.title }} Cover">
-                {% else %}
-                <div class="card-img-top bg-light d-flex align-items-center justify-content-center display-4">
-                    📚
-                </div>
-                {% endif %}
-            </div>
-            <div class="card-body">
-                <h5 class="card-title text-truncate">{{ book.title }}</h5>
-                <h6 class="card-subtitle mb-3 text-muted">by {{ book.author }}</h6>
-                <div class="mb-0">
-                    <span
-                        class="badge {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %} text-capitalize">
-                        {{ book.book_type }}
-                    </span>
-                    <span
-                        class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %} text-capitalize">
-                        {{ book.status }}
-                    </span>
-                </div>
-            </div>
-            <div class="card-footer bg-white border-top-0 pb-3 px-3">
-                <a href="{{ url_for('books.detail', book_id=book.id) }}"
-                    class="btn btn-sm btn-outline-primary w-100">View Details</a>
-            </div>
-        </div>
-    </div>
+<div class="row row-cols-1 row-cols-xl-4 row-cols-md-2 row-cols-lg-2 g-3">
+    {% if books %}
+    {% set card_context = 'profile' %}
+    {% include 'books/_book_cards_compact.html' %}
     {% else %}
     <div class="col-12">
         <div class="alert alert-light text-center border py-5">
             <p class="text-muted mb-0">This user hasn't shared any books yet.</p>
         </div>
     </div>
-    {% endfor %}
+    {% endif %}
 </div>
 {% endblock %}

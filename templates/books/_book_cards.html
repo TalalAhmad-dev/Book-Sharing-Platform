@@ -2,7 +2,7 @@
 {% set favorite_ids = favorite_book_ids|default([], true) %}
 <div data-aos="zoom-in-down" data-aos-easing="ease-in-sine" data-aos-duration="500" class="col" {% if loop.last and
     pagination.has_next %}
-    hx-get="{{ url_for('books.catalog', page=pagination.next_num, search=request.args.get('search', ''), category=request.args.get('category', 'All'), type=request.args.get('type', 'All')) }}"
+    hx-get="{{ url_for('books.catalog', page=pagination.next_num, search=request.args.get('search', ''), category=request.args.getlist('category'), type=request.args.get('type', 'All')) }}"
     hx-trigger="revealed" hx-swap="afterend" {% endif %}>
     <div class="card book-card shadow-sm">
         <div class="book-card-image-wrap">

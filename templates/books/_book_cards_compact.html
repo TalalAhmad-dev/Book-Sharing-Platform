@@ -1,0 +1,53 @@
+{% for book in books %}
+<div data-aos="zoom-in-up" data-aos-easing="ease-in-sine" data-aos-duration="350" class="col">
+    <div class="card book-card book-card-compact shadow-sm">
+        <div class="book-card-image-wrap">
+            {% if book.cover_image %}
+            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}" class="book-card-image"
+                alt="{{ book.title }} Cover">
+            {% else %}
+            <div class="book-card-fallback">📚</div>
+            {% endif %}
+
+            <div class="book-card-overlay">
+                <div>
+                    <h4 class="book-card-overlay-title">{{ book.title }}</h4>
+                    <div class="book-card-overlay-author fst-italic mb-2">by {{ book.author }}</div>
+                    <div class="mb-3">
+                        <span
+                            class="badge me-1 {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %}">
+                            {{ book.book_type|capitalize }}
+                        </span>
+                        <span
+                            class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %}">
+                            {{ book.status|capitalize }}
+                        </span>
+                    </div>
+                    {% if card_context == 'favorites' %}
+                    <p class="card-text text-info fw-semibold mb-3">Owner:
+                        <span class="fw-bold text-white">{{ book.owner.name }}</span>
+                    </p>
+                    {% endif %}
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('books.detail', book_id=book.id) }}"
+                            class="btn btn-light fw-semibold btn-sm">
+                            View Details
+                        </a>
+                        {% if card_context == 'favorites' %}
+                        <form action="{{ url_for('favorites.remove', book_id=book.id) }}" method="POST">
+                            <button type="submit" class="btn btn-outline-danger fw-semibold btn-sm w-100">
+                                Remove Favorite
+                            </button>
+                        </form>
+                        {% endif %}
+                        {% if book.owner_id == current_user.id and card_context == 'profile' %}
+                        <a href="{{ url_for('books.edit', book_id=book.id) }}"
+                            class="btn btn-secondary fw-semibold btn-sm">Edit Book Details</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
