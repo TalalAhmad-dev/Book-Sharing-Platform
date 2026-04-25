@@ -71,7 +71,7 @@ else '' %}
         <p class="sidebar-group-title">Administration</p>
         <ul class="nav nav-pills flex-column gap-1">
             <li class="nav-item">
-                <a class="sidebar-link nav-link {% if endpoint.startswith('admin.') %}active{% endif %}"
+                <a class="sidebar-link fw-semibold nav-link {% if endpoint.startswith('admin.') %}active{% endif %}"
                     href="{{ url_for('admin.dashboard') }}">
                     <i class="bi bi-shield-lock me-2"></i>Admin Dashboard
                 </a>
