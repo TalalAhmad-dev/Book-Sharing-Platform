@@ -8,6 +8,12 @@
   );
 }
 
+input,
+select,
+textarea {
+  background-color: #f8f9fa !important;
+}
+
 .floating-textarea-height {
   min-height: 100px !important;
 }
@@ -40,7 +46,7 @@
 
 .form-wrapper {
   max-width: 480px;
-  background: var(--primary-color)
+  background: var(--primary-color);
 }
 
 @media (max-width: 767.98px) {
@@ -81,18 +87,26 @@
   padding-top: 0.1rem;
 }
 
-.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--default.select2-container--focus
+  .select2-selection--multiple,
 .select2-container--default.select2-container--open .select2-selection--single {
   border-color: var(--bs-secondary) !important;
   box-shadow: 0 0 0 0.25rem rgba(var(--bs-secondary-rgb), 0.25) !important;
 }
 
-.select2-container--default .select2-results__option--highlighted[aria-selected] {
+.select2-results__option {
+  padding: 8px !important;
+}
+
+.select2-container--default
+  .select2-results__option--highlighted[aria-selected] {
   background-color: var(--bs-secondary) !important;
   color: #fff;
 }
 
-.select2-container--default .select2-selection--multiple .select2-selection__choice {
+.select2-container--default
+  .select2-selection--multiple
+  .select2-selection__choice {
   background-color: var(--bs-secondary) !important;
   border-color: var(--bs-secondary) !important;
   color: #fff;
@@ -132,7 +146,7 @@
 .sidebar-themed,
 .topbar-themed,
 .offcanvas-sidebar-themed {
-  background: var(--primary-color)
+  background: var(--primary-color);
 }
 
 .sidebar-brand {
@@ -277,6 +291,12 @@
   background: #f8f9fa;
 }
 
+.book-cover-preview {
+  width: 180px;
+  height: 240px;
+  object-fit: cover;
+}
+
 .book-card-actions {
   position: absolute;
   top: 0.7rem;
@@ -374,12 +394,9 @@
 .btn-check-toggle-group .btn-check:checked + label {
   background: var(--primary-color) !important;
   border-color: #6c757d !important;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
 }
 
 .btn-check-toggle-group :not(.btn-check:checked) + label {
   border-color: #6c757d !important;
-  color: #000 !important;
+  color: #fff !important;
 }

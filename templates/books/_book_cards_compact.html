@@ -18,10 +18,10 @@
                             class="badge me-1 {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %}">
                             {{ book.book_type|capitalize }}
                         </span>
-                        <span
+                        <!-- <span
                             class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %}">
                             {{ book.status|capitalize }}
-                        </span>
+                        </span> -->
                     </div>
                     {% if card_context == 'favorites' %}
                     <p class="card-text text-info fw-semibold mb-3">Owner:

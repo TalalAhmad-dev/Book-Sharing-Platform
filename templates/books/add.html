@@ -3,77 +3,94 @@
 {% block title %}Add Book - BookShare{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center py-5">
+<div class="row justify-content-center py-5" data-aos="zoom-in-down" data-aos-easing="linear" data-aos-delay="150"
+    data-aos-offset="0" data-aos-duration="350">
     <div class="col-md-8">
-        <div class="card shadow">
+        <div class="card bg-dark text-light shadow">
             <div class="card-body p-4">
-                <h2 class="card-title text-center mb-4">Add New Book</h2>
+                <h2 class="card-title text-center border-bottom border-light pb-2 mb-4">Add New Book</h2>
                 <form action="{{ url_for('books.add') }}" method="POST" enctype="multipart/form-data">
                     <div class="mb-3 form-floating">
                         <input type="text" class="form-control" id="title" name="title" placeholder="Enter Book Title"
                             required autocomplete="on">
-                        <label for="title" class="form-label">Book Title <span class="text-danger fw-bold">*</span></label>
+                        <label for="title" class="form-label fw-semibold">Book Title <span
+                                class="text-danger fw-bold">*</span></label>
                     </div>
 
                     <div class="mb-3 form-floating">
                         <input type="text" class="form-control" id="author" name="author"
                             placeholder="Enter Author Name" required autocomplete="name">
-                        <label for="author" class="form-label">Author <span class="text-danger fw-bold">*</span></label>
+                        <label for="author" class="form-label fw-semibold">Author <span
+                                class="text-danger fw-bold">*</span></label>
                     </div>
 
-                    <div class="mb-3 form-floating">
-                        <select class="form-select" id="category" name="category" required>
+                    <div class="mb-3">
+                        <label for="category" class="form-label fw-semibold">Category <span
+                                class="text-danger fw-bold">*</span></label>
+                        <select class="form-select js-select2" id="category" name="category"
+                            data-placeholder="Select Category" required>
                             <option selected value="">Select Category</option>
                             <option value="Programming">Programming</option>
                             <option value="Fiction">Fiction</option>
                             <option value="Science">Science</option>
                             <option value="Other">Other</option>
                         </select>
-                        <label for="category" class="form-label">Category <span class="text-danger fw-bold">*</span></label>
                     </div>
 
                     <div class="mb-3">
-                        <label for="cover_image" class="form-label">Book Cover Image <span class="text-danger fw-bold">*</span></label>
-                        <input type="file" class="form-control" accept="image/*" id="cover_image" name="cover_image" required>
+                        <label for="cover_image" class="form-label fw-semibold">Book Cover Image <span
+                                class="text-danger fw-bold">*</span></label>
+                        <input type="file" class="form-control" accept="image/*" id="cover_image" name="cover_image"
+                            required>
+                        <div id="cover_preview_wrapper" class="mt-2 d-none">
+                            <img id="cover_preview_image" src="" alt="Cover Preview"
+                                class="img-thumbnail book-cover-preview">
+                            <div class="form-text text-light fst-italic"><i class="bi bi-info-circle me-1"></i>Selected
+                                cover image preview.</div>
+                        </div>
                     </div>
 
                     <div class="mb-4 form-floating">
                         <textarea class="form-control floating-textarea-height" id="description" name="description"
                             placeholder="Provide a short description of the book..."></textarea>
-                        <label for="description" class="form-label">Description</label>
+                        <label for="description" class="form-label fw-semibold">Description</label>
                     </div>
 
                     <div class="mb-3 mx-1 btn-group btn-check-toggle-group row row-cols-2 d-flex" role="group">
                         <input class="btn-check" type="radio" name="book_type" id="type_physical" value="physical"
                             checked>
-                        <label class="form-label btn btn-outline-primary fw-semibold" for="type_physical">Physical</label>
+                        <label class="form-label btn btn-outline-primary fw-semibold"
+                            for="type_physical">Physical</label>
 
                         <input class="btn-check" type="radio" name="book_type" id="type_digital" value="digital">
                         <label class="form-label btn btn-outline-primary fw-semibold" for="type_digital">Digital</label>
                     </div>
 
                     <div id="physical-fields">
-                        <div class="mb-3 form-floating">
-                            <select class="form-select" id="condition" name="condition">
+                        <div class="mb-3">
+                            <label for="condition" class="form-label fw-semibold">Condition <span
+                                    class="text-danger fw-bold">*</span></label>
+                            <select class="form-select js-select2" id="condition" name="condition"
+                                data-placeholder="Select Condition">
                                 <option selected value="">Select Condition</option>
                                 <option value="New">New</option>
                                 <option value="Good">Good</option>
                                 <option value="Poor">Poor</option>
                             </select>
-                            <label for="condition" class="form-label">Condition <span class="text-danger fw-bold">*</span></label>
                         </div>
 
                         <div class="mb-3 form-floating">
                             <textarea class="form-control floating-textarea-height" id="location_notes"
                                 name="location_notes" placeholder="e.g. Near Main Gate"
                                 autocomplete="street-address"></textarea>
-                            <label for="location_notes" class="form-label">Pickup Location Notes</label>
+                            <label for="location_notes" class="form-label fw-semibold">Pickup Location Notes</label>
                         </div>
                     </div>
 
                     <div id="digital-fields" class="d-none">
                         <div class="mb-3">
-                            <label for="file" class="form-label">Upload Book File (.pdf, .epub, .txt) <span class="text-danger fw-bold">*</span></label>
+                            <label for="file" class="form-label fw-semibold">Upload Book File (.pdf, .epub, .txt) <span
+                                    class="text-danger fw-bold">*</span></label>
                             <input type="file" class="form-control" accept=".pdf,.epub,.txt" id="file" name="file">
                         </div>
                     </div>
@@ -102,6 +119,30 @@
                 digital.classList.remove('d-none');
             }
         });
+    });
+
+    const coverInput = document.getElementById('cover_image');
+    const coverPreviewWrapper = document.getElementById('cover_preview_wrapper');
+    const coverPreviewImage = document.getElementById('cover_preview_image');
+    let currentCoverPreviewUrl = null;
+
+    coverInput.addEventListener('change', function () {
+        const selectedFile = this.files && this.files[0];
+
+        if (currentCoverPreviewUrl) {
+            URL.revokeObjectURL(currentCoverPreviewUrl);
+            currentCoverPreviewUrl = null;
+        }
+
+        if (!selectedFile) {
+            coverPreviewImage.src = '';
+            coverPreviewWrapper.classList.add('d-none');
+            return;
+        }
+
+        currentCoverPreviewUrl = URL.createObjectURL(selectedFile);
+        coverPreviewImage.src = currentCoverPreviewUrl;
+        coverPreviewWrapper.classList.remove('d-none');
     });
 </script>
 {% endblock %}
