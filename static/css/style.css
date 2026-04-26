@@ -400,3 +400,12 @@ textarea {
   border-color: #6c757d !important;
   color: #fff !important;
 }
+
+.email-masked {
+  filter: blur(8px);
+}
+
+.cursor-disabled {
+  cursor: not-allowed !important;
+  pointer-events: all !important;
+}

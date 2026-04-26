@@ -3,72 +3,201 @@
 {% block title %}{{ user.name }}'s Profile - BookShare{% endblock %}
 
 {% block content %}
-<div class="card shadow-sm mb-5">
-    <div class="card-body p-4 p-md-5">
-        <div class="row align-items-center">
-            <div class="col-md-3 text-center mb-4 mb-md-0">
-                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm p-4">
-                    <i class="bi bi-person-fill display-3 text-secondary"></i>
-                </div>
-            </div>
-            <div class="col-md-9">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h1 class="display-5 mb-1">{{ user.name }}</h1>
-                        <p class="text-muted mb-3">Member since: {{ user.created_at.strftime('%B %Y') }}</p>
-                        <span class="badge bg-info text-capitalize mb-3 px-3 py-2">{{ user.role }}</span>
+{% set profile_avatar = url_for('static', filename='uploads/' + user.profile_image) if user.profile_image else '' %}
+
+<div class="row g-4">
+    <div class="col-12 col-xxl-4 order-2 order-xxl-1" data-aos="fade-right" data-aos-easing="linear"
+        data-aos-delay="150" data-aos-offset="0" data-aos-duration="350">
+        <div class="card bg-dark text-light shadow">
+            <div class="card-body p-4 p-lg-5">
+                <div class="text-center">
+                    {% if profile_avatar %}
+                    <img src="{{ profile_avatar }}" alt="{{ user.name }}"
+                        class="rounded-circle border border-secondary border-2 mb-3"
+                        style="width: 132px; height: 132px; object-fit: cover;">
+                    {% else %}
+                    <div class="rounded-circle bg-secondary-subtle text-dark fw-bold fs-1 border border-secondary border-2 mb-3 mx-auto d-flex align-items-center justify-content-center"
+                        style="width: 132px; height: 132px;">
+                        {{ (user.name or 'U')[:1]|upper }}
                     </div>
+                    {% endif %}
+                    <h1 class="h2 mb-1">{{ user.name }}</h1>
+                    <span class="badge bg-primary text-capitalize px-3 py-2 mb-4">{{ user.role }}</span>
+                </div>
+
+                <div class="d-grid gap-2 mb-4 w-75 text-center mx-auto">
                     {% if current_user.id == user.id %}
-                    <a href="{{ url_for('profile.edit') }}" class="btn btn-outline-primary">
+                    <a href="{{ url_for('profile.edit') }}" class="btn btn-secondary">
                         <i class="bi bi-pencil me-2"></i>Edit Profile
                     </a>
-                    {% elif current_user.role != 'admin' and user.role != 'admin' %}
+                    {% else %}
                     <button class="btn btn-outline-warning" type="button" data-bs-toggle="collapse"
                         data-bs-target="#reportUserForm" aria-expanded="false" aria-controls="reportUserForm">
                         Report User
                     </button>
                     {% endif %}
                 </div>
-                {% if current_user.id != user.id and (current_user.role != 'admin' and user.role != "admin") %}
-                <div class="collapse mt-3" id="reportUserForm">
+
+                {% if current_user.id != user.id %}
+                <div class="collapse mb-4" id="reportUserForm">
                     <form action="{{ url_for('reports.report_user', user_id=user.id) }}" method="POST">
-                        <div class="mb-2">
-                            <label for="reason" class="form-label fw-semibold">Reason</label>
-                            <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                        <div class="mb-2 form-floating">
+                            <textarea class="form-control floating-textarea-height" id="reason" name="reason"
+                                placeholder="Provide a valid reason for reporting this user..." required></textarea>
+                            <label for="reason" class="form-label fw-semibold">
+                                Reason<span class="text-danger fw-bold">*</span>
+                            </label>
                         </div>
-                        <button type="submit" class="btn btn-warning">Submit Report</button>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-warning ">Submit Report</button>
+                        </div>
                     </form>
                 </div>
                 {% endif %}
-                <div class="mt-3">
-                    <h5 class="h6 text-uppercase text-muted fw-bold mb-2">About</h5>
-                    <p class="lead fs-6">{{ user.bio or 'No bio provided yet.' }}</p>
+
+                <div class="pt-3">
+                    <div class="mb-3 form-floating">
+                        <input type="email"
+                            class="form-control {% if current_user.id != user.id %}email-masked cursor-disabled{% endif %}"
+                            id="email" name="email" placeholder="User Email" readonly
+                            value="{% if current_user.id == user.id %}{{ user.email }}{% else %}******@****.com{% endif %}">
+                        <label for="email" class="form-label fw-semibold"><i class="bi bi-envelope"></i> Email</label>
+                    </div>
+                    <div class="mb-3 form-floating">
+                        <input type="tel" class="form-control" id="contact" name="contact"
+                            placeholder="User Contact Number" readonly value="{{ user.contact or 'N/A' }}">
+                        <label for="contact" class="form-label fw-semibold"><i class="bi bi-phone"></i> Contact
+                            Number</label>
+                    </div>
+                    <div class="mb-3 form-floating">
+                        <textarea class="form-control floating-textarea-height" id="bio" name="bio"
+                            placeholder="User Bio" readonly>{{ user.bio or 'No bio provided yet.' }}</textarea>
+                        <label for="bio" class="form-label fw-semibold"><i class="bi bi-person"></i> Bio</label>
+                    </div>
                 </div>
-                {% if user.contact %}
-                <div class="mt-3">
-                    <h5 class="h6 text-uppercase text-muted fw-bold mb-2">Contact</h5>
-                    <p class="mb-0 text-primary">{{ user.contact }}</p>
-                </div>
-                {% endif %}
             </div>
         </div>
     </div>
-</div>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="h4">Books Shared by {{ user.name }}</h3>
-</div>
+    <div class="col-12 col-xxl-8 order-1 order-xxl-2">
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4" data-aos="fade-down" data-aos-easing="linear" data-aos-offset="0"
+                data-aos-duration="350" data-aos-delay="150">
+                <div class="card bg-dark text-light shadow h-100">
+                    <div class="card-body d-flex flex-column align-items-start justify-content-between">
+                        <div class="mb-2">
+                            <p class="small text-uppercase text-white-50 fw-semibold mb-2">Member Since</p>
+                        </div>
+                        <div class="mt-2">
+                            <h3 class="h4 mb-1">{{ profile_stats.member_since|format_date(tz=False) }}</h3>
+                            <p class="text-light mb-0"><b>Account age:</b> {{ profile_stats.account_age }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4" data-aos="fade-down" data-aos-easing="linear" data-aos-offset="0"
+                data-aos-duration="350" data-aos-delay="200">
+                <div class="card bg-dark text-light shadow h-100">
+                    <div class="card-body d-flex flex-column align-items-start justify-content-between">
+                        <div class="mb-2">
+                            <p class="small text-uppercase text-white-50 fw-semibold mb-2">Account Status</p>
+                        </div>
+                        <div class="mt-2">
+                            <div
+                                class="badge px-3 py-2 fs-4 fw-semibold {% if user.status == 'active' %}bg-success{% elif user.status == 'blocked' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {{ user.status|capitalize }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4" data-aos="fade-down" data-aos-easing="linear" data-aos-offset="0"
+                data-aos-duration="350" data-aos-delay="250">
+                <div class="card bg-dark text-light shadow h-100">
+                    <div class="card-body d-flex flex-column align-items-start justify-content-between">
+                        <div class="mb-2">
+                            <p class="small text-uppercase text-white-50 fw-semibold mb-2">Last Profile Update</p>
+                        </div>
+                        <div class="mt-2">
+                            {% if profile_stats.last_updated_at %}
+                            <h3 class="h4 mb-1">{{ profile_stats.last_updated_at|format_date(tz=False) }}</h3>
+                            <p class="text-light mb-0"><b>At</b> {{ profile_stats.last_updated_at|format_time }}</p>
+                            {% else %}
+                            <h3 class="h4 mb-0">N/A</h3>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div class="row row-cols-1 row-cols-xl-4 row-cols-md-2 row-cols-lg-2 g-3">
-    {% if books %}
-    {% set card_context = 'profile' %}
-    {% include 'books/_book_cards_compact.html' %}
-    {% else %}
-    <div class="col-12">
-        <div class="alert alert-light text-center border py-5">
-            <p class="text-muted mb-0">This user hasn't shared any books yet.</p>
+        <div class="card bg-dark text-light shadow" data-aos="fade-up" data-aos-easing="linear" data-aos-offset="0"
+            data-aos-duration="350" data-aos-delay="150">
+            <div class="card-header bg-transparent border-secondary pb-0">
+                <h2 class="h4 mb-0">Books Shared</h2>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-3">Title</th>
+                                <th>Type</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Added On</th>
+                                <th class="pe-3">Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-group-divider">
+                            {% for book in books %}
+                            <tr>
+                                <td class="ps-3 fw-semibold">{{ book.title }}</td>
+                                <td>
+                                    <span
+                                        class="badge {% if book.book_type == 'physical' %}bg-success text-white{% else %}bg-primary-subtle text-dark{% endif %} border text-capitalize">
+                                        {{ book.book_type }}
+                                    </span>
+                                </td>
+                                <td>{{ book.category }}</td>
+                                <td>
+                                    <span
+                                        class="badge {% if book.status == 'available' %}bg-info{% elif book.status == 'borrowed' %}bg-warning text-dark{% else %}bg-secondary{% endif %} text-capitalize">
+                                        {{ book.status }}
+                                    </span>
+                                </td>
+                                <td>{{ book.created_at|format_date(tz=False) }}</td>
+                                <td class="pe-3">
+                                    <div>
+                                        {{ (book.updated_at or book.created_at)|format_date(tz=False) }}
+                                    </div>
+                                    <span>
+                                        <b>at</b> {{ (book.updated_at or book.created_at)|format_time }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-white-50">
+                                    {% if current_user.id == user.id %}
+                                    <div class="mb-2">
+                                        You haven't shared any books yet.
+                                    </div>
+                                    <a href="{{ url_for('books.add') }}"
+                                        class="btn btn-secondary btn-sm fw-semibold">Add Book</a>
+                                    {% else %}
+                                    <span>
+                                        This user hasn't shared any books yet.
+                                    </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-    {% endif %}
 </div>
 {% endblock %}

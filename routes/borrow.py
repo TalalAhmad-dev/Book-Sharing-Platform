@@ -77,7 +77,7 @@ def request_borrow(book_id):
                 proposed_time = datetime.strptime(proposed_time_str, '%H:%M').time()
                 
                 proposed_datetime = datetime.combine(proposed_date, proposed_time)
-                if proposed_datetime < datetime.now():
+                if proposed_datetime < datetime.now(timezone.utc).replace(tzinfo=None):
                     flash("Meeting time must be in the future.", "danger")
                     return redirect(url_for('borrow.request_borrow', book_id=book_id))
             except ValueError:
@@ -231,7 +231,7 @@ def suggest(req_id):
             proposed_time = datetime.strptime(proposed_time_str, '%H:%M').time()
             
             proposed_datetime = datetime.combine(proposed_date, proposed_time)
-            if proposed_datetime < datetime.now():
+            if proposed_datetime < datetime.now(timezone.utc).replace(tzinfo=None):
                 flash("Meeting time must be in the future.", "danger")
                 return redirect(url_for(fallback_endpoint))
         except ValueError:

@@ -3,9 +3,33 @@ from flask_login import login_required, current_user
 from models import User, Book
 from extensions import db
 import os
+from datetime import datetime, timezone
 from werkzeug.utils import secure_filename
 
 profile_bp = Blueprint('profile', __name__)
+
+
+def _format_account_age(joined_at):
+    if not joined_at:
+        return "N/A"
+
+    joined_utc = joined_at if joined_at.tzinfo else joined_at.replace(tzinfo=timezone.utc)
+    now_utc = datetime.now(timezone.utc)
+
+    months = (now_utc.year - joined_utc.year) * 12 + (now_utc.month - joined_utc.month)
+    if now_utc.day < joined_utc.day:
+        months -= 1
+    months = max(months, 0)
+
+    years, remaining_months = divmod(months, 12)
+    if years and remaining_months:
+        return f"{years}y {remaining_months}m"
+    if years:
+        return f"{years} year{'s' if years != 1 else ''}"
+    if remaining_months:
+        return f"{remaining_months} month{'s' if remaining_months != 1 else ''}"
+    return "Less than a month"
+
 
 @profile_bp.route('/<int:user_id>')
 @login_required
@@ -14,8 +38,16 @@ def view(user_id):
     user_books = Book.query.filter(
         Book.owner_id == user.id,
         Book.deleted_at.is_(None)
-    ).all()
-    return render_template('profile/view.html', user=user, books=user_books)
+    ).order_by(Book.updated_at.desc(), Book.created_at.desc()).all()
+
+    profile_stats = {
+        'member_since': user.created_at if user.created_at else None,
+        'account_age': _format_account_age(user.created_at),
+        'account_status': (user.status or 'unknown').capitalize(),
+        'last_updated_at': user.updated_at or user.created_at
+    }
+
+    return render_template('profile/view.html', user=user, books=user_books, profile_stats=profile_stats)
 
 @profile_bp.route('/edit', methods=['GET', 'POST'])
 @login_required

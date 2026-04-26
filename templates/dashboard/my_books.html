@@ -92,7 +92,7 @@
                             {% set msg_data = request.message|fromjson %}
                             <div class="small">
                                 <i class="bi bi-calendar-event text-muted me-1"></i> {{
-                                request.proposed_date|format_date }} at {{ request.proposed_time|format_time }}<br>
+                                request.proposed_date|format_date(tz=False) }} at {{ request.proposed_time|format_time }}<br>
                                 <span class="small">
                                     <i class="bi bi-chat-left-text text-muted me-1"></i>
                                     <strong>Message from Borrower:</strong> {{ msg_data.borrower or 'No message.' }}

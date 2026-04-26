@@ -2,7 +2,7 @@ from flask import Flask, request, redirect, url_for, flash
 from config import Config
 from extensions import db, login_manager, migrate
 from models import *
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 from flask_login import current_user, logout_user
 
@@ -47,18 +47,18 @@ def create_app(config_class=Config):
             return value
 
     @app.template_filter('format_date')
-    def format_date(value):
+    def format_date(value, tz=True):
         if not value: return ""
-        return value.strftime('%b %d, %Y')
+        return value.strftime('%b %d, %Y') + ' (UTC)' if tz else value.strftime('%b %d, %Y')
 
     @app.template_filter('format_time')
-    def format_time(value):
+    def format_time(value, tz=True):
         if not value: return ""
-        return value.strftime('%I:%M %p')
+        return value.strftime('%I:%M %p') + ' (UTC)' if tz else value.strftime('%I:%M %p')
 
     @app.context_processor
     def inject_now():
-        return {'now': datetime.now()}
+        return {'now': datetime.now(timezone.utc)}
 
     @app.context_processor
     def inject_unread_notification_count():

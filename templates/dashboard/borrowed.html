@@ -34,7 +34,7 @@
                             {% if request.book.book_type == 'physical' %}
                             {% set msg_data = request.message|fromjson %}
                             <div class="small">
-                                <strong>{{ request.proposed_date|format_date }}</strong> at {{
+                                <strong>{{ request.proposed_date|format_date(tz=False) }}</strong> at {{
                                 request.proposed_time|format_time }}<br>
                                 <span class="text-muted small"><strong>Message from Owner: </strong> {{ msg_data.owner
                                     or 'No message.' }}</span>
