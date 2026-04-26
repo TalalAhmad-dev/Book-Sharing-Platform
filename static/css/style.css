@@ -126,8 +126,8 @@ textarea {
 
 .dropdown-item:hover,
 .dropdown-item:focus {
-  color: var(--bs-emphasis-color);
-  background-color: rgba(var(--bs-secondary-rgb), 0.2) !important;
+  color: var(--bs-dark);
+  background-color: var(--bs-light) !important;
 }
 
 .dropdown-item.active,
