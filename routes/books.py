@@ -84,7 +84,7 @@ def detail(book_id):
         active_request = BorrowRequest.query.filter_by(
             book_id=book_id,
             borrower_id=current_user.id
-        ).filter(BorrowRequest.status.in_(['pending', 'accepted', 'borrowed'])).first()
+        ).filter(BorrowRequest.status.in_(['pending', 'accepted', 'borrowed', 'suggested'])).first()
 
         is_favorite = Favorite.query.filter_by(
             user_id=current_user.id,
