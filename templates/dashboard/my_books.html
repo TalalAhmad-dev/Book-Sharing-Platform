@@ -1,233 +1,244 @@
 {% extends "base/protected.html" %}
-
 {% block title %}My Shared Books - BookShare{% endblock %}
-
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h3">My Shared Books</h2>
-    <a href="{{ url_for('books.add') }}" class="btn btn-primary">Add New Book</a>
-</div>
-
-<!-- TODO: Consider removing the message from the table and move it in suggest alternative and view details (yet to be implemented) -->
-<div class="card shadow-sm mb-5">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 table-striped">
-                <thead class="table-light">
-                    <tr>
-                        <th class="ps-3">ID</th>
-                        <th>Title</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th class="text-end pe-3">Actions</th>
-                        <!-- TODO: Add view details action and group action buttons into split dropdown. Keep all the actions that might be performed while disabling the one's that shouldn't be allwowed untill conditions are met -->
-                    </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                    {% for book in my_books %}
-                    <tr>
-                        <td class="px-3 text-muted">#{{ book.id }}</td>
-                        <td class="fw-bold">{{ book.title }}</td>
-                        <td>
-                            <span
-                                class="badge {% if book.book_type == 'physical' %}bg-success text-white {% else %}bg-info-subtle text-dark{% endif %} border text-capitalize">
-                                {{ book.book_type }}
-                            </span>
-                        </td>
-                        <td>
-                            <span
-                                class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %} text-capitalize">
-                                {{ book.status }}
-                            </span>
-                        </td>
-                        <td class="text-end pe-3">
-                            <div class="btn-group btn-group-sm">
-                                <a href="{{ url_for('books.detail', book_id=book.id) }}"
-                                    class="btn btn-outline-secondary">View</a>
-                                <a href="{{ url_for('books.edit', book_id=book.id) }}"
-                                    class="btn btn-outline-primary">Edit</a>
-                                <form id="{{ 'myBookDeleteForm' ~ book.id }}"
-                                    action="{{ url_for('books.delete', book_id=book.id) }}" method="POST"
-                                    class="d-inline">
-                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
-                                        data-bs-target="{{ '#myBookDeleteModal' ~ book.id }}">
-                                        Delete
-                                    </button>
-                                </form>
-                                {{ confirm_modal(
-                                modal_id='myBookDeleteModal' ~ book.id,
-                                title='Delete Book',
-                                message='Are you sure you want to delete "' ~ book.title ~ '"?',
-                                confirm_text='Delete Book',
-                                confirm_btn_class='btn-danger',
-                                form_id='myBookDeleteForm' ~ book.id
-                                ) }}
-                            </div>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="5" class="text-center py-4 text-muted">You haven't shared any books yet.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3">My Shared Books</h2>
+        <a href="{{ url_for('books.add') }}" class="btn btn-primary">Add New Book</a>
     </div>
-</div>
-
-<h3 class="h4 mb-4">Incoming Borrow Requests</h3>
-
-<div class="card shadow-sm">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 table-striped">
-                <thead class="table-light">
-                    <tr class="text-center">
-                        <th>ID</th>
-                        <th class="w-25">Book</th>
-                        <th>Requester</th>
-                        <th>Exchange Details</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                    {% for request in incoming_requests %}
-                    <tr class="text-center">
-                        <td class="text-muted px-3">#{{ request.id }}</td>
-                        <td class="fw-bold text-truncate w-25" title="{{ request.book.title }}">{{
-                            request.book.title }}</td>
-                        <td>{{ request.borrower.name }}</td>
-                        <td>
-                            {% if request.proposed_date %}
-                            {% set msg_data = request.message|fromjson %}
-                            <div class="small">
-                                <i class="bi bi-calendar-event text-muted me-1"></i> {{
-                                request.proposed_date|format_date(tz=False) }} at {{ request.proposed_time|format_time
-                                }}<br>
-                                <span class="small">
-                                    <i class="bi bi-chat-left-text text-muted me-1"></i>
-                                    <strong>Message from Borrower:</strong> {{ msg_data.borrower or 'No message.' }}
-                                </span>
-                            </div>
-                            {% else %}
-                            <span class="text-muted small italic">Digital Download</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <span class="badge bg-{% if request.status == 'pending' %}warning
-                                {% elif request.status == 'suggested' %}primary
-                                {% elif request.status == 'accepted' %}info
-                                {% elif request.status == 'borrowed' %}success
-                                {% elif request.status == 'rejected' %}danger
-                                {% elif request.status == 'returned' %}secondary{% endif %} text-capitalize">{{
-                                request.status }}</span>
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                {% if request.status in ('pending', 'suggested') %}
-                                <form action="{{ url_for('borrow.accept', req_id=request.id) }}" method="POST"
-                                    class="d-inline">
-                                    <button type="submit" class="btn btn-success">Accept</button>
-                                </form>
-                                <form action="{{ url_for('borrow.reject', req_id=request.id) }}" method="POST"
-                                    class="d-inline">
-                                    <button type="submit" class="btn btn-danger">Reject</button>
-                                </form>
-                                {% if request.book.book_type == 'physical' %}
-                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#suggestModal{{ request.id }}">
-                                    Suggest
-                                </button>
-                                {% endif %}
-                                {% elif request.status == 'accepted' %}
-                                <form action="{{ url_for('borrow.mark_borrowed', req_id=request.id) }}" method="POST">
-                                    <button type="submit" class="btn btn-sm btn-primary">Mark Borrowed</button>
-                                </form>
-                                {% elif request.status == 'borrowed' and not request.book.book_type == 'digital' %}
-                                <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}" method="POST">
-                                    <button type="submit" class="btn btn-sm btn-success">Mark Returned</button>
-                                </form>
-                                {% else %}
-                                <span class="text-muted small">No actions</span>
-                                {% endif %}
-                            </div>
-
-                            {% if request.book.book_type == 'physical' and request.status in ('pending', 'suggested') %}
-                            <div class="modal modal-lg fade text-start" id="suggestModal{{ request.id }}" tabindex="-1"
-                                aria-labelledby="suggestModalLabel{{ request.id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <form action="{{ url_for('borrow.suggest', req_id=request.id) }}" method="POST">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title fw-semibold"
-                                                    id="suggestModalLabel{{ request.id }}">Meeting Details ~ Suggest
-                                                    Alternative</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row row-cols-2">
-                                                    <div class="mb-3">
-                                                        <label class="form-label fw-bold">Proposed Date</label>
-                                                        <input type="date" name="proposed_date" class="form-control"
-                                                            value="{{ request.proposed_date }}"
-                                                            min="{{ now.strftime('%Y-%m-%d') }}" required>
-                                                        <div class="form-text">
-                                                            When would you like to pick up the book?
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label fw-bold">Proposed Time</label>
-                                                        <input type="time" name="proposed_time" class="form-control"
-                                                            value="{{ request.proposed_time }}" required>
-                                                        <div class="form-text">
-                                                            What time would you like to pick up the book?
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Pickup Location</label>
-                                                    <div class="input-group">
-                                                        <input type="text" name="location" class="form-control"
-                                                            value="{{ request.location }}" required>
-                                                        <button class="input-group-text" type="button" tabindex="0"
-                                                            data-bs-container="body" data-bs-toggle="popover"
-                                                            data-bs-trigger="toggle" data-bs-placement="top"
-                                                            title="Location Notes By Owner"
-                                                            data-bs-content="{{ request.book.location_notes or 'Not specified by the owner.' }}">
-                                                            <i class="bi bi-info-circle-fill"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Your Message/Note to
-                                                        Borrower</label>
-                                                    <textarea name="message" class="form-control"
-                                                        rows="3">{{ msg_data.owner }}</textarea>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Send Suggestion</button>
-                                            </div>
+    <!-- TODO: Consider removing the message from the table and move it in suggest alternative and view details (yet to be implemented) -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">ID</th>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th class="text-end pe-3">Actions</th>
+                            <!-- TODO: Add view details action and group action buttons into split dropdown. Keep all the actions that might be performed while disabling the one's that shouldn't be allwowed untill conditions are met -->
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                        {% for book in my_books %}
+                            <tr>
+                                <td class="px-3 text-muted">#{{ book.id }}</td>
+                                <td class="fw-bold">{{ book.title }}</td>
+                                <td>
+                                    <span class="badge {% if book.book_type == 'physical' %}bg-success text-white {% else %}bg-info-subtle text-dark{% endif %} border text-capitalize">
+                                        {{ book.book_type }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %} text-capitalize">
+                                        {{ book.status }}
+                                    </span>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('books.detail', book_id=book.id) }}"
+                                           class="btn btn-outline-secondary">View</a>
+                                        <a href="{{ url_for('books.edit', book_id=book.id) }}"
+                                           class="btn btn-outline-primary">Edit</a>
+                                        <form id="{{ 'myBookDeleteForm' ~ book.id }}"
+                                              action="{{ url_for('books.delete', book_id=book.id) }}"
+                                              method="POST"
+                                              class="d-inline">
+                                            <button type="button"
+                                                    class="btn btn-outline-danger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="{{ '#myBookDeleteModal' ~ book.id }}">
+                                                Delete
+                                            </button>
                                         </form>
+                                        {{ confirm_modal(modal_id='myBookDeleteModal' ~ book.id,
+                                                                                title='Delete Book',
+                                                                                message='Are you sure you want to delete "' ~ book.title ~ '"?',
+                                                                                confirm_text='Delete Book',
+                                                                                confirm_btn_class='btn-danger',
+                                                                                form_id='myBookDeleteForm' ~ book.id) }}
                                     </div>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">No borrow requests yet.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">You haven't shared any books yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
+    <h3 class="h4 mb-4">Incoming Borrow Requests</h3>
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 table-striped">
+                    <thead class="table-light">
+                        <tr class="text-center">
+                            <th>ID</th>
+                            <th class="w-25">Book</th>
+                            <th>Requester</th>
+                            <th>Exchange Details</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                        {% for request in incoming_requests %}
+                            <tr class="text-center">
+                                <td class="text-muted px-3">#{{ request.id }}</td>
+                                <td class="fw-bold text-truncate w-25" title="{{ request.book.title }}">
+                                    {{
+                                    request.book.title }}
+                                </td>
+                                <td>{{ request.borrower.name }}</td>
+                                <td>
+                                    {% if request.proposed_date %}
+                                        {% set msg_data = request.message|fromjson %}
+                                        <div class="small">
+                                            <i class="bi bi-calendar-event text-muted me-1"></i> {{ request.proposed_date|format_date(tz=False) }} at {{ request.proposed_time|format_time
+                                            }}
+                                            <br>
+                                            <span class="small">
+                                                <i class="bi bi-chat-left-text text-muted me-1"></i>
+                                                <strong>Message from Borrower:</strong> {{ msg_data.borrower or 'No message.' }}
+                                            </span>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted small italic">Digital Download</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-{% if request.status == 'pending' %}warning {% elif request.status == 'suggested' %}primary {% elif request.status == 'accepted' %}info {% elif request.status == 'borrowed' %}success {% elif request.status == 'rejected' %}danger {% elif request.status == 'returned' %}secondary{% endif %} text-capitalize">{{
+                                    request.status }}</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        {% if request.status in ('pending', 'suggested') %}
+                                            <form action="{{ url_for('borrow.accept', req_id=request.id) }}"
+                                                  method="POST"
+                                                  class="d-inline">
+                                                <button type="submit" class="btn btn-success">Accept</button>
+                                            </form>
+                                            <form action="{{ url_for('borrow.reject', req_id=request.id) }}"
+                                                  method="POST"
+                                                  class="d-inline">
+                                                <button type="submit" class="btn btn-danger">Reject</button>
+                                            </form>
+                                            {% if request.book.book_type == 'physical' %}
+                                                <button type="button"
+                                                        class="btn btn-outline-primary"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#suggestModal{{ request.id }}">Suggest</button>
+                                            {% endif %}
+                                        {% elif request.status == 'accepted' %}
+                                            <form action="{{ url_for('borrow.mark_borrowed', req_id=request.id) }}"
+                                                  method="POST">
+                                                <button type="submit" class="btn btn-sm btn-primary">Mark Borrowed</button>
+                                            </form>
+                                        {% elif request.status == 'borrowed' and not request.book.book_type == 'digital' %}
+                                            <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}"
+                                                  method="POST">
+                                                <button type="submit" class="btn btn-sm btn-success">Mark Returned</button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-muted small">No actions</span>
+                                        {% endif %}
+                                    </div>
+                                    {% if request.book.book_type == 'physical' and request.status in ('pending', 'suggested') %}
+                                        <div class="modal modal-lg fade text-start"
+                                             id="suggestModal{{ request.id }}"
+                                             tabindex="-1"
+                                             aria-labelledby="suggestModalLabel{{ request.id }}"
+                                             aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form action="{{ url_for('borrow.suggest', req_id=request.id) }}"
+                                                          method="POST">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title fw-semibold"
+                                                                id="suggestModalLabel{{ request.id }}">
+                                                                Meeting Details ~ Suggest
+                                                                Alternative
+                                                            </h5>
+                                                            <button type="button"
+                                                                    class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="row row-cols-2">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label fw-bold">Proposed Date</label>
+                                                                    <input type="date"
+                                                                           name="proposed_date"
+                                                                           class="form-control"
+                                                                           value="{{ request.proposed_date }}"
+                                                                           min="{{ now.strftime('%Y-%m-%d') }}"
+                                                                           required>
+                                                                    <div class="form-text">When would you like to pick up the book?</div>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label fw-bold">Proposed Time</label>
+                                                                    <input type="time"
+                                                                           name="proposed_time"
+                                                                           class="form-control"
+                                                                           value="{{ request.proposed_time }}"
+                                                                           required>
+                                                                    <div class="form-text">What time would you like to pick up the book?</div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label fw-bold">Pickup Location</label>
+                                                                <div class="input-group">
+                                                                    <input type="text"
+                                                                           name="location"
+                                                                           class="form-control"
+                                                                           value="{{ request.location }}"
+                                                                           required>
+                                                                    <button class="input-group-text"
+                                                                            type="button"
+                                                                            tabindex="0"
+                                                                            data-bs-container="body"
+                                                                            data-bs-toggle="popover"
+                                                                            data-bs-trigger="toggle"
+                                                                            data-bs-placement="top"
+                                                                            title="Location Notes By Owner"
+                                                                            data-bs-content="{{ request.book.location_notes or 'Not specified by the owner.' }}">
+                                                                        <i class="bi bi-info-circle-fill"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label fw-bold">
+                                                                    Your Message/Note to
+                                                                    Borrower
+                                                                </label>
+                                                                <textarea name="message" class="form-control" rows="3">{{ msg_data.owner }}</textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary">Send Suggestion</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">No borrow requests yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}

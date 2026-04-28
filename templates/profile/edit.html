@@ -1,84 +1,104 @@
 {% extends "base/protected.html" %}
-
 {% block title %}Edit Profile - BookShare{% endblock %}
-
 {% block content %}
-{% set profile_avatar = url_for('static', filename='uploads/' + current_user.profile_image) if
-current_user.profile_image else '' %}
-<div class="row justify-content-center py-5" data-aos="zoom-in-down" data-aos-easing="linear" data-aos-delay="150"
-    data-aos-offset="0" data-aos-duration="350">
-    <div class="col-md-10 col-lg-9">
-        <div class="card bg-dark text-light shadow">
-            <div class="card-body p-4 p-lg-5">
-                <h2 class="card-title text-center pb-2 mb-4 border-bottom border-2 border-light">Edit Profile</h2>
-                <form action="{{ url_for('profile.edit') }}" method="POST" enctype="multipart/form-data">
-                    <div class="text-center mb-4">
-                        {% if profile_avatar %}
-                        <img id="profile_preview_image" src="{{ profile_avatar }}" alt="{{ current_user.name }}"
-                            class="rounded-circle border border-secondary border-2"
-                            style="width: 132px; height: 132px; object-fit: cover;">
-                        {% else %}
-                        <div id="profile_fallback_avatar"
-                            class="rounded-circle bg-secondary-subtle text-dark fw-bold fs-1 border border-secondary border-2 mx-auto d-flex align-items-center justify-content-center"
-                            style="width: 132px; height: 132px;">
-                            {{ (current_user.name or 'U')[:1]|upper }}
+    {% set profile_avatar = url_for('static', filename='uploads/' + current_user.profile_image) if
+        current_user.profile_image else '' %}
+    <div class="row justify-content-center py-5"
+         data-aos="zoom-in-down"
+         data-aos-easing="linear"
+         data-aos-delay="150"
+         data-aos-offset="0"
+         data-aos-duration="350">
+        <div class="col-md-10 col-lg-9">
+            <div class="card bg-dark text-light shadow">
+                <div class="card-body p-4 p-lg-5">
+                    <h2 class="card-title text-center pb-2 mb-4 border-bottom border-2 border-light">Edit Profile</h2>
+                    <form action="{{ url_for('profile.edit') }}"
+                          method="POST"
+                          enctype="multipart/form-data">
+                        <div class="text-center mb-4">
+                            {% if profile_avatar %}
+                                <img id="profile_preview_image"
+                                     src="{{ profile_avatar }}"
+                                     alt="{{ current_user.name }}"
+                                     class="rounded-circle border border-secondary border-2"
+                                     style="width: 132px;
+                                            height: 132px;
+                                            object-fit: cover">
+                            {% else %}
+                                <div id="profile_fallback_avatar"
+                                     class="rounded-circle bg-secondary-subtle text-dark fw-bold fs-1 border border-secondary border-2 mx-auto d-flex align-items-center justify-content-center"
+                                     style="width: 132px;
+                                            height: 132px">{{ (current_user.name or 'U')[:1]|upper }}</div>
+                                <img id="profile_preview_image"
+                                     src=""
+                                     alt="{{ current_user.name }}"
+                                     class="rounded-circle border border-secondary border-2 d-none"
+                                     style="width: 132px;
+                                            height: 132px;
+                                            object-fit: cover">
+                            {% endif %}
+                            {% if profile_avatar %}
+                                <div id="profile_fallback_avatar"
+                                     class="rounded-circle bg-secondary-subtle text-dark fw-bold fs-1 border border-secondary border-2 mx-auto d-flex align-items-center justify-content-center d-none"
+                                     style="width: 132px;
+                                            height: 132px">{{ (current_user.name or 'U')[:1]|upper }}</div>
+                            {% endif %}
                         </div>
-                        <img id="profile_preview_image" src="" alt="{{ current_user.name }}"
-                            class="rounded-circle border border-secondary border-2 d-none"
-                            style="width: 132px; height: 132px; object-fit: cover;">
-                        {% endif %}
-                        {% if profile_avatar %}
-                        <div id="profile_fallback_avatar"
-                            class="rounded-circle bg-secondary-subtle text-dark fw-bold fs-1 border border-secondary border-2 mx-auto d-flex align-items-center justify-content-center d-none"
-                            style="width: 132px; height: 132px;">
-                            {{ (current_user.name or 'U')[:1]|upper }}
+                        <div class="mb-3 form-floating">
+                            <input type="text"
+                                   class="form-control"
+                                   id="name"
+                                   name="name"
+                                   value="{{ current_user.name }}"
+                                   placeholder="Enter Full Name"
+                                   required
+                                   autocomplete="name">
+                            <label for="name" class="form-label fw-semibold">
+                                Full Name <span class="text-danger fw-bold">*</span>
+                            </label>
                         </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="mb-3 form-floating">
-                        <input type="text" class="form-control" id="name" name="name" value="{{ current_user.name }}"
-                            placeholder="Enter Full Name" required autocomplete="name">
-                        <label for="name" class="form-label fw-semibold">Full Name <span
-                                class="text-danger fw-bold">*</span></label>
-                    </div>
-
-                    <div class="mb-1 form-floating">
-                        <input type="tel" class="form-control" id="contact" name="contact"
-                            value="{{ current_user.contact or '' }}" placeholder="Phone number, social handle, etc."
-                            autocomplete="tel">
-                        <label for="contact" class="form-label fw-semibold">Contact Information</label>
-                    </div>
-                    <div class="form-text text-light fst-italic mb-3">
-                        <!-- <i class="bi bi-info-circle me-1"></i>This may be visible to members who request your books. -->
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="profile_image" class="form-label fw-semibold">Profile Image</label>
-                        <input type="file" class="form-control" id="profile_image" name="profile_image"
-                            accept="image/*">
-                    </div>
-
-                    <div class="mb-4 form-floating">
-                        <textarea class="form-control floating-textarea-height" id="bio" name="bio"
-                            placeholder="Tell us a bit about yourself and your book interests...">{{ current_user.bio or '' }}</textarea>
-                        <label for="bio" class="form-label fw-semibold">Bio</label>
-                    </div>
-
-                    <div class="d-flex gap-2">
-                        <a href="{{ url_for('profile.view', user_id=current_user.id) }}"
-                            class="btn btn-outline-danger fw-semibold px-4 col-6">Cancel</a>
-                        <button type="submit" class="btn btn-secondary fw-semibold px-4 col-6">Save Changes</button>
-                    </div>
-                </form>
+                        <div class="mb-1 form-floating">
+                            <input type="tel"
+                                   class="form-control"
+                                   id="contact"
+                                   name="contact"
+                                   value="{{ current_user.contact or '' }}"
+                                   placeholder="Phone number, social handle, etc."
+                                   autocomplete="tel">
+                            <label for="contact" class="form-label fw-semibold">Contact Information</label>
+                        </div>
+                        <div class="form-text text-light fst-italic mb-3">
+                            <!-- <i class="bi bi-info-circle me-1"></i>This may be visible to members who request your books. -->
+                        </div>
+                        <div class="mb-3">
+                            <label for="profile_image" class="form-label fw-semibold">Profile Image</label>
+                            <input type="file"
+                                   class="form-control"
+                                   id="profile_image"
+                                   name="profile_image"
+                                   accept="image/*">
+                        </div>
+                        <div class="mb-4 form-floating">
+                            <textarea class="form-control floating-textarea-height"
+                                      id="bio"
+                                      name="bio"
+                                      placeholder="Tell us a bit about yourself and your book interests...">{{ current_user.bio or '' }}</textarea>
+                            <label for="bio" class="form-label fw-semibold">Bio</label>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('profile.view', user_id=current_user.id) }}"
+                               class="btn btn-outline-danger fw-semibold px-4 col-6">Cancel</a>
+                            <button type="submit" class="btn btn-secondary fw-semibold px-4 col-6">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
-
 {% block scripts %}
-<script>
+    <script>
     const initialProfileAvatar = profile_avatar | tojson;
     const profileImageInput = document.getElementById('profile_image');
     const previewImage = document.getElementById('profile_preview_image');
@@ -112,5 +132,5 @@ current_user.profile_image else '' %}
             fallbackAvatar.classList.add('d-none');
         });
     }
-</script>
+    </script>
 {% endblock %}

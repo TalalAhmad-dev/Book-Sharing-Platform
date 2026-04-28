@@ -1,81 +1,82 @@
 {% extends "base/protected.html" %}
-
 {% block title %}Review Reports - BookShare{% endblock %}
-
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h3">Review Reports</h2>
-</div>
-
-<div class="card shadow-sm">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 table-striped">
-                <thead class="table-light">
-                    <tr>
-                        <th class="ps-3">ID</th>
-                        <th>Reporter</th>
-                        <th class="w-25">Target</th>
-                        <th class="w-25">Reason</th>
-                        <th>Status</th>
-                        <th class="text-end pe-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                    {% for report in reports %}
-                    <tr>
-                        <td class="px-3 text-muted">#{{ report.id }}</td>
-                        <td>
-                            <a href="{{ url_for('profile.view', user_id=report.reporter_id) }}" class="text-decoration-none">
-                                {{ report.reporter.name }}
-                            </a>
-                        </td>
-                        <td>
-                            {% if report.reported_book_id %}
-                                <span class="badge bg-light text-dark border me-1">Book</span>
-                                <a href="{{ url_for('books.detail', book_id=report.reported_book_id) }}"
-                                    class="text-decoration-none small text-truncate d-inline-block w-100">
-                                    {{ report.reported_book.title }}
-                                </a>
-                            {% elif report.reported_user_id %}
-                                <span class="badge bg-light text-dark border me-1">User</span>
-                                <a href="{{ url_for('profile.view', user_id=report.reported_user_id) }}"
-                                    class="text-decoration-none small text-truncate d-inline-block w-100">
-                                    {{ report.reported_user.name }}
-                                </a>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <span class="small text-muted text-truncate d-inline-block w-100" title="{{ report.reason }}">
-                                {{ report.reason }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="badge bg-{% if report.status == 'open' %}warning text-dark{% elif report.status == 'reviewed' %}success{% else %}secondary{% endif %} text-capitalize">{{ report.status }}</span>
-                        </td>
-                        <td class="text-end pe-3">
-                            <div class="btn-group btn-group-sm">
-                                <form action="{{ url_for('admin.mark_report_reviewed', report_id=report.id) }}" method="POST">
-                                    <button type="submit" class="btn btn-outline-success" {% if report.status != 'open' %}disabled{% endif %}>
-                                        Mark Reviewed
-                                    </button>
-                                </form>
-                                <form action="{{ url_for('admin.dismiss_report', report_id=report.id) }}" method="POST">
-                                    <button type="submit" class="btn btn-outline-secondary" {% if report.status != 'open' %}disabled{% endif %}>
-                                        Dismiss
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">No reports found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3">Review Reports</h2>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">ID</th>
+                            <th>Reporter</th>
+                            <th class="w-25">Target</th>
+                            <th class="w-25">Reason</th>
+                            <th>Status</th>
+                            <th class="text-end pe-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                        {% for report in reports %}
+                            <tr>
+                                <td class="px-3 text-muted">#{{ report.id }}</td>
+                                <td>
+                                    <a href="{{ url_for('profile.view', user_id=report.reporter_id) }}"
+                                       class="text-decoration-none">{{ report.reporter.name }}</a>
+                                </td>
+                                <td>
+                                    {% if report.reported_book_id %}
+                                        <span class="badge bg-light text-dark border me-1">Book</span>
+                                        <a href="{{ url_for('books.detail', book_id=report.reported_book_id) }}"
+                                           class="text-decoration-none small text-truncate d-inline-block w-100">
+                                            {{ report.reported_book.title }}
+                                        </a>
+                                    {% elif report.reported_user_id %}
+                                        <span class="badge bg-light text-dark border me-1">User</span>
+                                        <a href="{{ url_for('profile.view', user_id=report.reported_user_id) }}"
+                                           class="text-decoration-none small text-truncate d-inline-block w-100">
+                                            {{ report.reported_user.name }}
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="small text-muted text-truncate d-inline-block w-100"
+                                          title="{{ report.reason }}">{{ report.reason }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{% if report.status == 'open' %}warning text-dark{% elif report.status == 'reviewed' %}success{% else %}secondary{% endif %} text-capitalize">{{ report.status }}</span>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <div class="btn-group btn-group-sm">
+                                        <form action="{{ url_for('admin.mark_report_reviewed', report_id=report.id) }}"
+                                              method="POST">
+                                            <button type="submit"
+                                                    class="btn btn-outline-success"
+                                                    {% if report.status != 'open' %}disabled{% endif %}>
+                                                Mark Reviewed
+                                            </button>
+                                        </form>
+                                        <form action="{{ url_for('admin.dismiss_report', report_id=report.id) }}"
+                                              method="POST">
+                                            <button type="submit"
+                                                    class="btn btn-outline-secondary"
+                                                    {% if report.status != 'open' %}disabled{% endif %}>
+                                                Dismiss
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">No reports found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

@@ -1,76 +1,76 @@
 {% for book in books %}
-{% set favorite_ids = favorite_book_ids|default([], true) %}
-<div data-aos="zoom-in-down" data-aos-easing="ease-in-sine" data-aos-duration="500" class="col" {% if loop.last and
-    pagination.has_next %}
-    hx-get="{{ url_for('books.catalog', page=pagination.next_num, search=request.args.get('search', ''), category=request.args.getlist('category'), type=request.args.get('type', 'All')) }}"
-    hx-trigger="revealed" hx-swap="afterend" {% endif %}>
-    <div class="card book-card shadow-sm">
-        <div class="book-card-image-wrap">
-            {% if book.cover_image %}
-            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}" class="book-card-image"
-                alt="{{ book.title }} Cover">
-            {% else %}
-            <div class="book-card-fallback">📚</div>
-            {% endif %}
-
-            <div class="book-card-actions">
-                {% if book.id in favorite_ids %}
-                <form action="{{ url_for('favorites.remove', book_id=book.id) }}" method="POST">
-                    <button type="submit" class="book-card-action-btn" title="Remove from favorites">
-                        <i class="bi bi-heart-fill text-danger fs-5"></i>
-                    </button>
-                </form>
+    {% set favorite_ids = favorite_book_ids|default([], true) %}
+    <div data-aos="zoom-in-down" data-aos-easing="ease-in-sine" data-aos-duration="500" class="col" {% if loop.last and
+        pagination.has_next %}
+        hx-get="{{ url_for('books.catalog', page=pagination.next_num, search=request.args.get('search', '') , category=request.args.getlist('category'), type=request.args.get('type', 'All')) }}"
+        hx-trigger="revealed" hx-swap="afterend" {% endif %}>
+        <div class="card book-card shadow-sm">
+            <div class="book-card-image-wrap">
+                {% if book.cover_image %}
+                    <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}"
+                         class="book-card-image"
+                         alt="{{ book.title }} Cover">
                 {% else %}
-                <form action="{{ url_for('favorites.add', book_id=book.id) }}" method="POST">
-                    <button type="submit" class="book-card-action-btn" title="Add to favorites">
-                        <i class="bi bi-heart fs-5"></i>
-                    </button>
-                </form>
+                    <div class="book-card-fallback">📚</div>
                 {% endif %}
-
-                {% if book.status == 'available' or book.book_type == 'digital' %}
-                <a href="{{ url_for('books.request_borrow', book_id=book.id) }}" class="book-card-action-btn"
-                    title="Request to borrow">
-                    <i class="bi bi-box-arrow-in-down fs-5"></i>
-                </a>
-                {% endif %}
-            </div>
-
-            <div class="book-card-overlay">
-                <div>
-                    <h3 class="book-card-overlay-title">{{ book.title }}</h3>
-                    <div class="book-card-overlay-author fst-italic mb-2">by {{ book.author }}</div>
-                    <div class="mb-3">
-                        <span
-                            class="badge fs-6 me-1 {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %}">
-                            {{ book.book_type|capitalize }}
-                        </span>
-                        <span
-                            class="badge fs-6 {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %}">
-                            {{ book.status|capitalize }}
-                        </span>
-                    </div>
-                    <p class="card-text fs-6 text-info fw-semibold mb-4">Owner:
-                        <span class="fw-bold text-white">
-                            {{ book.owner.name }}
-                        </span>
-                    </p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ url_for('books.detail', book_id=book.id) }}"
-                            class="btn btn-light fw-semibold btn-sm">View
-                            Details</a>
-                        {% if book.owner_id != current_user.id and (book.status == 'available' or book.book_type ==
-                        'digital') %}
+                <div class="book-card-actions">
+                    {% if book.id in favorite_ids %}
+                        <form action="{{ url_for('favorites.remove', book_id=book.id) }}"
+                              method="POST">
+                            <button type="submit"
+                                    class="book-card-action-btn"
+                                    title="Remove from favorites">
+                                <i class="bi bi-heart-fill text-danger fs-5"></i>
+                            </button>
+                        </form>
+                    {% else %}
+                        <form action="{{ url_for('favorites.add', book_id=book.id) }}"
+                              method="POST">
+                            <button type="submit" class="book-card-action-btn" title="Add to favorites">
+                                <i class="bi bi-heart fs-5"></i>
+                            </button>
+                        </form>
+                    {% endif %}
+                    {% if book.status == 'available' or book.book_type == 'digital' %}
                         <a href="{{ url_for('books.request_borrow', book_id=book.id) }}"
-                            class="btn btn-secondary fw-semibold btn-sm">Borrow Book</a>
-                        {% else %}
-                        <a href="{{ url_for('books.edit', book_id=book.id) }}"
-                            class="btn btn-secondary fw-semibold btn-sm">Edit Book Details</a>
-                        {% endif %}
+                           class="book-card-action-btn"
+                           title="Request to borrow">
+                            <i class="bi bi-box-arrow-in-down fs-5"></i>
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="book-card-overlay">
+                    <div>
+                        <h3 class="book-card-overlay-title">{{ book.title }}</h3>
+                        <div class="book-card-overlay-author fst-italic mb-2">by {{ book.author }}</div>
+                        <div class="mb-3">
+                            <span class="badge fs-6 me-1 {% if book.book_type == 'physical' %}bg-primary{% else %}bg-success{% endif %}">
+                                {{ book.book_type|capitalize }}
+                            </span>
+                            <span class="badge fs-6 {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %}">
+                                {{ book.status|capitalize }}
+                            </span>
+                        </div>
+                        <p class="card-text fs-6 text-info fw-semibold mb-4">
+                            Owner:
+                            <span class="fw-bold text-white">{{ book.owner.name }}</span>
+                        </p>
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('books.detail', book_id=book.id) }}"
+                               class="btn btn-light fw-semibold btn-sm">View
+                            Details</a>
+                            {% if book.owner_id != current_user.id and (book.status == 'available' or book.book_type ==
+                                'digital') %}
+                                <a href="{{ url_for('books.request_borrow', book_id=book.id) }}"
+                                   class="btn btn-secondary fw-semibold btn-sm">Borrow Book</a>
+                            {% else %}
+                                <a href="{{ url_for('books.edit', book_id=book.id) }}"
+                                   class="btn btn-secondary fw-semibold btn-sm">Edit Book Details</a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endfor %}

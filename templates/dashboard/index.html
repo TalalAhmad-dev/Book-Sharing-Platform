@@ -1,59 +1,57 @@
 {% extends "base/protected.html" %}
-
 {% block title %}Dashboard - BookShare{% endblock %}
-
 {% block content %}
-<!-- TODO: Update the form-select dropdown options to have black background when on hover accross all project -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2">Welcome, {{ current_user.name }}!</h1>
-    <div class="btn-group">
-        <a href="{{ url_for('dashboard.my_books') }}" class="btn btn-outline-primary">My Shared Books</a>
-        <a href="{{ url_for('dashboard.borrowed') }}" class="btn btn-outline-primary">Borrowed Books</a>
+    <!-- TODO: Update the form-select dropdown options to have black background when on hover accross all project -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Welcome, {{ current_user.name }}!</h1>
+        <div class="btn-group">
+            <a href="{{ url_for('dashboard.my_books') }}"
+               class="btn btn-outline-primary">My Shared Books</a>
+            <a href="{{ url_for('dashboard.borrowed') }}"
+               class="btn btn-outline-primary">Borrowed Books</a>
+        </div>
     </div>
-</div>
-
-<div class="row g-4 mb-5">
-    <div class="col-md-3">
-        <div class="card shadow-sm h-100 border-start border-primary border-4">
-            <div class="card-body text-center">
-                <h6 class="text-muted text-uppercase mb-2">Books Shared</h6>
-                <div class="h2 mb-0">{{ my_books_count }}</div>
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 border-start border-primary border-4">
+                <div class="card-body text-center">
+                    <h6 class="text-muted text-uppercase mb-2">Books Shared</h6>
+                    <div class="h2 mb-0">{{ my_books_count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 border-start border-success border-4">
+                <div class="card-body text-center">
+                    <h6 class="text-muted text-uppercase mb-2">Currently Borrowing</h6>
+                    <div class="h2 mb-0">{{ borrowed_count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 border-start border-warning border-4">
+                <div class="card-body text-center">
+                    <h6 class="text-muted text-uppercase mb-2">Pending Requests</h6>
+                    <div class="h2 mb-0">{{ pending_requests_count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 border-start border-info border-4">
+                <div class="card-body text-center">
+                    <h6 class="text-muted text-uppercase mb-2">Favorites</h6>
+                    <div class="h2 mb-0">{{ favorites_count }}</div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm h-100 border-start border-success border-4">
-            <div class="card-body text-center">
-                <h6 class="text-muted text-uppercase mb-2">Currently Borrowing</h6>
-                <div class="h2 mb-0">{{ borrowed_count }}</div>
-            </div>
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="mb-0 py-1">Recent Activity</h5>
+        </div>
+        <div class="card-body py-4 text-center text-muted">
+            <i class="bi bi-clock-history fs-1 d-block mb-3"></i>
+            <p class="mb-0">No recent activity to show.</p>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm h-100 border-start border-warning border-4">
-            <div class="card-body text-center">
-                <h6 class="text-muted text-uppercase mb-2">Pending Requests</h6>
-                <div class="h2 mb-0">{{ pending_requests_count }}</div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm h-100 border-start border-info border-4">
-            <div class="card-body text-center">
-                <h6 class="text-muted text-uppercase mb-2">Favorites</h6>
-                <div class="h2 mb-0">{{ favorites_count }}</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="card shadow-sm">
-    <div class="card-header bg-white">
-        <h5 class="mb-0 py-1">Recent Activity</h5>
-    </div>
-    <div class="card-body py-4 text-center text-muted">
-        <i class="bi bi-clock-history fs-1 d-block mb-3"></i>
-        <p class="mb-0">No recent activity to show.</p>
-    </div>
-</div>
 {% endblock %}
