@@ -26,7 +26,8 @@
                     <tr>
                         <td class="px-3 text-muted">#{{ user.id }}</td>
                         <td>
-                            <a href="{{ url_for('profile.view', user_id=user.id) }}" class="text-decoration-none fw-bold text-dark">
+                            <a href="{{ url_for('profile.view', user_id=user.id) }}"
+                                class="text-decoration-none fw-bold text-dark">
                                 {{ user.name }}
                             </a>
                         </td>
@@ -35,23 +36,38 @@
                             <span class="badge bg-info text-capitalize">{{ user.role }}</span>
                         </td>
                         <td>
-                            <span class="badge {% if user.status == 'active' %}bg-success{% else %}bg-danger{% endif %} text-capitalize">
+                            <span
+                                class="badge {% if user.status == 'active' %}bg-success{% else %}bg-danger{% endif %} text-capitalize">
                                 {{ user.status }}
                             </span>
                         </td>
                         <td class="text-end pe-3">
                             {% if user.id != current_user.id %}
-                                {% if user.status == 'active' %}
-                                    <form action="{{ url_for('admin.block_user', user_id=user.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Block this user?');">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Block</button>
-                                    </form>
-                                {% else %}
-                                    <form action="{{ url_for('admin.unblock_user', user_id=user.id) }}" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-outline-success">Unblock</button>
-                                    </form>
-                                {% endif %}
+                            {% if user.status == 'active' %}
+                            <form id="{{ 'blockUserForm' ~ user.id }}"
+                                action="{{ url_for('admin.block_user', user_id=user.id) }}" method="POST"
+                                class="d-inline">
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                    data-bs-target="{{ '#blockUserModal' ~ user.id }}">
+                                    Block
+                                </button>
+                            </form>
+                            {{ confirm_modal(
+                            modal_id='blockUserModal' ~ user.id,
+                            title='Block User',
+                            message='Are you sure you want to block ' ~ user.name ~ '?',
+                            confirm_text='Block User',
+                            confirm_btn_class='btn-danger',
+                            form_id='blockUserForm' ~ user.id
+                            ) }}
                             {% else %}
-                                <span class="badge bg-light text-dark border">Self (Admin)</span>
+                            <form action="{{ url_for('admin.unblock_user', user_id=user.id) }}" method="POST"
+                                class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-success">Unblock</button>
+                            </form>
+                            {% endif %}
+                            {% else %}
+                            <span class="badge bg-light text-dark border">Self (Admin)</span>
                             {% endif %}
                         </td>
                     </tr>

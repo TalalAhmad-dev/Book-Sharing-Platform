@@ -36,22 +36,38 @@
                             <span class="badge text-bg-primary">Unread</span>
                             {% endif %}
                         </td>
-                        <td><span class="badge text-bg-light border text-capitalize">{{ notification.category }}</span></td>
+                        <td><span class="badge text-bg-light border text-capitalize">{{ notification.category }}</span>
+                        </td>
                         <td class="fw-semibold">{{ notification.title }}</td>
                         <td class="small">{{ notification.message }}</td>
                         <td class="text-nowrap small text-muted">
-                            {{ notification.created_at.strftime('%b %d, %Y %I:%M %p') if notification.created_at else '-' }}
+                            {{ notification.created_at.strftime('%b %d, %Y %I:%M %p') if notification.created_at else
+                            '-' }}
                         </td>
                         <td class="text-end pe-3">
                             <div class="btn-group btn-group-sm">
                                 {% if not notification.is_read %}
-                                <form action="{{ url_for('inbox.mark_read', notification_id=notification.id) }}" method="POST">
+                                <form action="{{ url_for('inbox.mark_read', notification_id=notification.id) }}"
+                                    method="POST">
                                     <button type="submit" class="btn btn-outline-success">Mark read</button>
                                 </form>
                                 {% endif %}
-                                <form action="{{ url_for('inbox.delete', notification_id=notification.id) }}" method="POST">
-                                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                                <form id="{{ 'deleteNotificationForm' ~ notification.id }}"
+                                    action="{{ url_for('inbox.delete', notification_id=notification.id) }}"
+                                    method="POST">
+                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                                        data-bs-target="{{ '#deleteNotificationModal' ~ notification.id }}">
+                                        Delete
+                                    </button>
                                 </form>
+                                {{ confirm_modal(
+                                modal_id='deleteNotificationModal' ~ notification.id,
+                                title='Delete Notification',
+                                message='Are you sure you want to delete this notification?',
+                                confirm_text='Delete',
+                                confirm_btn_class='btn-danger',
+                                form_id='deleteNotificationForm' ~ notification.id
+                                ) }}
                             </div>
                         </td>
                     </tr>

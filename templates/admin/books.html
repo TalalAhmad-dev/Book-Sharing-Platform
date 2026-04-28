@@ -26,7 +26,8 @@
                     <tr>
                         <td class="px-3 text-muted">#{{ book.id }}</td>
                         <td>
-                            <a href="{{ url_for('books.detail', book_id=book.id) }}" class="text-decoration-none fw-bold text-dark">
+                            <a href="{{ url_for('books.detail', book_id=book.id) }}"
+                                class="text-decoration-none fw-bold text-dark">
                                 {{ book.title }}
                             </a>
                         </td>
@@ -37,14 +38,27 @@
                             </a>
                         </td>
                         <td>
-                            <span class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %} text-capitalize">
+                            <span
+                                class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %} text-capitalize">
                                 {{ book.status }}
                             </span>
                         </td>
                         <td class="text-end pe-3">
-                            <form action="{{ url_for('books.delete', book_id=book.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this book listing?');">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            <form id="{{ 'deleteBookForm' ~ book.id }}"
+                                action="{{ url_for('books.delete', book_id=book.id) }}" method="POST" class="d-inline">
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                    data-bs-target="{{ '#deleteBookModal' ~ book.id }}">
+                                    Delete
+                                </button>
                             </form>
+                            {{ confirm_modal(
+                            modal_id='deleteBookModal' ~ book.id,
+                            title='Delete Book Listing',
+                            message='Are you sure you want to delete "' ~ book.title ~ '"?',
+                            confirm_text='Delete Listing',
+                            confirm_btn_class='btn-danger',
+                            form_id='deleteBookForm' ~ book.id
+                            ) }}
                         </td>
                     </tr>
                     {% endfor %}
