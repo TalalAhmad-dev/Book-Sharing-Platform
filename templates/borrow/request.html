@@ -47,7 +47,7 @@
                                                id="proposed_date"
                                                name="proposed_date"
                                                class="form-control"
-                                               min="{{ now.strftime('%Y-%m-%d') }}"
+                                               min="{{ now.strftime("%Y-%m-%d") }}"
                                                required>
                                         <label for="proposed_date" class="form-label fw-semibold">
                                             Proposed Date <span class="text-danger fw-bold">*</span>
@@ -107,7 +107,7 @@
                             </div>
                         {% endif %}
                         <div class="d-flex gap-2">
-                            <a href="{{ url_for('books.catalog') }}"
+                            <a href="{{ url_for("books.catalog") }}"
                                class="btn btn-outline-danger fw-semibold px-4 col-6">Cancel</a>
                             <button type="submit" class="btn btn-secondary fw-semibold px-4 col-6">Submit Borrow Request</button>
                         </div>

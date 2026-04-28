@@ -29,7 +29,7 @@
                     </div>
                     <div class="d-grid gap-2 mb-4 w-75 text-center mx-auto">
                         {% if current_user.id == user.id %}
-                            <a href="{{ url_for('profile.edit') }}" class="btn btn-secondary">
+                            <a href="{{ url_for("profile.edit") }}" class="btn btn-secondary">
                                 <i class="bi bi-pencil me-2"></i>Edit Profile
                             </a>
                         {% else %}
@@ -217,7 +217,7 @@
                                         <td colspan="6" class="text-center py-4 text-white-50">
                                             {% if current_user.id == user.id %}
                                                 <div class="mb-2">You haven't shared any books yet.</div>
-                                                <a href="{{ url_for('books.add') }}"
+                                                <a href="{{ url_for("books.add") }}"
                                                    class="btn btn-secondary btn-sm fw-semibold">Add Book</a>
                                             {% else %}
                                                 <span>This user hasn't shared any books yet.</span>
