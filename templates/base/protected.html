@@ -42,13 +42,13 @@
                 <p class="sidebar-group-title">Library</p>
                 <ul class="nav nav-pills flex-column gap-1">
                     <li class="nav-item">
-                        <a class="sidebar-link fw-semibold nav-link {% if endpoint in ['books.catalog', 'books.detail', 'books.edit'] %}active{% endif %}"
+                        <a class="sidebar-link fw-semibold nav-link {% if endpoint in ['books.catalog', 'books.detail', 'books.edit', 'books.request_borrow'] %}active{% endif %}"
                            href="{{ url_for('books.catalog') }}">
                             <i class="bi bi-journal-bookmark me-2"></i>Browse Books
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="sidebar-link fw-semibold nav-link {% if endpoint.startswith('books.') and endpoint not in ['books.catalog', 'books.detail', 'books.edit'] %}active{% endif %}"
+                        <a class="sidebar-link fw-semibold nav-link {% if endpoint.startswith('books.') and endpoint not in ['books.catalog', 'books.detail', 'books.edit', 'books.request_borrow'] %}active{% endif %}"
                            href="{{ url_for('books.add') }}">
                             <i class="bi bi-plus-square me-2"></i>Add Book
                         </a>
@@ -239,6 +239,7 @@
                                                         Book', None)],
                                                         'books.detail': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog')), ('Book
                                                             Details', None)],
+                                                            'books.request_borrow': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog'))] + ([('Book Details', url_for('books.detail', book_id=book.id))] if book else []) + [('Borrow Book', None)],
                                                             'dashboard.index': [('Home', url_for('books.catalog')), ('Dashboard', None)],
                                                             'dashboard.my_books': [('Home', url_for('books.catalog')), ('Dashboard', url_for('dashboard.index')),
                                                                 ('My Shared Books', None)],
