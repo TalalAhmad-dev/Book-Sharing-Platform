@@ -6,7 +6,7 @@
          data-aos-easing="linear"
          data-aos-duration="350">
         <div class="card-body">
-            <form action="{{ url_for("books.catalog") }}"
+            <form action="{{ url_for('books.catalog') }}"
                   method="GET"
                   class="row g-3 align-items-end">
                 <div class="col-md-6">
@@ -54,7 +54,7 @@
                         <button type="submit" class="btn btn-secondary fw-semibold">Filter Books</button>
                     </div>
                     <div class="d-grid">
-                        <a href="{{ url_for("books.catalog") }}"
+                        <a href="{{ url_for('books.catalog') }}"
                            class="btn btn-outline-danger fw-semibold">Clear
                         Filters</a>
                     </div>

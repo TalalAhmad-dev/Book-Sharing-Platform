@@ -3,6 +3,10 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description"
+              content="BookShare - A community platform for sharing and borrowing books locally and digitally.">
+        <meta name="keywords"
+              content="books, sharing, borrowing, community, library">
         <title>
             {% block title %}BookShare{% endblock %}
         </title>
@@ -21,6 +25,10 @@
         <link rel="stylesheet"
               href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
         <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+        <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.3.8/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/kt-2.12.2/r-3.0.8/datatables.min.css"
+              rel="stylesheet"
+              integrity="sha384-YNRczY1yM1l2PXIIIsTNZWgk3dJ5q3RhEMqp8ugkrsMnOXAXcAeTZZh+gOz/EBkx"
+              crossorigin="anonymous">
         {% block head %}{% endblock %}
     </head>
     <body class="d-flex flex-column min-vh-100">
@@ -54,9 +62,18 @@
                 integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
                 crossorigin="anonymous"></script>
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="{{ url_for('static', filename='js/main.js') }}"></script>
         <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"
+                integrity="sha384-VFQrHzqBh5qiJIU0uGU5CIW3+OWpdGGJM9LBnGbuIH2mkICcFZ7lPd/AAtI7SNf7"
+                crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"
+                integrity="sha384-/RlQG9uf0M2vcTw3CX7fbqgbj/h8wKxw7C3zu9/GxcBPRKOEcESxaxufwRXqzq6n"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.3.8/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/kt-2.12.2/r-3.0.8/datatables.min.js"
+                integrity="sha384-glNcGu17wPiHdRgyE3VyiFV3A6MBomr8C6CUfjX+2SOWCaO7qoUg/JuKvtKOH/3H"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <!-- Initialize AOS -->
         <script>AOS.init();</script>
         {% block scripts %}{% endblock %}

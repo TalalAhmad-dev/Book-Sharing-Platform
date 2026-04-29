@@ -1,49 +1,69 @@
 {% extends "base/protected.html" %}
 {% block title %}Manage Users - BookShare{% endblock %}
 {% block content %}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4"
+         data-aos="fade-down"
+         data-aos-easing="ease-in-sine"
+         data-aos-duration="200">
         <h2 class="h3">Manage Users</h2>
     </div>
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
+    <div class="card bg-dark text-light shadow"
+         data-aos="fade-up"
+         data-aos-easing="linear"
+         data-aos-delay="150"
+         data-aos-offset="0"
+         data-aos-duration="350">
+        <div class="card-body px-2">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 table-striped">
-                    <thead class="table-light">
+                <table class="table table-dark table-hover table-striped align-middle mb-0 {% if users %}dataTable{% endif %}"
+                       {% if users %} data-default-order="0,desc" data-export-title="Manage Users - BookShare" data-non-orderable-targets="-1" data-non-searchable-targets="-1" data-no-export-targets="-1" {% endif %}>
+                    <thead>
                         <tr>
                             <th class="ps-3">ID</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
                             <th>Status</th>
+                            <th>Join Date</th>
+                            <th>Last Profile Update</th>
                             <th class="text-end pe-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="table-group-divider">
                         {% for user in users %}
                             <tr>
-                                <td class="px-3 text-muted">#{{ user.id }}</td>
+                                <td class="px-3 text-light">#{{ user.id }}</td>
                                 <td>
                                     <a href="{{ url_for('profile.view', user_id=user.id) }}"
-                                       class="text-decoration-none fw-bold text-dark">{{ user.name }}</a>
+                                       class="text-decoration-none fw-bold text-light">{{ user.name }}</a>
                                 </td>
                                 <td>{{ user.email }}</td>
                                 <td>
-                                    <span class="badge bg-info text-capitalize">{{ user.role }}</span>
+                                    <span class="badge bg-info text-dark text-capitalize">{{ user.role }}</span>
                                 </td>
                                 <td>
                                     <span class="badge {% if user.status == 'active' %}bg-success{% else %}bg-danger{% endif %} text-capitalize">
                                         {{ user.status }}
                                     </span>
                                 </td>
+                                <td>{{ user.created_at|format_date(tz=False) }}</td>
+                                <td>
+                                    {{ (user.updated_at|format_date(tz=False) ~ ' - ' + user.updated_at|format_time) if user.updated_at else '-' }}
+                                </td>
                                 <td class="text-end pe-3">
                                     {% if user.id != current_user.id %}
+                                        <form action="{{ url_for('profile.view', user_id=user.id) }}"
+                                              method="GET"
+                                              class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary fw-semibold me-2">View Profile</button>
+                                        </form>
                                         {% if user.status == 'active' %}
                                             <form id="{{ 'blockUserForm' ~ user.id }}"
                                                   action="{{ url_for('admin.block_user', user_id=user.id) }}"
                                                   method="POST"
                                                   class="d-inline">
                                                 <button type="button"
-                                                        class="btn btn-sm btn-outline-danger"
+                                                        class="btn btn-sm btn-danger fw-semibold"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="{{ '#blockUserModal' ~ user.id }}">
                                                     Block
@@ -59,13 +79,17 @@
                                             <form action="{{ url_for('admin.unblock_user', user_id=user.id) }}"
                                                   method="POST"
                                                   class="d-inline">
-                                                <button type="submit" class="btn btn-sm btn-outline-success">Unblock</button>
+                                                <button type="submit" class="btn btn-sm btn-outline-success fw-semibold">Unblock</button>
                                             </form>
                                         {% endif %}
                                     {% else %}
-                                        <span class="badge bg-light text-dark border">Self (Admin)</span>
+                                        <span class="badge bg-light-subtle text-dark border">Self (Admin)</span>
                                     {% endif %}
                                 </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">No users found.</td>
                             </tr>
                         {% endfor %}
                     </tbody>

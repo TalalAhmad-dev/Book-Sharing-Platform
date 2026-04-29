@@ -4,16 +4,17 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="h3 mb-0">Inbox</h2>
         {% if notifications %}
-            <form action="{{ url_for("inbox.mark_all_read") }}" method="POST">
-                <button type="submit" class="btn btn-outline-primary btn-sm">Mark all as read</button>
+            <form action="{{ url_for('inbox.mark_all_read') }}" method="POST">
+                <button type="submit" class="btn btn-outline-success fw-semibold btn-sm">Mark all as read</button>
             </form>
         {% endif %}
     </div>
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
+    <div class="card bg-dark text-light shadow">
+        <div class="card-body px-2">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 table-striped">
-                    <thead class="table-light">
+                <table class="table table-dark table-hover table-striped align-middle mb-0 {% if notifications %}dataTable{% endif %}"
+                       {% if notifications %} data-default-order="4,desc" data-export-title="Inbox - BookShare" data-non-orderable-targets="-1" data-non-searchable-targets="-1" data-no-export-targets="-1" {% endif %}>
+                    <thead>
                         <tr>
                             <th class="ps-3">Status</th>
                             <th>Category</th>
@@ -25,10 +26,10 @@
                     </thead>
                     <tbody class="table-group-divider">
                         {% for notification in notifications %}
-                            <tr>
+                            <tr class="{% if not notification.is_read %}table-secondary bg-opacity-75{% endif %}">
                                 <td class="ps-3">
                                     {% if notification.is_read %}
-                                        <span class="badge text-bg-secondary">Read</span>
+                                        <span class="badge text-bg-success">Read</span>
                                     {% else %}
                                         <span class="badge text-bg-primary">Unread</span>
                                     {% endif %}
@@ -38,8 +39,8 @@
                                 </td>
                                 <td class="fw-semibold">{{ notification.title }}</td>
                                 <td class="small">{{ notification.message }}</td>
-                                <td class="text-nowrap small text-muted">
-                                    {{ notification.created_at.strftime("%b %d, %Y %I:%M %p") if notification.created_at else
+                                <td class="text-nowrap">
+                                    {{ notification.created_at|format_date(tz=False) + ' - ' + notification.created_at|format_time if notification.created_at else
                                     '-' }}
                                 </td>
                                 <td class="text-end pe-3">
@@ -47,14 +48,14 @@
                                         {% if not notification.is_read %}
                                             <form action="{{ url_for('inbox.mark_read', notification_id=notification.id) }}"
                                                   method="POST">
-                                                <button type="submit" class="btn btn-outline-success">Mark read</button>
+                                                <button type="submit" class="btn btn-sm btn-outline-success fw-semibold me-2">Mark read</button>
                                             </form>
                                         {% endif %}
                                         <form id="{{ 'deleteNotificationForm' ~ notification.id }}"
                                               action="{{ url_for('inbox.delete', notification_id=notification.id) }}"
                                               method="POST">
                                             <button type="button"
-                                                    class="btn btn-outline-danger"
+                                                    class="btn btn-sm btn-danger fw-semibold"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="{{ '#deleteNotificationModal' ~ notification.id }}">
                                                 Delete
@@ -71,7 +72,7 @@
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">No notifications yet.</td>
+                                <td colspan="6" class="text-center py-4 text-white-50">No notifications yet.</td>
                             </tr>
                         {% endfor %}
                     </tbody>

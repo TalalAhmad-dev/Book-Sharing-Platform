@@ -5,9 +5,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h2">Welcome, {{ current_user.name }}!</h1>
         <div class="btn-group">
-            <a href="{{ url_for("dashboard.my_books") }}"
+            <a href="{{ url_for('dashboard.my_books') }}"
                class="btn btn-outline-primary">My Shared Books</a>
-            <a href="{{ url_for("dashboard.borrowed") }}"
+            <a href="{{ url_for('dashboard.borrowed') }}"
                class="btn btn-outline-primary">Borrowed Books</a>
         </div>
     </div>

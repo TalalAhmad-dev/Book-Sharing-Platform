@@ -2,12 +2,12 @@
 {% block title %}Borrowed Books - BookShare{% endblock %}
 {% block content %}
     <h2 class="h3 mb-4">Books I Am Borrowing</h2>
-    <!-- TODO: Add datatables instead of using html tables for better UI and usability -->
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
+    <div class="card bg-dark text-light shadow">
+        <div class="card-body px-2">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 table-striped">
-                    <thead class="table-light">
+                <table class="table table-dark table-hover table-striped align-middle mb-0 {% if my_borrows %}dataTable{% endif %}"
+                       {% if my_borrows %} data-default-order="0,desc" data-export-title="Borrowed Books - BookShare" data-non-orderable-targets="-1" data-non-searchable-targets="-1" data-no-export-targets="-1" {% endif %}>
+                    <thead>
                         <tr class="text-center">
                             <th>ID</th>
                             <th class="w-25">Book Title</th>
@@ -23,7 +23,7 @@
                                 <td class="px-3 text-muted">#{{ request.id }}</td>
                                 <td class="fw-bold" title="{{ request.book.title }}">
                                     <a href="{{ url_for('books.detail', book_id=request.book_id) }}"
-                                       class="text-decoration-underline text-dark text-truncate d-inline-block w-100">
+                                       class="text-decoration-underline text-light text-truncate d-inline-block w-100">
                                         {{ request.book.title }}
                                     </a>
                                 </td>
@@ -35,7 +35,7 @@
                                             <strong>{{ request.proposed_date|format_date(tz=False) }}</strong> at {{
                                             request.proposed_time|format_time }}
                                             <br>
-                                            <span class="text-muted small"><strong>Message from Owner:</strong> {{ msg_data.owner
+                                            <span class="text-white-50 small"><strong>Message from Owner:</strong> {{ msg_data.owner
                                             or 'No message.' }}</span>
                                         </div>
                                     {% else %}
@@ -102,7 +102,7 @@
                                                                                name="proposed_date"
                                                                                class="form-control"
                                                                                value="{{ request.proposed_date }}"
-                                                                               min="{{ now.strftime("%Y-%m-%d") }}"
+                                                                               min="{{ now.strftime('%Y-%m-%d') }}"
                                                                                required>
                                                                         <div class="form-text">When would you like to pick up the book?</div>
                                                                     </div>
@@ -161,13 +161,13 @@
                                             </div>
                                         {% endif %}
                                     {% else %}
-                                        <span class="text-muted small">No Actions</span>
+                                        <span class="text-white-50 small">No Actions</span>
                                     {% endif %}
                                 </td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">You are not borrowing any books yet.</td>
+                                <td colspan="6" class="text-center py-4 text-white-50">You are not borrowing any books yet.</td>
                             </tr>
                         {% endfor %}
                     </tbody>

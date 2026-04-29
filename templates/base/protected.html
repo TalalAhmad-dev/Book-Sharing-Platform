@@ -43,19 +43,19 @@
                 <ul class="nav nav-pills flex-column gap-1">
                     <li class="nav-item">
                         <a class="sidebar-link fw-semibold nav-link {% if endpoint in ['books.catalog', 'books.detail', 'books.edit', 'books.request_borrow'] %}active{% endif %}"
-                           href="{{ url_for("books.catalog") }}">
+                           href="{{ url_for('books.catalog') }}">
                             <i class="bi bi-journal-bookmark me-2"></i>Browse Books
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="sidebar-link fw-semibold nav-link {% if endpoint.startswith('books.') and endpoint not in ['books.catalog', 'books.detail', 'books.edit', 'books.request_borrow'] %}active{% endif %}"
-                           href="{{ url_for("books.add") }}">
+                           href="{{ url_for('books.add') }}">
                             <i class="bi bi-plus-square me-2"></i>Add Book
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="sidebar-link fw-semibold nav-link {% if endpoint.startswith('favorites.') %}active{% endif %}"
-                           href="{{ url_for("favorites.index") }}">
+                           href="{{ url_for('favorites.index') }}">
                             <i class="bi bi-heart me-2"></i>Favorites
                         </a>
                     </li>
@@ -66,19 +66,19 @@
                 <ul class="nav nav-pills flex-column gap-1">
                     <li class="nav-item">
                         <a class="sidebar-link fw-semibold nav-link {% if endpoint.startswith('dashboard.') %}active{% endif %}"
-                           href="{{ url_for("dashboard.index") }}">
+                           href="{{ url_for('dashboard.index') }}">
                             <i class="bi bi-speedometer2 me-2"></i>Dashboard
                         </a>
                         <ul class="nav flex-column sidebar-subnav">
                             <li class="nav-item">
                                 <a class="sidebar-sub-link fw-semibold nav-link {% if endpoint == 'dashboard.my_books' %}active{% endif %}"
-                                   href="{{ url_for("dashboard.my_books") }}">
+                                   href="{{ url_for('dashboard.my_books') }}">
                                     <i class="bi bi-collection me-2"></i>My Shared Books
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="sidebar-sub-link fw-semibold nav-link {% if endpoint == 'dashboard.borrowed' %}active{% endif %}"
-                                   href="{{ url_for("dashboard.borrowed") }}">
+                                   href="{{ url_for('dashboard.borrowed') }}">
                                     <i class="bi bi-journal-arrow-down me-2"></i>Borrowed Books
                                 </a>
                             </li>
@@ -86,7 +86,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="sidebar-link fw-semibold nav-link d-flex justify-content-between align-items-center {% if endpoint.startswith('inbox.') %}active{% endif %}"
-                           href="{{ url_for("inbox.index") }}">
+                           href="{{ url_for('inbox.index') }}">
                             <span><i class="bi bi-bell me-2"></i>Inbox</span>
                             {% if unread_notifications_count > 0 %}
                                 <span class="badge text-bg-danger">{{ unread_notifications_count }}</span>
@@ -101,25 +101,25 @@
                     <ul class="nav nav-pills flex-column gap-1">
                         <li class="nav-item">
                             <a class="sidebar-link fw-semibold nav-link {% if endpoint.startswith('admin.') %}active{% endif %}"
-                               href="{{ url_for("admin.dashboard") }}">
+                               href="{{ url_for('admin.dashboard') }}">
                                 <i class="bi bi-shield-lock me-2"></i>Admin Dashboard
                             </a>
                             <ul class="nav flex-column sidebar-subnav">
                                 <li class="nav-item">
                                     <a class="sidebar-sub-link fw-semibold nav-link {% if endpoint == 'admin.users' %}active{% endif %}"
-                                       href="{{ url_for("admin.users") }}">
+                                       href="{{ url_for('admin.users') }}">
                                         <i class="bi bi-people me-2"></i>Manage Users
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="sidebar-sub-link fw-semibold nav-link {% if endpoint == 'admin.books' %}active{% endif %}"
-                                       href="{{ url_for("admin.books") }}">
+                                       href="{{ url_for('admin.books') }}">
                                         <i class="bi bi-book me-2"></i>Manage Books
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="sidebar-sub-link fw-semibold nav-link {% if endpoint == 'admin.reports' %}active{% endif %}"
-                                       href="{{ url_for("admin.reports") }}">
+                                       href="{{ url_for('admin.reports') }}">
                                         <i class="bi bi-flag me-2"></i>Reports
                                     </a>
                                 </li>
@@ -189,7 +189,7 @@
                         aria-label="Toggle sidebar">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a class="navbar-brand mb-0 h1" href="{{ url_for("books.catalog") }}">BookShare</a>
+                <a class="navbar-brand mb-0 h1" href="{{ url_for('books.catalog') }}">BookShare</a>
             </div>
         </header>
         <div class="offcanvas offcanvas-start offcanvas-sidebar-themed d-md-none"
@@ -214,7 +214,7 @@
                data-aos-duration="200"
                class="d-none d-md-flex flex-column flex-shrink-0 sidebar-desktop sidebar-themed text-white border-end">
             <div class="text-center pt-4">
-                <a href="{{ url_for("books.catalog") }}"
+                <a href="{{ url_for('books.catalog') }}"
                    class="sidebar-brand text-white text-decoration-none fs-4 fw-semibold">
                     <img class="object-fit-scale"
                          src="/static/images/BookShare Logo (3).png"
@@ -235,57 +235,47 @@
                         {% set breadcrumb_trails = {
                                                     'books.catalog': [('Home', url_for('books.catalog')), ('Browse Books', None)],
                                                     'books.add': [('Home', url_for('books.catalog')), ('Add Book', None)],
-                                                    'books.edit': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog')), ('Edit
-                                                        Book', None)],
-                                                        'books.detail': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog')), ('Book
-                                                            Details', None)],
-                                                            'books.request_borrow': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog'))] + ([('Book Details', url_for('books.detail', book_id=book.id))] if book else []) + [('Borrow Book', None)],
-                                                            'dashboard.index': [('Home', url_for('books.catalog')), ('Dashboard', None)],
-                                                            'dashboard.my_books': [('Home', url_for('books.catalog')), ('Dashboard', url_for('dashboard.index')),
-                                                                ('My Shared Books', None)],
-                                                                'dashboard.borrowed': [('Home', url_for('books.catalog')), ('Dashboard', url_for('dashboard.index')),
-                                                                    ('Borrowed Books', None)],
-                                                                    'favorites.index': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog')),
-                                                                        ('Favorites', None)],
-                                                                        'inbox.index': [('Home', url_for('books.catalog')), ('Inbox', None)],
-                                                                        'profile.view': [('Home', url_for('books.catalog')), ('Profile', None)],
-                                                                        'profile.edit': [('Home', url_for('books.catalog')), ('Profile', url_for('profile.view',
-                                                                            user_id=current_user.id)), ('Edit Profile', None)],
-                                                                            'admin.dashboard': [('Home', url_for('books.catalog')), ('Admin Dashboard', None)],
-                                                                            'admin.users': [('Home', url_for('books.catalog')), ('Admin Dashboard', url_for('admin.dashboard')),
-                                                                                ('Manage Users', None)],
-                                                                                'admin.books': [('Home', url_for('books.catalog')), ('Admin Dashboard', url_for('admin.dashboard')),
-                                                                                    ('Manage Books', None)],
-                                                                                    'admin.reports': [('Home', url_for('books.catalog')), ('Admin Dashboard', url_for('admin.dashboard')),
-                                                                                        ('Reports', None)]
-                                                                                    } %}
-                                                            {% set trail = breadcrumb_trails.get(breadcrumb_endpoint, [('Home', url_for('books.catalog')), ('Page',
-                                                                                                                        None)]) %}
-                                                            <nav aria-label="breadcrumb">
-                                                                <ol class="breadcrumb mb-0">
-                                                                    {% for label, link in trail %}
-                                                                        <li class="breadcrumb-item {% if not link %}active{% endif %}" {% if not link
-                                                                            %}aria-current="page" {% endif %}>
-                                                                            {% if link %}
-                                                                                <a class="text-black fw-bold" href="{{ link }}">{{ label }}</a>
-                                                                            {% else %}
-                                                                                <span class="fw-semibold">{{ label }}</span>
-                                                                            {% endif %}
-                                                                        </li>
-                                                                    {% endfor %}
-                                                                </ol>
-                                                            </nav>
-                                                        {% endblock %}
-                                                    </section>
-                                                    {% block content %}{% endblock %}
-                                                </main>
-                                            </div>
-                                        </div>
-                                        {{ confirm_modal(modal_id='logoutConfirmModal',
-                                                                                title='Logout',
-                                                                                message='Are you sure you want to log out?',
-                                                                                confirm_text='Logout',
-                                                                                confirm_btn_class='btn-danger',
-                                                                                confirm_href=url_for('auth.logout') 
-                                        ) }}
-                                    {% endblock %}
+                                                    'books.edit': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog')), ('Edit Book', None)],
+                                                    'books.detail': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog')), ('Book Details', None)],
+                                                    'books.request_borrow': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog'))] + ([('Book Details', url_for('books.detail', book_id=book.id))] if book else []) + [('Borrow Book', None)],
+                                                    'dashboard.index': [('Home', url_for('books.catalog')), ('Dashboard', None)],
+                                                    'dashboard.my_books': [('Home', url_for('books.catalog')), ('Dashboard', url_for('dashboard.index')), ('My Shared Books', None)],
+                                                    'dashboard.borrowed': [('Home', url_for('books.catalog')), ('Dashboard', url_for('dashboard.index')), ('Borrowed Books', None)],
+                                                    'favorites.index': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog')), ('Favorites', None)],
+                                                    'inbox.index': [('Home', url_for('books.catalog')), ('Inbox', None)],
+                                                    'profile.view': [('Home', url_for('books.catalog')), ('Profile', None)],
+                                                    'profile.edit': [('Home', url_for('books.catalog')), ('Profile', url_for('profile.view', user_id=current_user.id)), ('Edit Profile', None)],
+                                                    'admin.dashboard': [('Home', url_for('books.catalog')), ('Admin Dashboard', None)],
+                                                    'admin.users': [('Home', url_for('books.catalog')), ('Admin Dashboard', url_for('admin.dashboard')), ('Manage Users', None)],
+                                                    'admin.books': [('Home', url_for('books.catalog')), ('Admin Dashboard', url_for('admin.dashboard')), ('Manage Books', None)],
+                                                    'admin.reports': [('Home', url_for('books.catalog')), ('Admin Dashboard', url_for('admin.dashboard')), ('Reports', None)]
+                                                } %}
+                        {% set trail = breadcrumb_trails.get(breadcrumb_endpoint, [('Home', url_for('books.catalog')), ('Page', None)]) %}
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                {% for label, link in trail %}
+                                    <li class="breadcrumb-item {% if not link %}active{% endif %}" {% if not link
+                                        %}aria-current="page" {% endif %}>
+                                        {% if link %}
+                                            <a class="text-black fw-bold" href="{{ link }}">{{ label }}</a>
+                                        {% else %}
+                                            <span class="fw-semibold">{{ label }}</span>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                        </nav>
+                    {% endblock %}
+                </section>
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    {{ confirm_modal(modal_id='logoutConfirmModal',
+        title='Logout',
+        message='Are you sure you want to log out?',
+        confirm_text='Logout',
+        confirm_btn_class='btn-danger',
+        confirm_href=url_for('auth.logout') 
+    ) }}
+{% endblock %}

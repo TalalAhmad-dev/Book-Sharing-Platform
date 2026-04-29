@@ -1,48 +1,71 @@
 {% extends "base/protected.html" %}
 {% block title %}Manage Books - BookShare{% endblock %}
 {% block content %}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4"
+         data-aos="fade-down"
+         data-aos-easing="ease-in-sine"
+         data-aos-duration="200">
         <h2 class="h3">Manage Books</h2>
     </div>
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
+    <div class="card bg-dark text-light shadow"
+         data-aos="fade-up"
+         data-aos-easing="linear"
+         data-aos-delay="150"
+         data-aos-offset="0"
+         data-aos-duration="350">
+        <div class="card-body px-2">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 table-striped">
-                    <thead class="table-light">
+                <table class="table table-dark table-hover table-striped align-middle mb-0 {% if books %}dataTable{% endif %}"
+                       {% if books %} data-default-order="0,desc" data-export-title="Manage Books - BookShare" data-non-orderable-targets="-1" data-non-searchable-targets="-1" data-no-export-targets="-1" {% endif %}>
+                    <thead>
                         <tr>
                             <th class="ps-3">ID</th>
                             <th>Title</th>
                             <th>Author</th>
                             <th>Owner</th>
                             <th>Status</th>
+                            <th>Created At</th>
+                            <th>Last Updated</th>
                             <th class="text-end pe-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="table-group-divider">
                         {% for book in books %}
                             <tr>
-                                <td class="px-3 text-muted">#{{ book.id }}</td>
+                                <td class="px-3 text-light">#{{ book.id }}</td>
                                 <td>
                                     <a href="{{ url_for('books.detail', book_id=book.id) }}"
-                                       class="text-decoration-none fw-bold text-dark">{{ book.title }}</a>
+                                       class="text-decoration-none fw-bold text-light">{{ book.title }}</a>
                                 </td>
                                 <td>{{ book.author }}</td>
                                 <td>
                                     <a href="{{ url_for('profile.view', user_id=book.owner_id) }}"
-                                       class="text-decoration-none">{{ book.owner.name }}</a>
+                                       class="text-decoration-none text-light">{{ book.owner.name }}</a>
                                 </td>
                                 <td>
                                     <span class="badge {% if book.status == 'available' %}bg-info{% else %}bg-warning text-dark{% endif %} text-capitalize">
                                         {{ book.status }}
                                     </span>
                                 </td>
+                                <td>
+                                    <span>{{ book.created_at|format_date(tz=False) }}</span>
+                                </td>
+                                <td>
+                                    <span>{{ (book.updated_at|format_date(tz=False) ~ ' - ' + book.updated_at|format_time) if book.updated_at else '-' }}</span>
+                                </td>
                                 <td class="text-end pe-3">
+                                    <form id="{{ viewBookDetailsForm ~ book.id }}"
+                                          action="{{ url_for('books.detail', book_id=book.id) }}"
+                                          method="GET"
+                                          class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary fw-semibold me-1">View Details</button>
+                                    </form>
                                     <form id="{{ 'deleteBookForm' ~ book.id }}"
                                           action="{{ url_for('books.delete', book_id=book.id) }}"
                                           method="POST"
                                           class="d-inline">
                                         <button type="button"
-                                                class="btn btn-sm btn-outline-danger"
+                                                class="btn btn-sm btn-danger fw-semibold"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="{{ '#deleteBookModal' ~ book.id }}">Delete</button>
                                     </form>
@@ -54,10 +77,15 @@
                                                                         form_id='deleteBookForm' ~ book.id) }}
                                 </td>
                             </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">No books found.</td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

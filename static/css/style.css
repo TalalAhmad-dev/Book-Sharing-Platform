@@ -6,6 +6,11 @@
     rgba(202, 26, 10, 0.96) 0%,
     rgba(253, 141, 13, 0.92) 100%
   );
+  /* --dtcc-button_background: var(--bs-secondary) !important; */
+  --dtcc-button-icon_color: var(--bs-white) !important;
+  --dtcc-button-icon_size: 1.0625rem !important;
+  --dtcc-button_hover-background: var(--bs-black) !important;
+  --dtcc-button_padding: 3px 4px !important;
 }
 
 input,
@@ -408,4 +413,18 @@ textarea {
 .cursor-disabled {
   cursor: not-allowed !important;
   pointer-events: all !important;
+}
+
+.pagination {
+  --bs-pagination-active-bg: var(--bs-light) !important;
+  --bs-pagination-active-color: var(--bs-dark) !important;
+  --bs-pagination-active-border-color: var(--bs-secondary) !important;
+  --bs-pagination-disabled-color: var(--bs-light) !important;
+  --bs-pagination-disabled-bg: var(--bs-secondary) !important;
+  --bs-pagination-bg: var(--bs-dark) !important;
+  --bs-pagination-color: var(--bs-light) !important;
+  --bs-pagination-hover-color: var(--bs-light) !important;
+  --bs-pagination-hover-bg: rgba(var(--bs-secondary-rgb), 0.4) !important;
+  --bs-pagination-focus-color: var(--bs-dark) !important;
+  --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(var(--bs-light-rgb), 0.25)
 }

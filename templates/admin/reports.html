@@ -1,77 +1,116 @@
 {% extends "base/protected.html" %}
-{% block title %}Review Reports - BookShare{% endblock %}
+{% block title %}Manage Reports - BookShare{% endblock %}
 {% block content %}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="h3">Review Reports</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4"
+         data-aos="fade-down"
+         data-aos-easing="ease-in-sine"
+         data-aos-duration="200">
+        <h2 class="h3">Manage Reports</h2>
     </div>
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
+    <div class="card bg-dark text-light shadow"
+         data-aos="fade-up"
+         data-aos-easing="linear"
+         data-aos-delay="150"
+         data-aos-offset="0"
+         data-aos-duration="350">
+        <div class="card-body px-2">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 table-striped">
-                    <thead class="table-light">
+                <table class="table table-dark table-hover table-striped align-middle mb-0 {% if reports %}dataTable{% endif %}"
+                       {% if reports %} data-default-order="0,desc" data-export-title="Review Reports - BookShare" data-non-orderable-targets="-1" data-non-searchable-targets="-1" data-no-export-targets="-1" {% endif %}>
+                    <thead>
                         <tr>
                             <th class="ps-3">ID</th>
                             <th>Reporter</th>
-                            <th class="w-25">Target</th>
-                            <th class="w-25">Reason</th>
+                            <th>Target</th>
+                            <th>Reason</th>
                             <th>Status</th>
+                            <th>Submitted At</th>
+                            <th>Last Updated</th>
                             <th class="text-end pe-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="table-group-divider">
                         {% for report in reports %}
                             <tr>
-                                <td class="px-3 text-muted">#{{ report.id }}</td>
+                                <td class="px-3 text-light">#{{ report.id }}</td>
                                 <td>
                                     <a href="{{ url_for('profile.view', user_id=report.reporter_id) }}"
-                                       class="text-decoration-none">{{ report.reporter.name }}</a>
+                                       class="text-decoration-underline fw-semibold text-light">{{ report.reporter.name }}</a>
                                 </td>
                                 <td>
+                                    {% set target_url = None %}
                                     {% if report.reported_book_id %}
-                                        <span class="badge bg-light text-dark border me-1">Book</span>
-                                        <a href="{{ url_for('books.detail', book_id=report.reported_book_id) }}"
-                                           class="text-decoration-none small text-truncate d-inline-block w-100">
+                                        {% set target_url = url_for('books.detail', book_id=report.reported_book_id) %}
+                                        <div>
+                                            <span class="badge bg-light text-dark border me-1 mb-1">Book</span>
+                                        </div>
+                                        <a href="{{ target_url }}"
+                                           class="text-decoration-underline text-light small text-truncate d-inline-block w-100 fw-semibold">
                                             {{ report.reported_book.title }}
                                         </a>
                                     {% elif report.reported_user_id %}
-                                        <span class="badge bg-light text-dark border me-1">User</span>
-                                        <a href="{{ url_for('profile.view', user_id=report.reported_user_id) }}"
-                                           class="text-decoration-none small text-truncate d-inline-block w-100">
+                                        {% set target_url = url_for('profile.view', user_id=report.reported_user_id) %}
+                                        <div>
+                                            <span class="badge bg-light text-dark border me-1 mb-1">User</span>
+                                        </div>
+                                        <a href="{{ target_url }}"
+                                           class="text-decoration-underline text-light small text-truncate d-inline-block w-100 fw-semibold">
                                             {{ report.reported_user.name }}
                                         </a>
+                                    {% else %}
+                                        <span class="text-white-50 small">No target available</span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <span class="small text-muted text-truncate d-inline-block w-100"
-                                          title="{{ report.reason }}">{{ report.reason }}</span>
+                                    <textarea name="reportReason"
+                                              id="{{ reportReason ~ report.id }}"
+                                              class="form-control bg-secondary-subtle text-dark"
+                                              rows="2"
+                                              readonly>{{ report.reason }}</textarea>
                                 </td>
                                 <td>
-                                    <span class="badge bg-{% if report.status == 'open' %}warning text-dark{% elif report.status == 'reviewed' %}success{% else %}secondary{% endif %} text-capitalize">{{ report.status }}</span>
+                                    <span class="badge {% if report.status == 'open' %}bg-warning text-dark{% elif report.status == 'reviewed' %}bg-success{% else %}bg-secondary{% endif %} text-capitalize">
+                                        {{ report.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span>{{ report.created_at|format_date(tz=False) }}</span>
+                                </td>
+                                <td>
+                                    <span>{{ (report.updated_at|format_date(tz=False) ~ ' - ' + report.updated_at|format_time) if report.updated_at else '-' }}</span>
                                 </td>
                                 <td class="text-end pe-3">
-                                    <div class="btn-group btn-group-sm">
+                                    {% if report.status == 'open' %}
                                         <form action="{{ url_for('admin.mark_report_reviewed', report_id=report.id) }}"
-                                              method="POST">
-                                            <button type="submit"
-                                                    class="btn btn-outline-success"
-                                                    {% if report.status != 'open' %}disabled{% endif %}>
-                                                Mark Reviewed
-                                            </button>
+                                              method="POST"
+                                              class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-success fw-semibold me-1">Mark Reviewed</button>
                                         </form>
-                                        <form action="{{ url_for('admin.dismiss_report', report_id=report.id) }}"
-                                              method="POST">
-                                            <button type="submit"
-                                                    class="btn btn-outline-secondary"
-                                                    {% if report.status != 'open' %}disabled{% endif %}>
+                                        <form id="{{ 'dismissReportForm' ~ report.id }}"
+                                              action="{{ url_for('admin.dismiss_report', report_id=report.id) }}"
+                                              method="POST"
+                                              class="d-inline">
+                                            <button type="button"
+                                                    class="btn btn-sm btn-secondary fw-semibold"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="{{ '#dismissReportModal' ~ report.id }}">
                                                 Dismiss
                                             </button>
                                         </form>
-                                    </div>
+                                        {{ confirm_modal(modal_id='dismissReportModal' ~ report.id,
+                                                                                title='Dismiss Report',
+                                                                                message='Are you sure you want to dismiss report #' ~ report.id ~ '?',
+                                                                                confirm_text='Dismiss Report',
+                                                                                confirm_btn_class='btn-secondary',
+                                                                                form_id='dismissReportForm' ~ report.id) }}
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-dark border">No Actions</span>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">No reports found.</td>
+                                <td colspan="8" class="text-center py-4 text-white-50">No reports found.</td>
                             </tr>
                         {% endfor %}
                     </tbody>
