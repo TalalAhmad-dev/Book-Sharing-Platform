@@ -44,7 +44,7 @@
                     {% if current_user.id != user.id %}
                         <div class="collapse mb-4" id="reportUserForm">
                             <form action="{{ url_for('reports.report_user', user_id=user.id) }}"
-                                  method="POST">
+                                  method="post">
                                 <div class="mb-2 form-floating">
                                     <textarea class="form-control floating-textarea-height"
                                               id="reason"

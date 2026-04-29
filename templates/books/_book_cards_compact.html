@@ -35,7 +35,7 @@
                                class="btn btn-light fw-semibold btn-sm">View Details</a>
                             {% if card_context == 'favorites' %}
                                 <form action="{{ url_for('favorites.remove', book_id=book.id) }}"
-                                      method="POST">
+                                      method="post">
                                     <button type="submit" class="btn btn-outline-danger fw-semibold btn-sm w-100">Remove Favorite</button>
                                 </form>
                             {% endif %}

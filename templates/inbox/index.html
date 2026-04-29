@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="h3 mb-0">Inbox</h2>
         {% if notifications %}
-            <form action="{{ url_for('inbox.mark_all_read') }}" method="POST">
+            <form action="{{ url_for('inbox.mark_all_read') }}" method="post">
                 <button type="submit" class="btn btn-outline-success fw-semibold btn-sm">Mark all as read</button>
             </form>
         {% endif %}
@@ -38,7 +38,13 @@
                                     <span class="badge text-bg-light border text-capitalize">{{ notification.category }}</span>
                                 </td>
                                 <td class="fw-semibold">{{ notification.title }}</td>
-                                <td class="small">{{ notification.message }}</td>
+                                <td>
+                                    <textarea name="notificationMessage"
+                                              id="{{ 'notificationMessage' ~ notification.id }}"
+                                              class="form-control {% if notification.is_read %}bg-secondary-subtle text-dark{% else %}bg-black text-light{% endif %}"
+                                              rows="2"
+                                              readonly>{{ notification.message }}</textarea>
+                                </td>
                                 <td class="text-nowrap">
                                     {{ notification.created_at|format_date(tz=False) + ' - ' + notification.created_at|format_time if notification.created_at else
                                     '-' }}
@@ -47,13 +53,13 @@
                                     <div class="btn-group btn-group-sm">
                                         {% if not notification.is_read %}
                                             <form action="{{ url_for('inbox.mark_read', notification_id=notification.id) }}"
-                                                  method="POST">
+                                                  method="post">
                                                 <button type="submit" class="btn btn-sm btn-outline-success fw-semibold me-2">Mark read</button>
                                             </form>
                                         {% endif %}
                                         <form id="{{ 'deleteNotificationForm' ~ notification.id }}"
                                               action="{{ url_for('inbox.delete', notification_id=notification.id) }}"
-                                              method="POST">
+                                              method="post">
                                             <button type="button"
                                                     class="btn btn-sm btn-danger fw-semibold"
                                                     data-bs-toggle="modal"

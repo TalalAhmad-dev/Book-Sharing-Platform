@@ -14,7 +14,7 @@
                 <div class="card-body p-4">
                     <h2 class="card-title text-center pb-2 mb-4 border-bottom border-2 border-light">Edit Profile</h2>
                     <form action="{{ url_for('profile.edit') }}"
-                          method="POST"
+                          method="post"
                           enctype="multipart/form-data">
                         <div class="text-center mb-4">
                             {% if profile_avatar %}

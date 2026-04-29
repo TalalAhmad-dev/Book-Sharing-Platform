@@ -63,7 +63,7 @@
                                 </td>
                                 <td>
                                     <textarea name="reportReason"
-                                              id="{{ reportReason ~ report.id }}"
+                                              id="{{ 'reportReason' ~ report.id }}"
                                               class="form-control bg-secondary-subtle text-dark"
                                               rows="2"
                                               readonly>{{ report.reason }}</textarea>
@@ -82,16 +82,16 @@
                                 <td class="text-end pe-3">
                                     {% if report.status == 'open' %}
                                         <form action="{{ url_for('admin.mark_report_reviewed', report_id=report.id) }}"
-                                              method="POST"
+                                              method="post"
                                               class="d-inline">
                                             <button type="submit" class="btn btn-sm btn-outline-success fw-semibold me-1">Mark Reviewed</button>
                                         </form>
                                         <form id="{{ 'dismissReportForm' ~ report.id }}"
                                               action="{{ url_for('admin.dismiss_report', report_id=report.id) }}"
-                                              method="POST"
+                                              method="post"
                                               class="d-inline">
                                             <button type="button"
-                                                    class="btn btn-sm btn-secondary fw-semibold"
+                                                    class="btn btn-sm btn-danger fw-semibold"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="{{ '#dismissReportModal' ~ report.id }}">
                                                 Dismiss

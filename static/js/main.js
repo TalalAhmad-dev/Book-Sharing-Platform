@@ -43,6 +43,22 @@ document.addEventListener("DOMContentLoaded", function () {
       table.dataset.nonSearchableTargets,
     );
     const noExportTargets = parseTargetIndexes(table.dataset.noExportTargets);
+    const noColumnControlTargets = parseTargetIndexes(
+      table.dataset.noColumnControlTargets,
+    );
+    const defaultNoControlTargets = [
+      ...nonOrderableTargets,
+      ...nonSearchableTargets,
+      ...noExportTargets,
+    ];
+    const effectiveNoControlTargets = [
+      ...new Set(
+        (noColumnControlTargets.length
+          ? noColumnControlTargets
+          : defaultNoControlTargets
+        ).filter((target) => Number.isInteger(target)),
+      ),
+    ];
     const columnDefs = [];
 
     if (nonOrderableTargets.length) {
@@ -63,6 +79,13 @@ document.addEventListener("DOMContentLoaded", function () {
       columnDefs.push({
         targets: noExportTargets,
         className: "dt-no-export",
+      });
+    }
+
+    if (effectiveNoControlTargets.length) {
+      columnDefs.push({
+        targets: effectiveNoControlTargets,
+        columnControl: [],
       });
     }
 

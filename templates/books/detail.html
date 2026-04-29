@@ -72,7 +72,7 @@
                                         <div class="col-12 d-grid">
                                             <form id="bookDetailDeleteForm"
                                                   action="{{ url_for('books.delete', book_id=book.id) }}"
-                                                  method="POST"
+                                                  method="post"
                                                   class="d-grid">
                                                 <button type="button"
                                                         class="btn btn-outline-danger fw-semibold"
@@ -125,7 +125,7 @@
                         <div class="col-12 col-md-6">
                             {% if is_favorite %}
                                 <form action="{{ url_for('favorites.remove', book_id=book.id) }}"
-                                      method="POST"
+                                      method="post"
                                       class="d-grid">
                                     <button type="submit" class="btn btn-outline-danger fw-semibold">
                                         <i class="bi bi-heart-fill me-1"></i>Remove from Favorites
@@ -133,7 +133,7 @@
                                 </form>
                             {% else %}
                                 <form action="{{ url_for('favorites.add', book_id=book.id) }}"
-                                      method="POST"
+                                      method="post"
                                       class="d-grid">
                                     <button type="submit" class="btn btn-secondary fw-semibold">
                                         <i class="bi bi-heart me-1"></i>Add to Favorites
@@ -154,7 +154,7 @@
                     </div>
                     <div class="collapse mb-4" id="reportBookForm">
                         <form action="{{ url_for('reports.report_book', book_id=book.id) }}"
-                              method="POST">
+                              method="post">
                             <div class="mb-2 form-floating">
                                 <textarea class="form-control floating-textarea-height"
                                           id="reason"

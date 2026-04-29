@@ -12,7 +12,7 @@
                 <div class="card-body p-4">
                     <h2 class="card-title text-center pb-2 mb-4 border-bottom border-2 border-light">Edit Book: {{ book.title }}</h2>
                     <form action="{{ url_for('books.edit', book_id=book.id) }}"
-                          method="POST"
+                          method="post"
                           enctype="multipart/form-data">
                         <div class="mb-3 form-floating">
                             <input type="text"
@@ -50,8 +50,9 @@
                                     data-placeholder="Select Category"
                                     required>
                                 <option {% if not book.category %}selected{% endif %} value="">Select Category</option>
-                                <option class="mx-2" value="Programming" {% if book.category=='Programming' %}selected{%
-                                    endif %}>Programming</option>
+                                <option class="mx-2"
+                                        value="Programming"
+                                        {% if book.category=='Programming' %}selected{% endif %}>Programming</option>
                                 <option value="Fiction" {% if book.category=='Fiction' %}selected{% endif %}>Fiction</option>
                                 <option value="Science" {% if book.category=='Science' %}selected{% endif %}>Science</option>
                                 <option value="Other" {% if book.category=='Other' %}selected{% endif %}>Other</option>

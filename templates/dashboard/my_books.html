@@ -44,7 +44,7 @@
                                            class="btn btn-outline-primary">Edit</a>
                                         <form id="{{ 'myBookDeleteForm' ~ book.id }}"
                                               action="{{ url_for('books.delete', book_id=book.id) }}"
-                                              method="POST"
+                                              method="post"
                                               class="d-inline">
                                             <button type="button"
                                                     class="btn btn-outline-danger"
@@ -121,12 +121,12 @@
                                     <div class="btn-group btn-group-sm">
                                         {% if request.status in ('pending', 'suggested') %}
                                             <form action="{{ url_for('borrow.accept', req_id=request.id) }}"
-                                                  method="POST"
+                                                  method="post"
                                                   class="d-inline">
                                                 <button type="submit" class="btn btn-success">Accept</button>
                                             </form>
                                             <form action="{{ url_for('borrow.reject', req_id=request.id) }}"
-                                                  method="POST"
+                                                  method="post"
                                                   class="d-inline">
                                                 <button type="submit" class="btn btn-danger">Reject</button>
                                             </form>
@@ -138,12 +138,12 @@
                                             {% endif %}
                                         {% elif request.status == 'accepted' %}
                                             <form action="{{ url_for('borrow.mark_borrowed', req_id=request.id) }}"
-                                                  method="POST">
+                                                  method="post">
                                                 <button type="submit" class="btn btn-sm btn-primary">Mark Borrowed</button>
                                             </form>
                                         {% elif request.status == 'borrowed' and not request.book.book_type == 'digital' %}
                                             <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}"
-                                                  method="POST">
+                                                  method="post">
                                                 <button type="submit" class="btn btn-sm btn-success">Mark Returned</button>
                                             </form>
                                         {% else %}
@@ -159,7 +159,7 @@
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                     <form action="{{ url_for('borrow.suggest', req_id=request.id) }}"
-                                                          method="POST">
+                                                          method="post">
                                                         <div class="modal-header">
                                                             <h5 class="modal-title fw-semibold"
                                                                 id="suggestModalLabel{{ request.id }}">

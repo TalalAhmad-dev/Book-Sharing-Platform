@@ -54,15 +54,15 @@
                                     <span>{{ (book.updated_at|format_date(tz=False) ~ ' - ' + book.updated_at|format_time) if book.updated_at else '-' }}</span>
                                 </td>
                                 <td class="text-end pe-3">
-                                    <form id="{{ viewBookDetailsForm ~ book.id }}"
+                                    <form id="{{ 'viewBookDetailsForm' ~ book.id }}"
                                           action="{{ url_for('books.detail', book_id=book.id) }}"
-                                          method="GET"
+                                          method="get"
                                           class="d-inline">
                                         <button type="submit" class="btn btn-sm btn-outline-primary fw-semibold me-1">View Details</button>
                                     </form>
                                     <form id="{{ 'deleteBookForm' ~ book.id }}"
                                           action="{{ url_for('books.delete', book_id=book.id) }}"
-                                          method="POST"
+                                          method="post"
                                           class="d-inline">
                                         <button type="button"
                                                 class="btn btn-sm btn-danger fw-semibold"
@@ -87,5 +87,4 @@
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

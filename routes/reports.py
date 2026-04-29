@@ -1,6 +1,6 @@
 from flask import Blueprint, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
-
+from notification_service import queue_notification
 from extensions import db
 from models import Book, Report, User
 
@@ -43,8 +43,22 @@ def report_book(book_id):
         report.reporter_id = current_user.id
         report.reported_book_id = book_id
         report.reason = reason
+        
+        admin_user = User.query.filter_by(role='admin').first()
+        if admin_user:
+            notification = queue_notification(
+                recipient_id=admin_user,
+                title='New Book Report',
+                message=f'User {current_user.username} has reported book "{book.title}" for: {reason}',
+                category='book report',
+                actor_id=current_user.id,
+                entity_type='book_report',
+                entity_id=report.id
+            )
 
         db.session.add(report)
+        if notification:
+            db.session.add(notification)
         db.session.commit()
         flash('Book report submitted.', 'success')
     except Exception as e:
@@ -91,9 +105,24 @@ def report_user(user_id):
         report.reporter_id = current_user.id
         report.reported_user_id = user_id
         report.reason = reason
+        
+        admin_user = User.query.filter_by(role='admin').first()
+        if admin_user:
+            notification = queue_notification(
+                recipient_id=admin_user,
+                title='New User Report',
+                message=f'User {current_user.username} has reported user {user.username} for: {reason}',
+                category='user report',
+                actor_id=current_user.id,
+                entity_type='user_report',
+                entity_id=report.id
+            )
 
         db.session.add(report)
+        if notification:
+            db.session.add(notification)
         db.session.commit()
+        
         flash('User report submitted.', 'success')
     except Exception as e:
         db.session.rollback()

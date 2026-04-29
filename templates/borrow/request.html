@@ -37,7 +37,7 @@
                         </div>
                     </div>
                     <form action="{{ url_for('books.request_borrow', book_id=book.id) }}"
-                          method="POST">
+                          method="post">
                         {% if book.book_type == 'physical' %}
                             <h5 class="mb-3">Meeting Details</h5>
                             <div class="row g-3">

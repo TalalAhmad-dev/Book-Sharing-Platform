@@ -51,14 +51,14 @@
                                         <div class="btn-group btn-group-sm">
                                             {% if request.book.book_type == 'digital' %}
                                                 <form action="{{ url_for('books.download', book_id=request.book_id) }}"
-                                                      method="GET"
+                                                      method="get"
                                                       class="d-inline">
                                                     <button class="btn btn-success" type="submit" {% if request.status !='borrowed'
                                                         %}disabled{% endif %}>Download</button>
                                                 </form>
                                             {% endif %}
                                             <form action="{{ url_for('borrow.mark_returned', req_id=request.id) }}"
-                                                  method="POST"
+                                                  method="post"
                                                   class="d-inline">
                                                 <button class="btn btn-primary" type="submit" {% if not request.status=='borrowed'
                                                     or request.book.book_type=='physical' %}disabled{% endif %}>
@@ -81,7 +81,7 @@
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
                                                         <form action="{{ url_for('borrow.suggest', req_id=request.id) }}"
-                                                              method="POST"
+                                                              method="post"
                                                               id="suggestion">
                                                             <div class="modal-header">
                                                                 <h5 class="modal-title fw-semibold"
@@ -146,7 +146,7 @@
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                             <form action="{{ url_for('borrow.accept', req_id=request.id) }}"
-                                                                  method="POST"
+                                                                  method="post"
                                                                   class="d-inline"
                                                                   id="accept">
                                                                 <button type="submit" form="accept" class="btn btn-success">Accept</button>

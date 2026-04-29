@@ -53,14 +53,14 @@
                                 <td class="text-end pe-3">
                                     {% if user.id != current_user.id %}
                                         <form action="{{ url_for('profile.view', user_id=user.id) }}"
-                                              method="GET"
+                                              method="get"
                                               class="d-inline">
                                             <button type="submit" class="btn btn-sm btn-outline-primary fw-semibold me-2">View Profile</button>
                                         </form>
                                         {% if user.status == 'active' %}
                                             <form id="{{ 'blockUserForm' ~ user.id }}"
                                                   action="{{ url_for('admin.block_user', user_id=user.id) }}"
-                                                  method="POST"
+                                                  method="post"
                                                   class="d-inline">
                                                 <button type="button"
                                                         class="btn btn-sm btn-danger fw-semibold"
@@ -77,7 +77,7 @@
                                                                                         form_id='blockUserForm' ~ user.id) }}
                                         {% else %}
                                             <form action="{{ url_for('admin.unblock_user', user_id=user.id) }}"
-                                                  method="POST"
+                                                  method="post"
                                                   class="d-inline">
                                                 <button type="submit" class="btn btn-sm btn-outline-success fw-semibold">Unblock</button>
                                             </form>
