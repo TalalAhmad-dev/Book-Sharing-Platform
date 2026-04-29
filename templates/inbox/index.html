@@ -41,7 +41,7 @@
                                 <td>
                                     <textarea name="notificationMessage"
                                               id="{{ 'notificationMessage' ~ notification.id }}"
-                                              class="form-control {% if notification.is_read %}bg-secondary-subtle text-dark{% else %}bg-black text-light{% endif %}"
+                                              class="form-control text-dark {% if not notification.is_read %}bg-light{% else %}bg-secondary-subtle{% endif %}"
                                               rows="2"
                                               readonly>{{ notification.message }}</textarea>
                                 </td>

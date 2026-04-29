@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
 from functools import wraps
+from sqlalchemy.orm import joinedload
 from models import User, Book, Report, BorrowRequest
 from extensions import db
 from notification_service import queue_notification
@@ -26,11 +27,42 @@ def dashboard():
             'reports': Report.query.filter_by(status='open').count(),
             'borrows': BorrowRequest.query.filter_by(status='borrowed').count()
         }
-        return render_template('admin/dashboard.html', stats=stats)
+
+        open_reports = (
+            Report.query.options(
+                joinedload(Report.reporter),
+                joinedload(Report.reported_book),
+                joinedload(Report.reported_user)
+            )
+            .filter_by(status='open').order_by(Report.created_at.desc()).limit(5).all()
+        )
+
+        recent_users = User.query.order_by(User.created_at.desc()).limit(5).all()
+
+        recent_books = (
+            Book.query.options(joinedload(Book.owner)).filter(Book.deleted_at.is_(None))
+            .order_by(Book.created_at.desc())
+            .limit(5).all()
+            )
+        
+
+        return render_template(
+            'admin/dashboard.html',
+            stats=stats,
+            open_reports=open_reports,
+            recent_users=recent_users,
+            recent_books=recent_books
+        )
     except Exception as e:
         current_app.logger.exception(f'Error loading admin dashboard: {e}')
         flash('Unable to load the admin dashboard right now.', 'danger')
-        return render_template('admin/dashboard.html', stats={'users': 0, 'books': 0, 'reports': 0, 'borrows': 0})
+        return render_template(
+            'admin/dashboard.html',
+            stats={'users': 0, 'books': 0, 'reports': 0, 'borrows': 0},
+            open_reports=[],
+            recent_users=[],
+            recent_books=[]
+        )
 
 @admin_bp.route('/users')
 @login_required

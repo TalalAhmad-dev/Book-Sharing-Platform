@@ -29,7 +29,7 @@
                     </div>
                     <div class="d-grid gap-2 mb-4 w-75 text-center mx-auto">
                         {% if current_user.id == user.id %}
-                            <a href="{{ url_for('profile.edit') }}" class="btn btn-secondary">
+                            <a href="{{ url_for("profile.edit") }}" class="btn btn-secondary">
                                 <i class="bi bi-pencil me-2"></i>Edit Profile
                             </a>
                         {% else %}
@@ -64,12 +64,12 @@
                     <div class="pt-3">
                         <div class="mb-3 form-floating">
                             <input type="email"
-                                   class="form-control {% if current_user.id != user.id %}email-masked cursor-disabled{% endif %}"
+                                   class="form-control {% if current_user.id != user.id and current_user.role == 'member' %}email-masked cursor-disabled{% endif %}"
                                    id="email"
                                    name="email"
                                    placeholder="User Email"
                                    readonly
-                                   value="{% if current_user.id == user.id %}{{ user.email }}{% else %}******@****.com{% endif %}">
+                                   value="{% if current_user.id == user.id or current_user.role == 'admin' %}{{ user.email }}{% else %}******@****.com{% endif %}">
                             <label for="email" class="form-label fw-semibold">
                                 <i class="bi bi-envelope"></i> Email
                             </label>
@@ -218,7 +218,7 @@
                                         <td colspan="6" class="text-center py-4 text-white-50">
                                             {% if current_user.id == user.id %}
                                                 <div class="mb-2">You haven't shared any books yet.</div>
-                                                <a href="{{ url_for('books.add') }}"
+                                                <a href="{{ url_for("books.add") }}"
                                                    class="btn btn-secondary btn-sm fw-semibold">Add Book</a>
                                             {% else %}
                                                 <span>This user hasn't shared any books yet.</span>
