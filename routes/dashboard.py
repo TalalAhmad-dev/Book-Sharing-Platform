@@ -39,22 +39,65 @@ def index():
                                pending_requests_count=0,
                                favorites_count=0)
 
-@dashboard_bp.route('/my-books')
+@dashboard_bp.route('/incoming-requests')
 @login_required
-def my_books():
+def incoming_requests():
     try:
-        my_books = Book.query.filter(
-            Book.owner_id == current_user.id,
-            Book.deleted_at.is_(None)
-        ).all()
-        incoming_requests = BorrowRequest.query.join(Book).filter(
-            Book.owner_id == current_user.id,
-            Book.deleted_at.is_(None)
-        ).all()
-        return render_template('dashboard/my_books.html', my_books=my_books, incoming_requests=incoming_requests)
+        incoming_requests = (
+            BorrowRequest.query.options(
+                joinedload(BorrowRequest.book).joinedload(Book.owner),
+                joinedload(BorrowRequest.borrower)
+            )
+            .join(Book)
+            .filter(
+                Book.owner_id == current_user.id,
+                Book.deleted_at.is_(None)
+            )
+            .order_by(BorrowRequest.created_at.desc())
+            .all()
+        )
+
+        incoming_messages = {}
+        incoming_summary = {
+            'total': len(incoming_requests),
+            'pending': 0,
+            'actionable': 0,
+            'borrowed': 0,
+            'returned': 0
+        }
+
+        for borrow_request in incoming_requests:
+            message_data = {'borrower': '', 'owner': ''}
+            if borrow_request.message:
+                try:
+                    parsed = json.loads(borrow_request.message)
+                    if isinstance(parsed, dict):
+                        message_data['borrower'] = parsed.get('borrower', '') or ''
+                        message_data['owner'] = parsed.get('owner', '') or ''
+                    else:
+                        message_data['borrower'] = str(parsed)
+                except (ValueError, TypeError):
+                    message_data['borrower'] = str(borrow_request.message)
+            incoming_messages[borrow_request.id] = message_data
+
+            if borrow_request.status == 'pending':
+                incoming_summary['pending'] += 1
+            if borrow_request.status in ('pending', 'suggested', 'accepted'):
+                incoming_summary['actionable'] += 1
+            if borrow_request.status == 'borrowed':
+                incoming_summary['borrowed'] += 1
+            if borrow_request.status == 'returned':
+                incoming_summary['returned'] += 1
+
+        return render_template(
+            'dashboard/incoming_requests.html',
+            incoming_requests=incoming_requests,
+            incoming_messages=incoming_messages,
+            incoming_summary=incoming_summary
+        )
     except Exception as e:
-        current_app.logger.exception(f"Error loading my books dashboard: {e}")
-        flash("An error occurred while loading your books.", "danger")
+        current_app.logger.exception(f"Error loading incoming requests dashboard: {e}")
+        flash("An error occurred while loading incoming requests.", "danger")
         return redirect(url_for('dashboard.index'))
 
 @dashboard_bp.route('/borrowed')

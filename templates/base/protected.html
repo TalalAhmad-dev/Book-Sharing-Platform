@@ -71,9 +71,9 @@
                         </a>
                         <ul class="nav flex-column sidebar-subnav">
                             <li class="nav-item">
-                                <a class="sidebar-sub-link fw-semibold nav-link {% if endpoint == 'dashboard.my_books' %}active{% endif %}"
-                                   href="{{ url_for('dashboard.my_books') }}">
-                                    <i class="bi bi-collection me-2"></i>My Shared Books
+                                <a class="sidebar-sub-link fw-semibold nav-link {% if endpoint == 'dashboard.incoming_requests' %}active{% endif %}"
+                                   href="{{ url_for('dashboard.incoming_requests') }}">
+                                    <i class="bi bi-inboxes me-2"></i>Incoming Requests
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -239,7 +239,7 @@
                                                     'books.detail': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog')), ('Book Details', None)],
                                                     'books.request_borrow': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog'))] + ([('Book Details', url_for('books.detail', book_id=book.id))] if book else []) + [('Borrow Book', None)],
                                                     'dashboard.index': [('Home', url_for('books.catalog')), ('Dashboard', None)],
-                                                    'dashboard.my_books': [('Home', url_for('books.catalog')), ('Dashboard', url_for('dashboard.index')), ('My Shared Books', None)],
+                                                    'dashboard.incoming_requests': [('Home', url_for('books.catalog')), ('Dashboard', url_for('dashboard.index')), ('Incoming Requests', None)],
                                                     'dashboard.borrowed': [('Home', url_for('books.catalog')), ('Dashboard', url_for('dashboard.index')), ('Borrowed Books', None)],
                                                     'favorites.index': [('Home', url_for('books.catalog')), ('Browse Books', url_for('books.catalog')), ('Favorites', None)],
                                                     'inbox.index': [('Home', url_for('books.catalog')), ('Inbox', None)],

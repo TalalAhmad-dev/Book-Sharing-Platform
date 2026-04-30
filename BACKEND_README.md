@@ -215,7 +215,7 @@ All routes are server-rendered (Flask + Jinja2). `GET` routes render templates; 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
 | `GET` | `/dashboard` | Login required | Main dashboard: My Books + incoming requests + Borrowed Books |
-| `GET` | `/dashboard/my-books` | Login required | All books where `owner_id = current_user.id` with their borrow requests |
+| `GET` | `/dashboard/incoming-requests` | Login required | Incoming borrow requests for books owned by current user |
 | `GET` | `/dashboard/borrowed` | Login required | All BorrowRequests where `borrower_id = current_user.id` and status in `[accepted, borrowed]` |
 
 ---

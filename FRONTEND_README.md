@@ -292,7 +292,7 @@ bookTypeRadios.forEach(radio => {
 - Fill Date, Time, Location, Message → Submit
 - Flash: *"Borrow request sent! Waiting for owner approval."*
 
-**Step 2 — Owner responds** (`/dashboard/my-books`)
+**Step 2 — Owner responds** (`/dashboard/incoming-requests`)
 - Incoming request visible in dashboard table
 - Owner clicks **Accept** → `status = 'accepted'`
 - Owner clicks **Reject** → `status = 'rejected'`
@@ -360,7 +360,7 @@ bookTypeRadios.forEach(radio => {
 | `books/add.html` | `/books/add` | Login req. | Add book form with conditional JS fields |
 | `books/edit.html` | `/books/<id>/edit` | Owner / Admin | Pre-filled edit form |
 | `dashboard/index.html` | `/dashboard` | Login req. | Stats, welcome, quick links |
-| `dashboard/my_books.html` | `/dashboard/my-books` | Login req. | My shared books + incoming requests |
+| `dashboard/my_books.html` | `/dashboard/incoming-requests` | Login req. | Incoming borrow requests with owner actions |
 | `dashboard/borrowed.html` | `/dashboard/borrowed` | Login req. | Books I am borrowing |
 | `profile/view.html` | `/profile/<id>` | Login req. | Public profile, user's books, report link |
 | `profile/edit.html` | `/profile/edit` | Login req. | Edit name, bio, contact, profile image |

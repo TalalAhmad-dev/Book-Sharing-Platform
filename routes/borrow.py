@@ -122,17 +122,17 @@ def request_borrow(book_id):
 @borrow_bp.route('/<int:req_id>/accept', methods=['POST'])
 @login_required
 def accept(req_id):
-    fallback_endpoint = 'dashboard.my_books'
+    fallback_endpoint = 'dashboard.incoming_requests'
     try:
         borrow_req = BorrowRequest.query.get_or_404(req_id)
         is_owner = borrow_req.book.owner_id == current_user.id
         is_borrower = borrow_req.borrower_id == current_user.id
-        fallback_endpoint = 'dashboard.my_books' if is_owner else 'dashboard.borrowed'
+        fallback_endpoint = 'dashboard.incoming_requests' if is_owner else 'dashboard.borrowed'
 
         if is_owner:
             if borrow_req.status not in ('pending', 'suggested'):
                 flash("Invalid request status for acceptance.", "danger")
-                return redirect(url_for('dashboard.my_books'))
+                return redirect(url_for('dashboard.incoming_requests'))
         elif is_borrower:
             if borrow_req.status != 'suggested':
                 flash("You can't accept your own borrow request.", "danger")
@@ -144,12 +144,12 @@ def accept(req_id):
             active_borrow = BorrowRequest.query.filter_by(book_id=borrow_req.book_id, status='borrowed').first()
             if active_borrow:
                 flash("This book is currently borrowed. You cannot accept another request until it is returned.", "danger")
-                return redirect(url_for('dashboard.my_books'))
+                return redirect(url_for('dashboard.incoming_requests'))
                 
             accepted_req = BorrowRequest.query.filter_by(book_id=borrow_req.book_id, status='accepted').first()
             if accepted_req and accepted_req.id != borrow_req.id:
                 flash("You have already accepted another request for this book. Complete or cancel that one first.", "warning")
-                return redirect(url_for('dashboard.my_books'))
+                return redirect(url_for('dashboard.incoming_requests'))
 
         borrow_req.status = 'accepted'
         
@@ -193,12 +193,12 @@ def accept(req_id):
 @borrow_bp.route('/<int:req_id>/suggest', methods=['POST'])
 @login_required
 def suggest(req_id):
-    fallback_endpoint = 'dashboard.my_books'
+    fallback_endpoint = 'dashboard.incoming_requests'
     try:
         borrow_req = BorrowRequest.query.get_or_404(req_id)
         is_owner = borrow_req.book.owner_id == current_user.id
         is_borrower = borrow_req.borrower_id == current_user.id
-        fallback_endpoint = 'dashboard.my_books' if is_owner else 'dashboard.borrowed'
+        fallback_endpoint = 'dashboard.incoming_requests' if is_owner else 'dashboard.borrowed'
 
         if not (is_owner or is_borrower):
             abort(403)
@@ -294,7 +294,7 @@ def reject(req_id):
             
         if not borrow_req.status == 'pending':
             flash("Only pending requests can be rejected.", "danger")
-            return redirect(url_for('dashboard.my_books'))
+            return redirect(url_for('dashboard.incoming_requests'))
 
         borrow_req.status = 'rejected'
         notification = queue_notification(
@@ -310,12 +310,12 @@ def reject(req_id):
             db.session.add(notification)
         db.session.commit()
         flash("Request rejected.", "info")
-        return redirect(url_for('dashboard.my_books'))
+        return redirect(url_for('dashboard.incoming_requests'))
     except Exception as e:
         db.session.rollback()
         current_app.logger.exception(f"Error rejecting request {req_id}: {e}")
         flash("An error occurred while rejecting the request.", "danger")
-        return redirect(url_for('dashboard.my_books'))
+        return redirect(url_for('dashboard.incoming_requests'))
 
 @borrow_bp.route('/<int:req_id>/mark-borrowed', methods=['POST'])
 @login_required
@@ -329,7 +329,7 @@ def mark_borrowed(req_id):
         if borrow_req.book.book_type == 'physical':
             if borrow_req.book.status != 'available':
                 flash("This book is not available to be marked as borrowed.", "danger")
-                return redirect(url_for('dashboard.my_books'))
+                return redirect(url_for('dashboard.incoming_requests'))
             borrow_req.book.status = 'borrowed'
         
         borrow_req.status = 'borrowed'
@@ -347,12 +347,12 @@ def mark_borrowed(req_id):
             db.session.add(notification)
         db.session.commit()
         flash("Book marked as borrowed.", "success")
-        return redirect(url_for('dashboard.my_books'))
+        return redirect(url_for('dashboard.incoming_requests'))
     except Exception as e:
         db.session.rollback()
         current_app.logger.exception(f"Error marking request {req_id} as borrowed: {e}")
         flash("An error occurred while updating the borrow status.", "danger")
-        return redirect(url_for('dashboard.my_books'))
+        return redirect(url_for('dashboard.incoming_requests'))
 
 @borrow_bp.route('/<int:req_id>/mark-returned', methods=['POST'])
 @login_required
@@ -364,7 +364,7 @@ def mark_returned(req_id):
         
         if borrow_req.book.book_type == 'digital' and borrow_req.book.owner_id == current_user.id:
             flash("Digital book borrowings can only be marked as returned by the borrower or will be marked as returned automatically after 7 days.", "danger") 
-            return redirect(url_for('dashboard.my_books'))
+            return redirect(url_for('dashboard.incoming_requests'))
         
         if borrow_req.book.book_type == 'physical' and borrow_req.book.owner_id != current_user.id:
             flash("Only the owner can mark a physical book as returned.", "danger")

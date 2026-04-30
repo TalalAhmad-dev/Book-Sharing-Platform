@@ -252,7 +252,7 @@ def edit(book_id):
 @books_bp.route('/<int:book_id>/delete', methods=['POST'])
 @login_required
 def delete(book_id):
-    fallback_endpoint = 'admin.books' if current_user.role == 'admin' else 'dashboard.my_books'
+    fallback_endpoint = 'admin.books' if current_user.role == 'admin' else 'dashboard.incoming_requests'
     try:
         book = Book.query.filter(
             Book.id == book_id,
