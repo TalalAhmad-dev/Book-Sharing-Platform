@@ -24,7 +24,7 @@
                                  style="width: 132px;
                                         height: 132px">{{ (user.name or 'U')[:1]|upper }}</div>
                         {% endif %}
-                        <h1 class="h2 mb-1">{{ user.name }}</h1>
+                        <h2 class="mb-1">{{ user.name }}</h2>
                         <span class="badge bg-primary text-capitalize px-3 py-2 mb-4">{{ user.role }}</span>
                     </div>
                     <div class="d-grid gap-2 mb-4 w-75 text-center mx-auto">
@@ -115,7 +115,7 @@
                                 <p class="small text-uppercase text-white-50 fw-semibold mb-2">Member Since</p>
                             </div>
                             <div class="mt-2">
-                                <h3 class="h4 mb-1">{{ profile_stats.member_since|format_date(tz=False) }}</h3>
+                                <h4 class="mb-1">{{ profile_stats.member_since|format_date(tz=False) }}</h4>
                                 <p class="text-light mb-0">
                                     <b>Account age:</b> {{ profile_stats.account_age }}
                                 </p>
@@ -155,12 +155,12 @@
                             </div>
                             <div class="mt-2">
                                 {% if profile_stats.last_updated_at %}
-                                    <h3 class="h4 mb-1">{{ profile_stats.last_updated_at|format_date(tz=False) }}</h3>
+                                    <h4 class="mb-1">{{ profile_stats.last_updated_at|format_date(tz=False) }}</h4>
                                     <p class="text-light mb-0">
                                         <b>At</b> {{ profile_stats.last_updated_at|format_time }}
                                     </p>
                                 {% else %}
-                                    <h3 class="h4 mb-0">N/A</h3>
+                                    <h4 class="mb-0">N/A</h4>
                                 {% endif %}
                             </div>
                         </div>
@@ -175,7 +175,7 @@
                  data-aos-delay="150">
                 <div class="card-header bg-transparent border-secondary d-flex justify-content-between align-items-center">
                     <div>
-                        <h2 class="h4 my-2">Books Shared</h2>
+                        <h4 class="my-2">Books Shared</h4>
                         {% if has_more_books %}
                             <small class="text-white-50">Showing latest {{ books|length }} of {{ total_books_count }} books</small>
                         {% endif %}
