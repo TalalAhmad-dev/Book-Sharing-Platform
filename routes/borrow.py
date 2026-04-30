@@ -383,7 +383,7 @@ def mark_returned(req_id):
                 actor_id=current_user.id,
                 category='borrow',
                 title='Book marked as returned',
-                message=f'"{borrow_req.book.title}" was marked as returned by {current_user.username}.',
+                message=f'"{borrow_req.book.title}" was marked as returned by {current_user.name}.',
                 entity_type='borrow_request',
                 entity_id=borrow_req.id
             )

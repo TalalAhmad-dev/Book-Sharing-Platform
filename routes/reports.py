@@ -49,7 +49,7 @@ def report_book(book_id):
             notification = queue_notification(
                 recipient_id=admin_user,
                 title='New Book Report',
-                message=f'User {current_user.username} has reported book "{book.title}" for: {reason}',
+                message=f'User {current_user.name} has reported book "{book.title}" for: {reason}',
                 category='book report',
                 actor_id=current_user.id,
                 entity_type='book_report',
@@ -111,7 +111,7 @@ def report_user(user_id):
             notification = queue_notification(
                 recipient_id=admin_user,
                 title='New User Report',
-                message=f'User {current_user.username} has reported user {user.username} for: {reason}',
+                message=f'User {current_user.name} has reported user {user.username} for: {reason}',
                 category='user report',
                 actor_id=current_user.id,
                 entity_type='user_report',

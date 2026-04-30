@@ -59,11 +59,10 @@
                             <a href="{{ url_for('books.detail', book_id=book.id) }}"
                                class="btn btn-light fw-semibold btn-sm">View
                             Details</a>
-                            {% if book.owner_id != current_user.id and (book.status == 'available' or book.book_type ==
-                                'digital') %}
+                            {% if book.owner_id != current_user.id and (book.status == 'available' or book.book_type == 'digital') %}
                                 <a href="{{ url_for('books.request_borrow', book_id=book.id) }}"
                                    class="btn btn-secondary fw-semibold btn-sm">Borrow Book</a>
-                            {% else %}
+                            {% elif book.owner_id == current_user.id %}
                                 <a href="{{ url_for('books.edit', book_id=book.id) }}"
                                    class="btn btn-secondary fw-semibold btn-sm">Edit Book Details</a>
                             {% endif %}
@@ -72,4 +71,5 @@
                 </div>
             </div>
         </div>
-    {% endfor %}
+    </div>
+{% endfor %}
