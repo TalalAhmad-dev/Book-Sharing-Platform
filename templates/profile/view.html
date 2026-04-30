@@ -2,6 +2,13 @@
 {% block title %}{{ user.name }}'s Profile - BookShare{% endblock %}
 {% block content %}
     {% set profile_avatar = url_for('static', filename='uploads/' + user.profile_image) if user.profile_image else '' %}
+    <div class="mb-4"
+         data-aos="fade-down"
+         data-aos-easing="ease-in-sine"
+         data-aos-duration="200">
+        <h3 class="mb-1">{{ user.name }}'s Profile</h3>
+        <p class="text-muted mb-0">View user information and shared books.</p>
+    </div>
     <div class="row g-4">
         <div class="col-12 col-xxl-4 order-2 order-xxl-1"
              data-aos="fade-right"
