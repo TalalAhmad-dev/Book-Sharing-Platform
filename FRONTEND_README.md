@@ -52,7 +52,7 @@ templates/
 │   └── edit.html               # Edit book form
 ├── dashboard/
 │   ├── index.html              # Main user dashboard
-│   ├── my_books.html           # My shared books + incoming requests
+│   ├── incoming_requests.html  # Incoming borrow requests (owner workspace)
 │   └── borrowed.html           # Books I am borrowing
 ├── borrow/
 │   ├── request_form.html       # Borrow request modal/form
@@ -231,20 +231,16 @@ bookTypeRadios.forEach(radio => {
 
 - Welcome message: *"Hello, {{ current_user.name }}"*
 - Summary stat cards: Total Books Shared, Books Currently Borrowed, Pending Requests, Favorites count
-- Quick links to: My Books, Borrowed Books, Favorites
+- Quick links to: Incoming Requests, Borrowed Books, Add Book
+- Includes a compact-card section for the current user's shared books
 
 ---
 
-### 6.2 `dashboard/my_books.html` — My Shared Books
+### 6.2 `dashboard/incoming_requests.html` — Incoming Borrow Requests
 
-**Section A — My Books List:**
-- Table/card list of all books owned by current user
-- Columns: Title, Type, Status badge, Actions (Edit / Delete)
-- Status badge colors: `available` = green, `borrowed` = orange, `returned` = blue
-
-**Section B — Incoming Borrow Requests:**
-- Table of all pending requests on the user's books
-- Columns: Book Title, Requester Name, Proposed Date/Time/Location, Status, Actions
+- Dedicated table of borrow requests for books owned by current user
+- Summary cards + concise request table + details modal
+- Columns: ID, Book, Requester, Type, Status, Updated, Actions
 - Action buttons depend on request status:
 
 | Request Status | Buttons Available |
@@ -269,7 +265,8 @@ bookTypeRadios.forEach(radio => {
 ### 7.1 `profile/view.html` — Public Profile
 
 - Profile image (or default avatar placeholder), Name, Bio, Contact, Member since date
-- Grid of books shared by this user
+- Preview table of books shared by this user (latest entries)
+- For profile owner, **View All** button redirects to dashboard for full shared-books view
 - *"Report this User"* link (visible to other members, not to the profile owner)
 
 ### 7.2 `profile/edit.html` — Edit My Profile
@@ -360,7 +357,7 @@ bookTypeRadios.forEach(radio => {
 | `books/add.html` | `/books/add` | Login req. | Add book form with conditional JS fields |
 | `books/edit.html` | `/books/<id>/edit` | Owner / Admin | Pre-filled edit form |
 | `dashboard/index.html` | `/dashboard` | Login req. | Stats, welcome, quick links |
-| `dashboard/my_books.html` | `/dashboard/incoming-requests` | Login req. | Incoming borrow requests with owner actions |
+| `dashboard/incoming_requests.html` | `/dashboard/incoming-requests` | Login req. | Incoming borrow requests with owner actions |
 | `dashboard/borrowed.html` | `/dashboard/borrowed` | Login req. | Books I am borrowing |
 | `profile/view.html` | `/profile/<id>` | Login req. | Public profile, user's books, report link |
 | `profile/edit.html` | `/profile/edit` | Login req. | Edit name, bio, contact, profile image |

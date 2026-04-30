@@ -39,7 +39,7 @@
                                     <button type="submit" class="btn btn-outline-danger fw-semibold btn-sm w-100">Remove Favorite</button>
                                 </form>
                             {% endif %}
-                            {% if book.owner_id == current_user.id and card_context == 'profile' %}
+                            {% if book.owner_id == current_user.id and card_context in ['profile', 'dashboard'] %}
                                 <a href="{{ url_for('books.edit', book_id=book.id) }}"
                                    class="btn btn-secondary fw-semibold btn-sm">Edit Book Details</a>
                             {% endif %}

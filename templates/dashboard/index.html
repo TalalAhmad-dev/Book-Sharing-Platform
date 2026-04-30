@@ -1,57 +1,98 @@
 {% extends "base/protected.html" %}
 {% block title %}Dashboard - BookShare{% endblock %}
 {% block content %}
-    <!-- TODO: Update the form-select dropdown options to have black background when on hover accross all project -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2">Welcome, {{ current_user.name }}!</h1>
-        <div class="btn-group">
-            <a href="{{ url_for('dashboard.incoming_requests') }}"
-               class="btn btn-outline-primary">Incoming Requests</a>
-            <a href="{{ url_for('dashboard.borrowed') }}"
-               class="btn btn-outline-primary">Borrowed Books</a>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4"
+         data-aos="fade-down"
+         data-aos-easing="ease-in-sine"
+         data-aos-duration="200">
+        <div>
+            <h1 class="h2 mb-1">Welcome, {{ current_user.name }}!</h1>
+            <p class="text-muted mb-0">Manage your shared books and borrowing activity.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('dashboard.incoming_requests') }}" class="btn btn-secondary fw-semibold">Incoming Requests</a>
+            <a href="{{ url_for('dashboard.borrowed') }}" class="btn btn-secondary fw-semibold">Borrowed Books</a>
         </div>
     </div>
-    <div class="row g-4 mb-5">
-        <div class="col-md-3">
-            <div class="card shadow-sm h-100 border-start border-primary border-4">
-                <div class="card-body text-center">
-                    <h6 class="text-muted text-uppercase mb-2">Books Shared</h6>
-                    <div class="h2 mb-0">{{ my_books_count }}</div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-xl-3"
+             data-aos="fade-up"
+             data-aos-easing="linear"
+             data-aos-delay="100"
+             data-aos-offset="0"
+             data-aos-duration="300">
+            <div class="card bg-dark text-light shadow h-100">
+                <div class="card-body">
+                    <p class="small text-uppercase text-white-50 fw-semibold mb-2">Books Shared</p>
+                    <h3 class="h4 mb-0">{{ my_books_count }}</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm h-100 border-start border-success border-4">
-                <div class="card-body text-center">
-                    <h6 class="text-muted text-uppercase mb-2">Currently Borrowing</h6>
-                    <div class="h2 mb-0">{{ borrowed_count }}</div>
+        <div class="col-12 col-md-6 col-xl-3"
+             data-aos="fade-up"
+             data-aos-easing="linear"
+             data-aos-delay="150"
+             data-aos-offset="0"
+             data-aos-duration="300">
+            <div class="card bg-dark text-light shadow h-100">
+                <div class="card-body">
+                    <p class="small text-uppercase text-white-50 fw-semibold mb-2">Currently Borrowing</p>
+                    <h3 class="h4 mb-0">{{ borrowed_count }}</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm h-100 border-start border-warning border-4">
-                <div class="card-body text-center">
-                    <h6 class="text-muted text-uppercase mb-2">Pending Requests</h6>
-                    <div class="h2 mb-0">{{ pending_requests_count }}</div>
+        <div class="col-12 col-md-6 col-xl-3"
+             data-aos="fade-up"
+             data-aos-easing="linear"
+             data-aos-delay="200"
+             data-aos-offset="0"
+             data-aos-duration="300">
+            <div class="card bg-dark text-light shadow h-100">
+                <div class="card-body">
+                    <p class="small text-uppercase text-white-50 fw-semibold mb-2">Pending Requests</p>
+                    <h3 class="h4 mb-0">{{ pending_requests_count }}</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm h-100 border-start border-info border-4">
-                <div class="card-body text-center">
-                    <h6 class="text-muted text-uppercase mb-2">Favorites</h6>
-                    <div class="h2 mb-0">{{ favorites_count }}</div>
+        <div class="col-12 col-md-6 col-xl-3"
+             data-aos="fade-up"
+             data-aos-easing="linear"
+             data-aos-delay="250"
+             data-aos-offset="0"
+             data-aos-duration="300">
+            <div class="card bg-dark text-light shadow h-100">
+                <div class="card-body">
+                    <p class="small text-uppercase text-white-50 fw-semibold mb-2">Favorites</p>
+                    <h3 class="h4 mb-0">{{ favorites_count }}</h3>
                 </div>
             </div>
         </div>
     </div>
-    <div class="card shadow-sm">
-        <div class="card-header bg-white">
-            <h5 class="mb-0 py-1">Recent Activity</h5>
+
+    <div class="card bg-dark text-light shadow"
+         data-aos="fade-up"
+         data-aos-easing="linear"
+         data-aos-delay="150"
+         data-aos-offset="0"
+         data-aos-duration="350">
+        <div class="card-header bg-transparent border-secondary d-flex justify-content-between align-items-center">
+            <h2 class="h5 mb-0 py-1">My Shared Books</h2>
+            <a href="{{ url_for('books.add') }}" class="btn btn-sm btn-outline-light fw-semibold">Add New Book</a>
         </div>
-        <div class="card-body py-4 text-center text-muted">
-            <i class="bi bi-clock-history fs-1 d-block mb-3"></i>
-            <p class="mb-0">No recent activity to show.</p>
+        <div class="card-body">
+            {% if my_shared_books %}
+                {% set books = my_shared_books %}
+                {% set card_context = 'dashboard' %}
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xxl-4 g-3">
+                    {% include 'books/_book_cards_compact.html' %}
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-white-50">
+                    <div class="mb-2">You have not shared any books yet.</div>
+                    <a href="{{ url_for('books.add') }}" class="btn btn-outline-primary fw-semibold">Add Your First Book</a>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

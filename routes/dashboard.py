@@ -10,6 +10,16 @@ dashboard_bp = Blueprint('dashboard', __name__)
 @login_required
 def index():
     try:
+        my_shared_books = (
+            Book.query.filter(
+                Book.owner_id == current_user.id,
+                Book.deleted_at.is_(None)
+            )
+            .order_by(Book.updated_at.desc(), Book.created_at.desc())
+            .limit(8)
+            .all()
+        )
+
         my_books_count = Book.query.filter(
             Book.owner_id == current_user.id,
             Book.deleted_at.is_(None)
@@ -29,7 +39,8 @@ def index():
                                my_books_count=my_books_count,
                                borrowed_count=borrowed_count,
                                pending_requests_count=pending_requests_count,
-                               favorites_count=favorites_count)
+                               favorites_count=favorites_count,
+                               my_shared_books=my_shared_books)
     except Exception as e:
         current_app.logger.exception(f"Error loading dashboard index: {e}")
         flash("An error occurred while loading your dashboard.", "danger")
@@ -37,7 +48,8 @@ def index():
                                my_books_count=0,
                                borrowed_count=0,
                                pending_requests_count=0,
-                               favorites_count=0)
+                               favorites_count=0,
+                               my_shared_books=[])
 
 @dashboard_bp.route('/incoming-requests')
 @login_required

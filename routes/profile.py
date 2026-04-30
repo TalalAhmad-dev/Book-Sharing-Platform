@@ -35,10 +35,12 @@ def _format_account_age(joined_at):
 @login_required
 def view(user_id):
     user = User.query.get_or_404(user_id)
-    user_books = Book.query.filter(
+    books_query = Book.query.filter(
         Book.owner_id == user.id,
         Book.deleted_at.is_(None)
-    ).order_by(Book.updated_at.desc(), Book.created_at.desc()).all()
+    ).order_by(Book.updated_at.desc(), Book.created_at.desc())
+    total_books_count = books_query.count()
+    user_books = books_query.limit(5).all()
 
     profile_stats = {
         'member_since': user.created_at if user.created_at else None,
@@ -47,7 +49,14 @@ def view(user_id):
         'last_updated_at': user.updated_at or user.created_at
     }
 
-    return render_template('profile/view.html', user=user, books=user_books, profile_stats=profile_stats)
+    return render_template(
+        'profile/view.html',
+        user=user,
+        books=user_books,
+        profile_stats=profile_stats,
+        total_books_count=total_books_count,
+        has_more_books=total_books_count > len(user_books)
+    )
 
 @profile_bp.route('/edit', methods=['GET', 'POST'])
 @login_required
