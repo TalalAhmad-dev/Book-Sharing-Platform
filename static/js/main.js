@@ -185,7 +185,6 @@ document.addEventListener("DOMContentLoaded", function () {
             },
           },
         };
-        baseConfig.lengthMenu = [5, 10, 25, 50, { label: "All", value: -1 }];
         baseConfig.buttons = buttons;
       } else {
         baseConfig.layout = {
@@ -198,8 +197,9 @@ document.addEventListener("DOMContentLoaded", function () {
             },
           },
         };
-        baseConfig.lengthMenu = [5, 10, 25, 50, { label: "All", value: -1 }];
       }
+      baseConfig.lengthMenu = [5, 10, 25, 50, { label: "All", value: -1 }];
+      baseConfig.scrollX = true;
 
       new DataTable(table, baseConfig);
       table.dataset.dtInitialized = "true";

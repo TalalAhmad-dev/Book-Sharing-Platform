@@ -426,5 +426,6 @@ textarea {
   --bs-pagination-hover-color: var(--bs-light) !important;
   --bs-pagination-hover-bg: rgba(var(--bs-secondary-rgb), 0.4) !important;
   --bs-pagination-focus-color: var(--bs-dark) !important;
-  --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(var(--bs-light-rgb), 0.25)
+  --bs-pagination-focus-box-shadow: 0 0 0 0.25rem
+    rgba(var(--bs-light-rgb), 0.25);
 }
