@@ -178,7 +178,7 @@
         </div>
         <div class="card-body px-2">
             <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0 { dataTable if recent_books else '' }">
+                <table class="table table-dark table-hover align-middle mb-0 {% if recent_books %} dataTable{% endif %}">
                     <thead>
                         <tr>
                             <th class="ps-3">Title</th>
