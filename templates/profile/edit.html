@@ -1,5 +1,5 @@
 {% extends "base/protected.html" %}
-{% block title %}Edit Profile - BookShare{% endblock %}
+{% block title %}Edit Profile - Book Sharing Platform{% endblock %}
 {% block content %}
     {% set profile_avatar = url_for('static', filename='uploads/' + current_user.profile_image) if
         current_user.profile_image else '' %}

@@ -1,5 +1,5 @@
 {% extends "base/protected.html" %}
-{% block title %}{{ book.title }} - BookShare{% endblock %}
+{% block title %}{{ book.title }} - Book Sharing Platform{% endblock %}
 {% block content %}
     {% set is_owner = current_user.id == book.owner_id %}
     {% set is_available_for_request = (book.status == 'available' or book.book_type == 'digital') %}

@@ -1,5 +1,5 @@
 {% extends "base/protected.html" %}
-{% block title %}{{ user.name }}'s Profile - BookShare{% endblock %}
+{% block title %}{{ user.name }}'s Profile - Book Sharing Platform{% endblock %}
 {% block content %}
     {% set profile_avatar = url_for('static', filename='uploads/' + user.profile_image) if user.profile_image else '' %}
     <div class="mb-4"
@@ -194,7 +194,7 @@
                 <div class="card-body px-2">
                     <div class="table-responsive">
                         <table class="table table-dark table-hover table-striped align-middle mb-0 {% if books %}dataTable{% endif %}"
-                               {% if books %}data-default-order="4,desc" data-export-title="Books Shared - BookShare"{% endif %}>
+                               {% if books %}data-default-order="4,desc" data-export-title="Books Shared - Book Sharing Platform"{% endif %}>
                             <thead>
                                 <tr>
                                     <th class="ps-3">Title</th>
