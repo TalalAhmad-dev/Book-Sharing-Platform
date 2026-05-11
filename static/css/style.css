@@ -415,6 +415,10 @@ textarea {
   pointer-events: all !important;
 }
 
+.modal-backdrop {
+  z-index: -2 !important;
+}
+
 .pagination {
   --bs-pagination-active-bg: var(--bs-light) !important;
   --bs-pagination-active-color: var(--bs-dark) !important;
